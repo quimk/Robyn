@@ -17,6 +17,7 @@ Imports:
     data.table,
     doParallel,
     doFuture,
+    future,
     doRNG,
     foreach,
     ggplot2,
@@ -36,8 +37,7 @@ Imports:
     see,
     StanHeaders,
     stringr,
-    car,
-    see
+    car
 Suggests:
     shiny
 URL: https://github.com/facebookexperimental/Robyn, https://facebookexperimental.github.io/Robyn/
