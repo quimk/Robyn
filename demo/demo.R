@@ -94,11 +94,11 @@ InputCollect <- robyn_inputs(dt_input = dt_simulated_weekly
                              
                              ## set model core features
                              ,adstock = "geometric" # geometric or weibull. weibull is more flexible, yet has one more parameter and thus takes longer
-                             ,iterations = 200  # number of allowed iterations per trial. 500 is recommended
+                             ,iterations = 100  # number of allowed iterations per trial. 500 is recommended
                              
                              ,nevergrad_algo = "TwoPointsDE" # selected algorithm for Nevergrad, the gradient-free optimisation library https://facebookresearch.github.io/nevergrad/index.html
                              ,trials = 2 # number of allowed iterations per trial. 40 is recommended without calibration, 100 with calibration.
-                             ## Time estimation: with geometric adstock, 500 iterations * 40 trials and 6 cores, it takes less than 1 hour. Weibull takes at least twice as much time.
+                             ## Time estimation: with geometric adstock, 2000 iterations * 5 trials and 6 cores, it takes about 30 minutes. Weibull takes at least twice as much time.
                              
                              #,hyperparameters = hyperparameters
                              
@@ -186,67 +186,8 @@ InputCollect <- robyn_inputs(InputCollect = InputCollect
 OutputCollect <- robyn_run(InputCollect = InputCollect
                            , plot_folder = robyn_object
                            , pareto_fronts = 1
-                           , plot_pareto = F)
+                           , plot_pareto = TRUE)
 
-
-ng_algos <- c("OnePlusOne"
-              ,"DoubleFastGADiscreteOnePlusOne"
-              ,"DiscreteOnePlusOne"
-              ,"PortfolioDiscreteOnePlusOne"
-              ,"DE"
-              ,"TwoPointsDE"
-              #,"MetaModel"
-              ,"NaiveTBPSA"
-              ,"cGA"
-              ,"RandomSearch")
-ng_algos <- c("DE", "TwoPointsDE")
-
-source(paste(script_path, "fb_robyn.func.R", sep=""))
-
-al_collect <- list()
-for (al in ng_algos) {
-  InputCollect$iterations <- 2000
-  InputCollect$trials <- 5
-  InputCollect$cores <- availableCores()
-  InputCollect$nevergrad_algo <- al
-  
-  options(parallelly.fork.enable = F)
-  supportsMulticore()
-  OutputCollect <- robyn_run(InputCollect = InputCollect
-                             , plot_folder = robyn_object
-                             , pareto_fronts = 1
-                             , plot_pareto = F)
-  
-  plotname <- paste0(InputCollect$nevergrad_algo,"_", InputCollect$iterations, "x", InputCollect$trials)
-  dt_test <- rbindlist(lapply(OutputCollect$model_output_collect, function (x) x$resultCollect$resultHypParam[, trial:= x$trial]))
-  dt_test[, ':='(trial=as.factor(trial)
-                 , combined_error= sqrt(decomp.rssd^2+nrmse^2)
-                 , test_setup = plotname
-                 , iterations = (iterNG-1)*InputCollect$cores + iterPar
-  )]
-  dt_test[, combined_error:= sqrt(decomp.rssd^2+nrmse^2)]
-  dt_test <- dt_test[order(trial, ElapsedAccum)][, combined_error_min:= cummin(combined_error), by = trial]
-  al_collect[[which(al == ng_algos)]] <- dt_test
-  
-  fwrite(dt_test, paste0("/Users/gufengzhou/Documents/robyn_dev_output/",plotname,".csv"))
-}
-
-dt_al_collect <- rbindlist(al_collect)
-#dt_al_collect[, iterations:= (iterNG-1)*InputCollect$cores + iterPar]
-plotTest <- ggplot(dt_al_collect, aes(x=iterations, y=combined_error_min, color = trial)) + 
-  facet_wrap(~ test_setup) +
-  geom_line() +
-  labs(x ="seconds", y = "minimum combined error")
-plotTest
-fwrite(dt_al_collect, paste0("/Users/gufengzhou/Documents/robyn_dev_output/ng_algo_compare_",InputCollect$iterations, "x", InputCollect$trials,".csv"))
-
-ggsave(paste0("/Users/gufengzhou/Documents/robyn_dev_output/ng_algo_compare_",InputCollect$iterations, "x", InputCollect$trials,".png")
-       , plot = plotTest
-       , dpi = 600, width = 16, height = 9)
-
-
-
-.Platform$OS.type
 
 ################################################################
 #### Step 5: Select and save the initial model
@@ -254,7 +195,7 @@ ggsave(paste0("/Users/gufengzhou/Documents/robyn_dev_output/ng_algo_compare_",In
 ## compare all model onepagers in the plot folder and select one that mostly represents your business reality
 
 OutputCollect$allSolutions
-select_model <- "1_54_3"
+select_model <- "2_30_6"
 robyn_save(robyn_object = robyn_object
            , select_model = select_model
            , InputCollect = InputCollect
@@ -297,10 +238,10 @@ AllocatorCollect <- robyn_allocator(InputCollect = InputCollect
 ## NOTE: must run robyn_save to select and save an initial model first, before refreshing below
 
 Robyn <- robyn_refresh(robyn_object = robyn_object # the location of your Robyn.RData object
-                       , dt_input = dt_input
-                       , dt_holidays = dt_holidays
+                       , dt_input = dt_simulated_weekly
+                       , dt_holidays = dt_prophet_holidays
                        , refresh_steps = 13 # refresh_steps = 4 means refresh model's rolling window will move forward 4 weeks 
-                       , refresh_mode = "auto" # "auto" means the refresh function will move forward until no more data available
+                       , refresh_mode = "manual" # "auto" means the refresh function will move forward until no more data available
                        , refresh_iters = 150 # iteration for refresh
                        , refresh_trials = 1 # trial for refresh
 )

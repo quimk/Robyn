@@ -194,10 +194,10 @@ robyn_inputs <- function(dt_input
                          ,iterations = 500  
                          ,trials = 40 
                          ,nevergrad_algo = "TwoPointsDE" 
-                         ,calibration_input = data.table(channel = character(),
-                                                         liftStartDate = Date(), 
-                                                         liftEndDate = Date(), 
-                                                         liftAbs = numeric()) 
+                         ,calibration_input = data.table::data.table(channel = NULL,
+                                                                     liftStartDate = NULL, 
+                                                                     liftEndDate = NULL, 
+                                                                     liftAbs = NULL) 
                          ,InputCollect = NULL
                          
 ) {
@@ -367,10 +367,10 @@ robyn_inputs <- function(dt_input
       if ((min(calibration_input$liftStartDate) < min(dt_input[, get(date_var)])) | (max(calibration_input$liftEndDate) >  (max(dt_input[, get(date_var)]) + dayInterval-1))) {
         stop("we recommend you to only use lift results conducted within your MMM input data date range")
       } else if (iterations < 500 | trials < 80) {
-        message("you are calibrating MMM. we recommend to run at least 500 iterations per trial and at least 80 trials at the beginning")
+        message("you are calibrating MMM. we recommend to run at least 2000 iterations per trial and at least 10 trials at the beginning")
       }
     } else {
-      if (iterations < 500 | trials < 40) {message("we recommend to run at least 500 iterations per trial and at least 40 trials at the beginning")}
+      if (iterations < 500 | trials < 40) {message("we recommend to run at least 2000 iterations per trial and at least 5 trials at the beginning")}
     }
     
     ## get all hyper names

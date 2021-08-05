@@ -101,8 +101,9 @@ saturation_hill <- function(x, alpha, gamma, x_marginal = NULL) {
 #' Describe function.
 #'
 #' @param plotAdstockCurves xxx
+#' @export
 
-plot_adstock <- function(c) {
+plot_adstock <- function(plotAdstockCurves) {
   if (plotAdstockCurves) {
     # plot weibull
     weibullCollect <- list()
@@ -181,6 +182,7 @@ plot_adstock <- function(c) {
 #' Describe function.
 #'
 #' @param plotResponseCurves xxx
+#' @export
 
 plot_saturation <- function(plotResponseCurves) {
   if (plotResponseCurves) {

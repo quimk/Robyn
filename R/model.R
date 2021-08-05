@@ -80,7 +80,7 @@ robyn_run <- function(InputCollect
                                            ,InputCollect = InputCollect
                                            #,iterations = iterations
                                            #,cores = cores
-                                           ,optimizer_name = InputCollect$nevergrad_algo
+                                           #,optimizer_name = InputCollect$nevergrad_algo
                                            ,lambda_fixed = dt_hyper_fixed$lambda)
     
     model_output_collect[[1]]$trial <- 1

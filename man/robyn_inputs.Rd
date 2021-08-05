@@ -29,8 +29,8 @@ robyn_inputs(
   iterations = 500,
   trials = 40,
   nevergrad_algo = "TwoPointsDE",
-  calibration_input = data.table(channel = character(), liftStartDate = Date(),
-    liftEndDate = Date(), liftAbs = numeric()),
+  calibration_input = data.table::data.table(channel = NULL, liftStartDate = NULL,
+    liftEndDate = NULL, liftAbs = NULL),
   InputCollect = NULL
 )
 }

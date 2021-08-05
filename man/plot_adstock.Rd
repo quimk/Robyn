@@ -4,7 +4,7 @@
 \alias{plot_adstock}
 \title{Adstocking help plot}
 \usage{
-plot_adstock(c)
+plot_adstock(plotAdstockCurves)
 }
 \arguments{
 \item{plotAdstockCurves}{xxx}

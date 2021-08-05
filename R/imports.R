@@ -18,19 +18,23 @@
 #' @author Leonel Sentana (leonelsentana@@fb.com)
 #' @author Antonio Prada (aprada@@fb.com)
 #' @author Igor Skokan (igorskokan@@fb.com)
-#' @importFrom corrplot corrplot
 #' @import data.table
 #' @import ggplot2
 #' @import doFuture
-#' @import doRNG
+#' @import future
+#' @import prophet
+#' @importFrom doRNG %dorng%
 #' @importFrom doParallel registerDoParallel
 #' @importFrom foreach foreach %dopar% getDoParWorkers
+#' @importFrom gridExtra grid.arrange arrangeGrob
+#' @importFrom ggpubr text_grob
+#' @importFrom grid unit.pmax
+#' @importFrom corrplot corrplot
 #' @importFrom glmnet cv.glmnet glmnet
 #' @importFrom lubridate is.Date
 #' @importFrom minpack.lm nlsLM
 #' @importFrom nloptr nloptr
 #' @importFrom patchwork guide_area plot_layout plot_annotation wrap_plots
-#' @importFrom prophet prophet prophet_plot_components
 #' @importFrom reticulate tuple use_condaenv import conda_create conda_install py_module_available
 #' @importFrom rPref low psel
 #' @importFrom stats AIC BIC coef end lm model.matrix na.omit nls.control
@@ -40,6 +44,8 @@
 #' @importFrom foreach registerDoSEQ
 #' @importFrom parallel detectCores
 "_PACKAGE"
+
+# "car","StanHeaders","rstan", "see","PerformanceAnalytics"
 
 if (getRversion() >= "2.15.1") {
   globalVariables(".")

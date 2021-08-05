@@ -16,9 +16,13 @@ Imports:
     corrplot,
     data.table,
     doParallel,
+    doFuture,
+    doRNG,
     foreach,
     ggplot2,
     ggpubr,
+    grid,
+    gridExtra,
     glmnet,
     lubridate,
     minpack.lm,
@@ -31,7 +35,9 @@ Imports:
     rstan,
     see,
     StanHeaders,
-    stringr
+    stringr,
+    car,
+    see
 Suggests:
     shiny
 URL: https://github.com/facebookexperimental/Robyn, https://facebookexperimental.github.io/Robyn/
