@@ -69,7 +69,7 @@ robyn_save <- function(robyn_object
 #' @param refresh_trials xxx
 #' @param plot_pareto xxx
 #' @examples
-#' # xxx
+#'
 #' @return List object
 #' @export
 

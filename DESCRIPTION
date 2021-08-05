@@ -23,7 +23,6 @@ Imports:
     ggplot2,
     ggpubr,
     grid,
-    gridExtra,
     glmnet,
     lubridate,
     minpack.lm,
@@ -33,11 +32,8 @@ Imports:
     prophet,
     reticulate,
     rPref,
-    rstan,
     see,
-    StanHeaders,
-    stringr,
-    car
+    stringr
 Suggests:
     shiny
 URL: https://github.com/facebookexperimental/Robyn, https://facebookexperimental.github.io/Robyn/

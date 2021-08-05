@@ -30,5 +30,5 @@ robyn_mmm(
 Describe function.
 }
 \examples{
-xxx
+## xxx
 }

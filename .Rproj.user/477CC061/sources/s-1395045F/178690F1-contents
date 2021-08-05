@@ -2,7 +2,6 @@
 setwd("/Users/gufengzhou/Documents/GitHub/Robyn")
 devtools::document()
 setwd("/Users/gufengzhou/Documents/GitHub")
-devtools::install("Robyn")
-
 devtools::check("Robyn")
 
+#devtools::install("Robyn")

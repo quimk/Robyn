@@ -1,0 +1,26 @@
+{
+    "id": "0C664786",
+    "path": "~/Documents/GitHub/Robyn/R/imports.R",
+    "project_path": "R/imports.R",
+    "type": "r_source",
+    "hash": "3185420726",
+    "contents": "",
+    "dirty": false,
+    "created": 1628172969970.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "29,54",
+        "scrollLine": "25"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1628175170,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1628175170662,
+    "read_only": false,
+    "read_only_alternatives": []
+}

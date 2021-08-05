@@ -516,15 +516,13 @@ robyn_allocator <- function(robyn_object = NULL
   # pgbl <- arrangeGrob(p13,p12,p11,p14, ncol=2, top = text_grob(grobTitle, size = 15, face = "bold"))
   # grid.draw(pgbl)
 
-  # g13 <- ggplotGrob(p13)
-  # g12 <- ggplotGrob(p12)
-  # g14 <- ggplotGrob(p14)
-  # maxWidth <- unit.pmax(g13$widths, g12$widths, g14$widths)
-  # g13$widths <- g12$widths <- g14$widths <- maxWidth
-  # layout <- cbind(c(1,2), c(3,3))
-  # g <- grid.arrange(g13, g12, g14,   layout_matrix=layout, top = text_grob(grobTitle, size = 15, face = "bold"))
-
-  g <- (p13 + p12) / p14 + plot_annotation(title = grobTitle, theme = theme(plot.title = element_text(hjust = 0.5)))
+  g13 <- ggplotGrob(p13)
+  g12 <- ggplotGrob(p12)
+  g14 <- ggplotGrob(p14)
+  maxWidth <- unit.pmax(g13$widths, g12$widths, g14$widths)
+  g13$widths <- g12$widths <- g14$widths <- maxWidth
+  layout <- cbind(c(1,2), c(3,3))
+  g <- grid.arrange(g13, g12, g14,   layout_matrix=layout, top = text_grob(grobTitle, size = 15, face = "bold"))
 
   cat("\nSaving plots to ", paste0(OutputCollect$folder_path, select_model,"_reallocated.png"), "...\n")
   ggsave(filename=paste0(OutputCollect$folder_path, select_model,"_reallocated.png")

@@ -30,5 +30,5 @@ robyn_run(
 Describe function.
 }
 \examples{
-xxx
+## xxx
 }
