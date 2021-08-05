@@ -23,6 +23,11 @@
 #' @import doFuture
 #' @import future
 #' @import prophet
+#' @import car
+#' @import StanHeaders
+#' @import rstan
+#' @import see
+#' @import PerformanceAnalytics
 #' @importFrom doRNG %dorng%
 #' @importFrom doParallel registerDoParallel
 #' @importFrom foreach foreach %dopar% getDoParWorkers
@@ -44,8 +49,6 @@
 #' @importFrom foreach registerDoSEQ
 #' @importFrom parallel detectCores
 "_PACKAGE"
-
-# "car","StanHeaders","rstan", "see","PerformanceAnalytics"
 
 if (getRversion() >= "2.15.1") {
   globalVariables(".")

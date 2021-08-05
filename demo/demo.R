@@ -178,6 +178,8 @@ hyperparameters <- list(
 InputCollect <- robyn_inputs(InputCollect = InputCollect
                              , hyperparameters = hyperparameters)
 
+## NOTE: The example above is to get InputCollect for the first time and done in 2 steps
+## NOTE: If hyperparameters are set before, robyn_inputs() can be also done in 1 step by providing the hyperparameters parameter immediately
 
 ################################################################
 #### Step 4: Build initial model
