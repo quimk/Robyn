@@ -28,8 +28,6 @@
 #' @importFrom doRNG %dorng%
 #' @importFrom doParallel registerDoParallel
 #' @importFrom foreach foreach %dopar% getDoParWorkers
-#' @importFrom ggpubr text_grob
-#' @importFrom grid unit.pmax
 #' @importFrom corrplot corrplot
 #' @importFrom glmnet cv.glmnet glmnet
 #' @importFrom lubridate is.Date

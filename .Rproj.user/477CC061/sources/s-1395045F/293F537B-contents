@@ -12,7 +12,7 @@
 #### Step 0: setup environement
 
 ## set locale for non English R
-# Sys.setlocale("LC_TIME", "C") 
+# Sys.setlocale("LC_TIME", "C")
 
 ## Install and load libraries
 library(Robyn) # devtools::install_github("facebookexperimental/Robyn@package_test")
@@ -22,7 +22,7 @@ library(Robyn) # devtools::install_github("facebookexperimental/Robyn@package_te
 
 ## option 1 nevergrad installation via conda
 # conda_create("r-reticulate") # must run this line once
-# conda_install("r-reticulate", "nevergrad", pip=TRUE) 
+# conda_install("r-reticulate", "nevergrad", pip=TRUE)
 # use_condaenv("r-reticulate")
 
 ## option 2 nevergrad installation via PIP
@@ -31,7 +31,7 @@ library(Robyn) # devtools::install_github("facebookexperimental/Robyn@package_te
 # use_virtualenv("r-reticulate", required = TRUE)
 
 ## in case nevergrad still can't be imported after installation, please locate your python file and run this line
-# use_python("/Users/gufengzhou/Library/r-miniconda/envs/r-reticulate/bin/python3.9") 
+# use_python("/Users/gufengzhou/Library/r-miniconda/envs/r-reticulate/bin/python3.9")
 
 
 ################################################################
@@ -45,7 +45,7 @@ head(dt_simulated_weekly)
 # 59 countries included. If your country is not included, please manually add it.
 # Tipp: any events can be added into this table, school break, events etc.
 data("dt_prophet_holidays")
-head(dt_prophet_holidays) 
+head(dt_prophet_holidays)
 
 ## Set robyn_object. It must has extension .RData. The object name can be different than Robyn
 robyn_object <- "/Users/gufengzhou/Documents/robyn_dev_output/Robyn.RData"
@@ -56,52 +56,52 @@ robyn_object <- "/Users/gufengzhou/Documents/robyn_dev_output/Robyn.RData"
 
 InputCollect <- robyn_inputs(dt_input = dt_simulated_weekly
                              ,dt_holidays = dt_prophet_holidays
-                             
-                             
+
+
                              #######################
                              #### set variables ####
-                             
+
                              ,date_var = "DATE" # date format must be "2020-01-01"
                              ,dep_var = "revenue" # there should be only one dependent variable
                              ,dep_var_type = "revenue" # "revenue" or "conversion"
-                             
+
                              ,prophet_vars = c("trend", "season", "holiday") # "trend","season", "weekday", "holiday" are provided and case-sensitive. Recommended to at least keep Trend & Holidays
                              ,prophet_signs = c("default","default", "default") # c("default", "positive", and "negative"). Recommend as default. Must be same length as prophet_vars
                              ,prophet_country = "DE" # only one country allowed once. Including national holidays for 59 countries, whose list can be found on our githut guide
-                             
+
                              ,context_vars = c("competitor_sales_B", "events") # typically competitors, price & promotion, temperature,  unemployment rate etc
                              ,context_signs = c("default", "default") # c("default", "positive", and "negative"), control the signs of coefficients for baseline variables
-                             
+
                              ,paid_media_vars = c("tv_S","ooh_S"	,	"print_S"	,"facebook_I"	,"search_clicks_P") # c("tv_S"	,"ooh_S",	"print_S"	,"facebook_I", "facebook_S"	,"search_clicks_P"	,"search_S") we recommend to use media exposure metrics like impressions, GRP etc for the model. If not applicable, use spend instead
                              ,paid_media_signs = c("positive", "positive","positive", "positive", "positive") # c("default", "positive", and "negative"). must have same length as paid_media_vars. control the signs of coefficients for media variables
                              ,paid_media_spends = c("tv_S","ooh_S",	"print_S"	,"facebook_S"	,"search_S") # spends must have same order and same length as paid_media_vars
-                             
+
                              ,organic_vars = c("newsletter")
                              ,organic_signs = c("positive") # must have same length as organic_vars
-                             
+
                              ,factor_vars = c("events") # specify which variables in context_vars and organic_vars are factorial
-                             
-                             
+
+
                              ##############################
                              #### set model parameters ####
-                             
+
                              ## set cores for parallel computing
                              ,cores = 6 # I am using 6 cores from 8 on my local machine. Use detectCores() to find out cores
-                             
+
                              ## set rolling window start
                              ,window_start = "2016-11-23"
                              ,window_end = "2018-08-22"
-                             
+
                              ## set model core features
                              ,adstock = "geometric" # geometric or weibull. weibull is more flexible, yet has one more parameter and thus takes longer
                              ,iterations = 100  # number of allowed iterations per trial. 500 is recommended
-                             
+
                              ,nevergrad_algo = "TwoPointsDE" # selected algorithm for Nevergrad, the gradient-free optimisation library https://facebookresearch.github.io/nevergrad/index.html
                              ,trials = 2 # number of allowed iterations per trial. 40 is recommended without calibration, 100 with calibration.
                              ## Time estimation: with geometric adstock, 2000 iterations * 5 trials and 6 cores, it takes about 30 minutes. Weibull takes at least twice as much time.
-                             
+
                              #,hyperparameters = hyperparameters
-                             
+
                              # ,calibration_input = data.table(channel = c("facebook_I",  "tv_S", "facebook_I"),
                              #                        liftStartDate = as.Date(c("2018-05-01", "2017-11-27", "2018-07-01")),
                              #                        liftEndDate = as.Date(c("2018-06-10", "2017-12-03", "2018-07-20")),
@@ -112,7 +112,7 @@ InputCollect <- robyn_inputs(dt_input = dt_simulated_weekly
 ################################################################
 #### Step 3: define and add hyperparameters
 
-## Guide to setup hyperparameters 
+## Guide to setup hyperparameters
 
 ## 1. get correct hyperparameter names:
 # all variables in paid_media_vars or organic_vars require hyperprameter and will be transformed by adstock & saturation
@@ -141,31 +141,31 @@ hyperparameters <- list(
   ,facebook_I_thetas = c(0, 0.3) # example bounds for theta
   #,facebook_I_shapes = c(0.0001, 2) # example bounds for shape
   #,facebook_I_scales = c(0, 0.1) # example bounds for scale
-  
+
   ,print_S_alphas = c(0.5, 3)
   ,print_S_gammas = c(0.3, 1)
   ,print_S_thetas = c(0.1, 0.4)
   #,print_S_shapes = c(0.0001, 2)
   #,print_S_scales = c(0, 0.1)
-  
+
   ,tv_S_alphas = c(0.5, 3)
   ,tv_S_gammas = c(0.3, 1)
   ,tv_S_thetas = c(0.3, 0.8)
   #,tv_S_shapes = c(0.0001, 2)
   #,tv_S_scales= c(0, 0.1)
-  
+
   ,search_clicks_P_alphas = c(0.5, 3)
   ,search_clicks_P_gammas = c(0.3, 1)
   ,search_clicks_P_thetas = c(0, 0.3)
   #,search_clicks_P_shapes = c(0.0001, 2)
   #,search_clicks_P_scales = c(0, 0.1)
-  
+
   ,ooh_S_alphas = c(0.5, 3)
   ,ooh_S_gammas = c(0.3, 1)
   ,ooh_S_thetas = c(0.1, 0.4)
   #,ooh_S_shapes = c(0.0001, 2)
   #,ooh_S_scales = c(0, 0.1)
-  
+
   ,newsletter_alphas = c(0.5, 3)
   ,newsletter_gammas = c(0.3, 1)
   ,newsletter_thetas = c(0.1, 0.4)
@@ -197,7 +197,7 @@ OutputCollect <- robyn_run(InputCollect = InputCollect
 ## compare all model onepagers in the plot folder and select one that mostly represents your business reality
 
 OutputCollect$allSolutions
-select_model <- "2_30_6"
+select_model <- "2_15_5"
 robyn_save(robyn_object = robyn_object
            , select_model = select_model
            , InputCollect = InputCollect
@@ -242,14 +242,14 @@ AllocatorCollect <- robyn_allocator(InputCollect = InputCollect
 Robyn <- robyn_refresh(robyn_object = robyn_object # the location of your Robyn.RData object
                        , dt_input = dt_simulated_weekly
                        , dt_holidays = dt_prophet_holidays
-                       , refresh_steps = 13 # refresh_steps = 4 means refresh model's rolling window will move forward 4 weeks 
+                       , refresh_steps = 13 # refresh_steps = 4 means refresh model's rolling window will move forward 4 weeks
                        , refresh_mode = "manual" # "auto" means the refresh function will move forward until no more data available
                        , refresh_iters = 150 # iteration for refresh
                        , refresh_trials = 1 # trial for refresh
 )
 
 ######## Please check plot output folders. The following 4 reporting CSVs are new and accummulated result with all previous refreshes ...
-######## ... that will be the data for reporting plots 
+######## ... that will be the data for reporting plots
 ######## report_aggregated.csv, report_alldecomp_matrix.csv, report_hyperparameters.csv, report_media_transform_matrix.csv
 
 # QA
@@ -302,12 +302,12 @@ Response2/Spend2 # ROI for search 81k
 
 # get old hyperparameters and select model
 dt_hyper_fixed <- fread("/Users/gufengzhou/Documents/robyn_dev_output/2021-07-29 00.56 init/pareto_hyperparameters.csv")
-select_model <- "1_24_5" 
+select_model <- "1_24_5"
 dt_hyper_fixed <- dt_hyper_fixed[solID == select_model]
 
 OutputCollectFixed <- robyn_run(InputCollect = InputCollect # InputCollect must be provided by robyn_inputs with same dataset and parameters as before
-                                , plot_folder = robyn_object 
-                                , dt_hyper_fixed = dt_hyper_fixed) 
+                                , plot_folder = robyn_object
+                                , dt_hyper_fixed = dt_hyper_fixed)
 
 
 # save Robyn object for further refresh

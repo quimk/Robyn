@@ -3,7 +3,7 @@
     "path": "~/Documents/GitHub/Robyn/R/inputs.R",
     "project_path": "R/inputs.R",
     "type": "r_source",
-    "hash": "270349056",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1628173421072.0,
@@ -12,8 +12,8 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "14,10",
-        "scrollLine": "0"
+        "cursorPosition": "82,30",
+        "scrollLine": "72"
     },
     "folds": "",
     "lastKnownWriteTime": 1628174007,

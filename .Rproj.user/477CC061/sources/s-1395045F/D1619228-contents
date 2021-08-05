@@ -360,7 +360,7 @@ robyn_allocator <- function(robyn_object = NULL
 
   ## run optim
   if (constr_mode  == "eq") {
-    nlsMod <- nloptr( x0=x0,
+    nlsMod <- nloptr::nloptr( x0=x0,
                       eval_f=eval_f,
                       lb=lb,
                       ub=ub,
@@ -368,7 +368,7 @@ robyn_allocator <- function(robyn_object = NULL
                       eval_g_eq=eval_g_eq,
                       opts=opts)
   } else if (constr_mode  == "ineq") {
-    nlsMod <- nloptr( x0=x0,
+    nlsMod <- nloptr::nloptr( x0=x0,
                       eval_f=eval_f,
                       lb=lb,
                       ub=ub,
@@ -526,8 +526,8 @@ robyn_allocator <- function(robyn_object = NULL
 
   g <- (p13 + p12) / p14 + plot_annotation(title = grobTitle, theme = theme(plot.title = element_text(hjust = 0.5)))
 
-  cat("\nSaving plots to ", paste0(OutputCollect$folder_path, select_model,"_reallocated.png"), "...\n")
-  ggsave(filename=paste0(OutputCollect$folder_path, select_model,"_reallocated.png")
+  cat("\nSaving plots to ", paste0(OutputCollect$plot_folder, select_model,"_reallocated.png"), "...\n")
+  ggsave(filename=paste0(OutputCollect$plot_folder, select_model,"_reallocated.png")
          , plot = g
          , dpi = 400, width = 18, height = 14)
 
