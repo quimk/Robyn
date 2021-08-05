@@ -7,6 +7,7 @@ Authors@R: c(
     person("Leonel", "Sentana", , "leonelsentana@fb.com", c("aut")),
     person("Antonio", "Prada", , "aprada@fb.com", c("aut")),
     person("Igor", "Skokan", , "igorskokan@fb.com", c("aut")))
+Maintainer: Gufeng Zhou <gufeng@fb.com>
 Description: Robyn is an automated Marketing Mix Modeling (MMM) code. It aims to reduce human bias by means of ridge regression and evolutionary algorithms, enables actionable decision making providing a budget allocator and diminishing returns curves and allows ground-truth calibration to account for causation.
 Depends:
     R (>= 3.5)
