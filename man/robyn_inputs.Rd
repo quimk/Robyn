@@ -35,21 +35,21 @@ robyn_inputs(
 )
 }
 \arguments{
-\item{dt_input}{Input dataset as data.table. Load simulated
+\item{dt_input}{Input dataset as data.table. Load simulated 
 dataset using \code{data("dt_input")}}
 
-\item{date_var}{Character. Name of date variable. Daily, weekly
+\item{date_var}{Character. Name of date variable. Daily, weekly 
 and monthly data supported. Weekly requires weekstart of Monday or Sunday.
 date_var must have format "2020-01-01"}
 
 \item{dep_var}{Character. Name of dependent variable. Only one allowed}
 
-\item{dep_var_type}{Character. Type of dependent variable
+\item{dep_var_type}{Character. Type of dependent variable 
 as "revenue" or "conversion". Only one allowed and case sensitive.}
 
 \item{prophet_vars}{Character vector. Include any of "trend",
 "season", "weekday", "holiday". Are case-sensitive. Highly recommended
-to use all for daily data and "trend", "season", "holiday" for
+to use all for daily data and "trend", "season", "holiday" for 
 weekly and above cadence}
 
 \item{prophet_signs}{Character vector. Choose any of
@@ -71,7 +71,7 @@ order and same length as \code{context_vars}.}
 
 \item{paid_media_vars}{Character vector. Recommended to use exposure
 level metrics (impressions, clicks, GRP etc) other than spend. Also
-recommended to split media channel into sub-channels
+recommended to split media channel into sub-channels 
 (e.g. fb_retargeting, fb_prospecting etc.) to gain more variance.
 paid_media_vars only accept numerical variable}
 
@@ -80,14 +80,14 @@ paid_media_vars only accept numerical variable}
 the signs of coefficients for paid_media_vars. Must have same
 order and same length as \code{paid_media_vars}.}
 
-\item{paid_media_spends}{Character vector. When using exposure level
-metrics (impressions, clicks, GRP etc) in paid_media_vars, provide
-corresponding spends for ROAS calculation. For spend metrics in
+\item{paid_media_spends}{Character vector. When using exposure level 
+metrics (impressions, clicks, GRP etc) in paid_media_vars, provide 
+corresponding spends for ROAS calculation. For spend metrics in 
 paid_media_vars, use the same name. media_spend_vars must have same
 order and same length as \code{paid_media_vars}.}
 
-\item{organic_vars}{Character vector. Typically newsletter sendings,
-push-notifications, social media posts etc. Compared to paid_media_vars
+\item{organic_vars}{Character vector. Typically newsletter sendings, 
+push-notifications, social media posts etc. Compared to paid_media_vars 
 organic_vars are often  marketing activities without clear spends}
 
 \item{organic_signs}{Character vector. Choose any of
@@ -95,17 +95,17 @@ organic_vars are often  marketing activities without clear spends}
 the signs of coefficients for organic_signs. Must have same
 order and same length as \code{organic_vars}.}
 
-\item{adstock}{Character. Choose any of \code{c("geometric", "weibull")}.
-Weibull adtock is a two-parametric function and thus more flexible, but
+\item{adstock}{Character. Choose any of \code{c("geometric", "weibull")}. 
+Weibull adtock is a two-parametric function and thus more flexible, but 
 takes longer time than the traditional geometric one-parametric function.
-Time estimation: with geometric adstock, 2000 iterations * 5 trials on 8
-cores, it takes less than 30 minutes. Weibull takes at least twice as
+Time estimation: with geometric adstock, 2000 iterations * 5 trials on 8 
+cores, it takes less than 30 minutes. Weibull takes at least twice as 
 much time.}
 
-\item{hyperparameters}{List containing hyperparameter lower and upper bounds.
+\item{hyperparameters}{List containing hyperparameter lower and upper bounds. 
 Names of elements in list must be identical to output of \code{hyper_names()}}
 
-\item{window_start}{Character. Set start date of modelling period.
+\item{window_start}{Character. Set start date of modelling period. 
 Recommended to not start in the first date in dataset to gain adstock
 effect from previous periods.}
 
@@ -114,10 +114,10 @@ to have ratio of independent variable: data points of 1:10.}
 
 \item{cores}{Integer. Default to parallelly::availableCores()}
 
-\item{iterations}{Integer. Recommended 2000 for default
+\item{iterations}{Integer. Recommended 2000 for default 
 \code{nevergrad_algo = "TwoPointsDE"}}
 
-\item{trials}{Integer. Recommended 5 for default
+\item{trials}{Integer. Recommended 5 for default 
 \code{nevergrad_algo = "TwoPointsDE"}}
 
 \item{nevergrad_algo}{Character. Default to "TwoPointsDE". Options are

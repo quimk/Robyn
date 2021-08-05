@@ -36,7 +36,7 @@ library(Robyn) # devtools::install_github("facebookexperimental/Robyn@package_te
 
 ################################################################
 #### Step 1: load data
-rm(list = ls())
+# rm(list = ls())
 ## Check simulatetd dataset or load your own dataset
 data("dt_simulated_weekly")
 head(dt_simulated_weekly)
