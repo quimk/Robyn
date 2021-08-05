@@ -10,7 +10,7 @@
 
 ################################################################
 #### set locale for non English R
-# Sys.setlocale("LC_TIME", "English")
+# Sys.setlocale("LC_TIME", "C")
 
 ################################################################
 #### load libraries
