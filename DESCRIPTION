@@ -1,16 +1,43 @@
 Package: Robyn
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Type: Package
+Title: Robyn MMM Open Source 2.0 - a Beta Project from Facebook Marketing Science 
+Version: 0.0.1
+Authors@R: c(
+    person("Gufeng", "Zhou", , "gufeng@fb.com", c("aut")),
+    person("Leonel", "Sentana", , "leonelsentana@fb.com", c("aut")),
+    person("Antonio", "Prada", , "aprada@fb.com", c("aut")),
+    person("Igor", "Skokan", , "igorskokan@fb.com", c("aut")),
+    person("Bernardo", "Lares", , "bernardolares@fb.com", c("cre")))
+Description: Robyn is an automated Marketing Mix Modeling (MMM) code. It aims to reduce human bias by means of ridge regression and evolutionary algorithms, enables actionable decision making providing a budget allocator and diminishing returns curves and allows ground-truth calibration to account for causation.
+Depends:
+    R (>= 3.5)
+Imports:
+    corrplot,
+    data.table,
+    doParallel,
+    doFuture,
+    doRNG,
+    foreach,
+    ggplot2,
+    ggpubr,
+    glmnet,
+    lubridate,
+    minpack.lm,
+    nloptr,
+    patchwork,
+    PerformanceAnalytics,
+    prophet,
+    reticulate,
+    rPref,
+    rstan,
+    see,
+    StanHeaders,
+    stringr
+Suggests:
+    shiny
+URL: https://github.com/facebookexperimental/Robyn, https://facebookexperimental.github.io/Robyn/
+BugReports: https://github.com/facebookexperimental/Robyn/issues
+RoxygenNote: 7.1.1
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
