@@ -73,7 +73,7 @@
 #' effect from previous periods.
 #' @param window_end Character. Set end date of modelling period. Recommended
 #' to have ratio of independent variable: data points of 1:10.
-#' @param cores Integer. Default to parallelly::availableCores()
+#' @param cores Integer. Default to \code{parallel::detectCores()}
 #' @param iterations Integer. Recommended 2000 for default
 #' \code{nevergrad_algo = "TwoPointsDE"}
 #' @param trials Integer. Recommended 5 for default
@@ -86,45 +86,44 @@
 #' @param InputCollect Default to NULL. Required when adding hyperparameters
 #' Not yet implemented!
 #' @examples
+#' \dontrun{
 #' data("dt_simulated_weekly")
 #' data("dt_prophet_holidays")
 #'
 #' ## Define model input using simulated dataset
+#' InputCollect <- robyn_inputs(
+#'   dt_input = dt_simulated_weekly
+#'   ,dt_holidays = dt_prophet_holidays
 #'
-#' # Recommended to keep the object naming InputCollect
-#' InputCollect <- robyn_inputs(dt_input = dt_simulated_weekly
-#'                              ,dt_holidays = dt_prophet_holidays
+#'   ,date_var = "DATE"
+#'   ,dep_var = "revenue"
+#'   ,dep_var_type = "revenue"
 #'
-#'                              ,date_var = "DATE"
-#'                              ,dep_var = "revenue"
-#'                              ,dep_var_type = "revenue"
+#'   ,prophet_vars = c("trend", "season", "holiday")
+#'   ,prophet_signs = c("default","default", "default")
+#'   ,prophet_country = "DE"
 #'
-#'                              ,prophet_vars = c("trend", "season", "holiday")
-#'                              ,prophet_signs = c("default","default", "default")
-#'                              ,prophet_country = "DE"
+#'   ,context_vars = c("competitor_sales_B", "events")
+#'   ,context_signs = c("default", "default")
 #'
-#'                              ,context_vars = c("competitor_sales_B", "events")
-#'                              ,context_signs = c("default", "default")
+#'   ,paid_media_vars = c("tv_S","ooh_S"	,	"print_S"	,"facebook_I"	,"search_clicks_P")
+#'   ,paid_media_signs = c("positive", "positive","positive", "positive", "positive")
+#'   ,paid_media_spends = c("tv_S","ooh_S",	"print_S"	,"facebook_S"	,"search_S")
 #'
-#'                              ,paid_media_vars = c("tv_S","ooh_S"	,	"print_S"	,"facebook_I"	,"search_clicks_P")
-#'                              ,paid_media_signs = c("positive", "positive","positive", "positive", "positive")
-#'                              ,paid_media_spends = c("tv_S","ooh_S",	"print_S"	,"facebook_S"	,"search_S")
+#'   ,organic_vars = c("newsletter")
+#'   ,organic_signs = c("positive")
 #'
-#'                              ,organic_vars = c("newsletter")
-#'                              ,organic_signs = c("positive")
+#'   ,factor_vars = c("events")
 #'
-#'                              ,factor_vars = c("events")
+#'   ,window_start = "2016-11-23"
+#'   ,window_end = "2018-08-22"
 #'
-#'                              ,window_start = "2016-11-23"
-#'                              ,window_end = "2018-08-22"
-#'
-#'                              ,adstock = "geometric"
-#'                              ,iterations = 2000
-#'                              ,trials = 5
+#'   ,adstock = "geometric"
+#'   ,iterations = 2000
+#'   ,trials = 5
 #' )
 #'
 #' ## Define hyperparameters
-#'
 #' hyper_names(adstock = InputCollect$adstock, all_media = InputCollect$all_media)
 #'
 #' hyperparameters <- list(
@@ -166,12 +165,10 @@
 #' )
 #'
 #' ## Add hyperparameters into robyn_inputs()
-#'
-#' InputCollect <- robyn_inputs(InputCollect = InputCollect
-#'                              , hyperparameters = hyperparameters)
+#' InputCollect <- robyn_inputs(InputCollect, hyperparameters = hyperparameters)
+#' }
 #' @return List object
 #' @export
-
 robyn_inputs <- function(dt_input = NULL
                          ,dt_holidays = NULL
                          ,date_var = NULL
@@ -367,12 +364,14 @@ robyn_inputs <- function(dt_input = NULL
 
     if(nrow(calibration_input)>0) {
       if ((min(calibration_input$liftStartDate) < min(dt_input[, get(date_var)])) | (max(calibration_input$liftEndDate) >  (max(dt_input[, get(date_var)]) + dayInterval-1))) {
-        stop("we recommend you to only use lift results conducted within your MMM input data date range")
+        stop("We recommend you to only use lift results conducted within your MMM input data date range")
       } else if (iterations < 500 | trials < 80) {
-        message("you are calibrating MMM. we recommend to run at least 2000 iterations per trial and at least 10 trials at the beginning")
+        message("You are calibrating MMM. we recommend to run at least 2000 iterations per trial and at least 10 trials at the beginning")
       }
     } else {
-      if (iterations < 500 | trials < 40) {message("we recommend to run at least 2000 iterations per trial and at least 5 trials at the beginning")}
+      if (iterations < 500 | trials < 40) {
+        warning("We recommend to run at least 2000 iterations per trial and at least 5 trials at the beginning")
+      }
     }
 
     ## get all hyper names
@@ -440,18 +439,18 @@ robyn_inputs <- function(dt_input = NULL
     # when hyperparameters is not provided
     if (is.null(hyperparameters)) {
 
-      message("\nhyperparameters is not provided yet. run robyn_inputs(InputCollect = InputCollect, hyperparameter = ...) to add it\n")
+      message(">>> hyperparameters are not provided yet. Run robyn_inputs(InputCollect, hyperparameter = ...) to include them")
       invisible(InputCollect)
 
       # when hyperparameters is provided wrongly
     } else if (!identical(sort(names(hyperparameters)), local_name)) {
 
-      stop("\nhyperparameters must be a list and contain vectors or values named as followed: ", paste(local_name, collapse = ", "), "\n")
+      stop("hyperparameters must be a list and contain vectors or values named as followed: ", paste(local_name, collapse = ", "), "\n")
 
     } else {
 
       # when all provided once correctly
-      message("\nAll input in robyn_inputs() correct. running robyn_engineering()")
+      message("All input in robyn_inputs() are valid. Running robyn_engineering()...")
       outFeatEng <- robyn_engineering(InputCollect = InputCollect, refresh = FALSE)
       invisible(outFeatEng)
 
@@ -460,7 +459,7 @@ robyn_inputs <- function(dt_input = NULL
   } else if (!is.null(InputCollect) & is.null(hyperparameters)) {
 
     # when adding hyperparameters and InputCollect is provided, but hyperparameters not
-    stop("\nhyperparameters is not provided yet. run robyn_inputs(InputCollect = InputCollect, hyperparameter = ...) to add it\n")
+    stop("hyperparameters are not provided yet. Run robyn_inputs(InputCollect, hyperparameter = ...) to include them")
 
   } else {
 
@@ -474,12 +473,12 @@ robyn_inputs <- function(dt_input = NULL
 
     if (!identical(sort(names(hyperparameters)), local_name)) {
 
-      stop("\nhyperparameters must be a list and contain vectors or values named as followed: ", paste(local_name, collapse = ", "), "\n")
+      stop("hyperparameters must be a list and contain vectors or values named as followed: ", paste(local_name, collapse = ", "), "\n")
 
     } else {
 
       InputCollect$hyperparameters <- hyperparameters
-      message("\nAll input in robyn_inputs() correct. running robyn_engineering()")
+      message("All input in robyn_inputs() are valid. Running robyn_engineering()...")
       outFeatEng <- robyn_engineering(InputCollect = InputCollect, refresh = FALSE)
       invisible(outFeatEng)
 
@@ -681,11 +680,13 @@ robyn_engineering <- function(InputCollect = InputCollect
 
     } else if (InputCollect$intervalType == "month") {
 
-      monthStartInput <- all(day(dt_transform[, ds]) ==1)
-      if (monthStartInput==FALSE) {stop("monthly data should have first day of month as datestampe, e.g.'2020-01-01' ")}
+      monthStartInput <- all(day(dt_transform[, ds]) == 1)
+      if (monthStartInput == FALSE) {
+        stop("Monthly data should have first day of month as datestampe, e.g.'2020-01-01'")
+      }
       InputCollect$dt_holidays[, dsMonthStart:= cut(as.Date(ds), InputCollect$intervalType)]
       holidays <- InputCollect$dt_holidays[, .(ds=dsMonthStart, holiday, country, year)]
-      holidays <- holidays[, lapply(.SD, paste0, collapse="#"), by = c("ds", "country", "year"), .SDcols = "holiday"]
+      holidays <- holidays[, lapply(.SD, paste0, collapse = "#"), by = c("ds", "country", "year"), .SDcols = "holiday"]
 
     }
 

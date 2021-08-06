@@ -14,11 +14,8 @@
 #' @param select_model xxx
 #' @param InputCollect xxx
 #' @param OutputCollect xxx
-#' @examples
-#' # xxx
 #' @return List object
 #' @export
-
 robyn_save <- function(robyn_object
                        ,select_model
                        ,InputCollect
@@ -68,11 +65,8 @@ robyn_save <- function(robyn_object
 #' @param refresh_iters xxx
 #' @param refresh_trials xxx
 #' @param plot_pareto xxx
-#' @examples
-#' # xxx
 #' @return List object
 #' @export
-
 robyn_refresh <- function(robyn_object
                           ,dt_input = dt_input
                           ,dt_holidays= dt_holidays

@@ -118,7 +118,7 @@ effect from previous periods.}
 \item{window_end}{Character. Set end date of modelling period. Recommended
 to have ratio of independent variable: data points of 1:10.}
 
-\item{cores}{Integer. Default to parallelly::availableCores()}
+\item{cores}{Integer. Default to \code{parallel::detectCores()}}
 
 \item{iterations}{Integer. Recommended 2000 for default
 \code{nevergrad_algo = "TwoPointsDE"}}
@@ -143,45 +143,44 @@ List object
 Describe function.
 }
 \examples{
+\dontrun{
 data("dt_simulated_weekly")
 data("dt_prophet_holidays")
 
 ## Define model input using simulated dataset
+InputCollect <- robyn_inputs(
+  dt_input = dt_simulated_weekly
+  ,dt_holidays = dt_prophet_holidays
 
-# Recommended to keep the object naming InputCollect
-InputCollect <- robyn_inputs(dt_input = dt_simulated_weekly
-                             ,dt_holidays = dt_prophet_holidays
+  ,date_var = "DATE"
+  ,dep_var = "revenue"
+  ,dep_var_type = "revenue"
 
-                             ,date_var = "DATE"
-                             ,dep_var = "revenue"
-                             ,dep_var_type = "revenue"
+  ,prophet_vars = c("trend", "season", "holiday")
+  ,prophet_signs = c("default","default", "default")
+  ,prophet_country = "DE"
 
-                             ,prophet_vars = c("trend", "season", "holiday")
-                             ,prophet_signs = c("default","default", "default")
-                             ,prophet_country = "DE"
+  ,context_vars = c("competitor_sales_B", "events")
+  ,context_signs = c("default", "default")
 
-                             ,context_vars = c("competitor_sales_B", "events")
-                             ,context_signs = c("default", "default")
+  ,paid_media_vars = c("tv_S","ooh_S"	,	"print_S"	,"facebook_I"	,"search_clicks_P")
+  ,paid_media_signs = c("positive", "positive","positive", "positive", "positive")
+  ,paid_media_spends = c("tv_S","ooh_S",	"print_S"	,"facebook_S"	,"search_S")
 
-                             ,paid_media_vars = c("tv_S","ooh_S"	,	"print_S"	,"facebook_I"	,"search_clicks_P")
-                             ,paid_media_signs = c("positive", "positive","positive", "positive", "positive")
-                             ,paid_media_spends = c("tv_S","ooh_S",	"print_S"	,"facebook_S"	,"search_S")
+  ,organic_vars = c("newsletter")
+  ,organic_signs = c("positive")
 
-                             ,organic_vars = c("newsletter")
-                             ,organic_signs = c("positive")
+  ,factor_vars = c("events")
 
-                             ,factor_vars = c("events")
+  ,window_start = "2016-11-23"
+  ,window_end = "2018-08-22"
 
-                             ,window_start = "2016-11-23"
-                             ,window_end = "2018-08-22"
-
-                             ,adstock = "geometric"
-                             ,iterations = 2000
-                             ,trials = 5
+  ,adstock = "geometric"
+  ,iterations = 2000
+  ,trials = 5
 )
 
 ## Define hyperparameters
-
 hyper_names(adstock = InputCollect$adstock, all_media = InputCollect$all_media)
 
 hyperparameters <- list(
@@ -223,7 +222,6 @@ hyperparameters <- list(
 )
 
 ## Add hyperparameters into robyn_inputs()
-
-InputCollect <- robyn_inputs(InputCollect = InputCollect
-                             , hyperparameters = hyperparameters)
+InputCollect <- robyn_inputs(InputCollect, hyperparameters = hyperparameters)
+}
 }

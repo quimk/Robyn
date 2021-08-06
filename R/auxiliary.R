@@ -11,7 +11,6 @@
 #' Describe function.
 #'
 #' @param x_in xxx
-
 format_unit <- function(x_in) {
   x_out <- sapply(x_in, function(x) {
     if (abs(x) >= 1000000000) {
@@ -23,7 +22,7 @@ format_unit <- function(x_in) {
     } else {
       x_out <- round(x,0)
     }
-  }, simplify = TRUE) 
+  }, simplify = TRUE)
   return(x_out)
 }
 
@@ -36,20 +35,19 @@ format_unit <- function(x_in) {
 #' @param predicted xxx
 #' @param p xxx
 #' @param df.int xxx
-
 get_rsq <- function(true, predicted, p = NULL, df.int = NULL) {
-  
+
   sse <- sum((predicted - true)^2)
   sst <- sum((true - mean(true))^2)
   rsq <- 1 - sse / sst
-  
-  # adjusted rsq formula from summary.lm: ans$adj.r.squared <- 1 - (1 - ans$r.squared) * ((n - df.int)/rdf) # n = num_obs, p = num_indepvar, rdf = n-p-1
+
+  # adjusted rsq formula from summary.lm:
+  # ans$adj.r.squared <- 1 - (1 - ans$r.squared) * ((n - df.int)/rdf)
+  # n = num_obs, p = num_indepvar, rdf = n-p-1
   if (!is.null(p) & !is.null(df.int)) {
     n <- length(true)
     rdf <- n - p - 1
     rsq <- 1 - (1 - rsq) * ((n - df.int)/rdf)
   }
-  
   return(rsq)
 }
-

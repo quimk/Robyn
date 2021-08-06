@@ -23,11 +23,8 @@
 #' @param scenario xxx
 #' @param maxeval xxx
 #' @param constr_mode xxx
-#' @examples
-#' ### xxx
 #' @return List object
 #' @export
-
 robyn_allocator <- function(robyn_object = NULL
                             ,select_run = NULL
                             ,InputCollect = NULL

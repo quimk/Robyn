@@ -1,8 +1,0 @@
-
-setwd("/Users/gufengzhou/Documents/GitHub/Robyn")
-devtools::document()
-setwd("/Users/gufengzhou/Documents/GitHub")
-devtools::check("Robyn")
-
-#devtools::install("Robyn")
-rm(list=ls())

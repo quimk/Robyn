@@ -29,6 +29,3 @@ robyn_run(
 \description{
 Describe function.
 }
-\examples{
-## xxx
-}

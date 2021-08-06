@@ -18,32 +18,36 @@
 #' @author Leonel Sentana (leonelsentana@@fb.com)
 #' @author Antonio Prada (aprada@@fb.com)
 #' @author Igor Skokan (igorskokan@@fb.com)
+#' @importFrom corrplot corrplot
 #' @import data.table
-#' @import ggplot2
-#' @import doFuture
-#' @import future
-#' @import prophet
-#' @import see
-#' @import PerformanceAnalytics
+#' @importFrom doFuture registerDoFuture
 #' @importFrom doRNG %dorng%
 #' @importFrom doParallel registerDoParallel
-#' @importFrom foreach foreach %dopar% getDoParWorkers
-#' @importFrom corrplot corrplot
+#' @importFrom foreach foreach %dopar% getDoParWorkers registerDoSEQ
+#' @import ggplot2
 #' @importFrom glmnet cv.glmnet glmnet
-#' @importFrom lubridate is.Date
+#' @importFrom lubridate is.Date day
 #' @importFrom minpack.lm nlsLM
 #' @importFrom nloptr nloptr
+#' @importFrom parallel detectCores
 #' @importFrom patchwork guide_area plot_layout plot_annotation wrap_plots
+#' @importFrom prophet add_regressor fit.prophet prophet
 #' @importFrom reticulate tuple use_condaenv import conda_create conda_install py_module_available
 #' @importFrom rPref low psel
 #' @importFrom stats AIC BIC coef end lm model.matrix na.omit nls.control
 #' predict pweibull quantile qunif start
 #' @importFrom stringr str_detect str_remove str_which str_extract str_replace
-#' @importFrom utils head setTxtProgressBar txtProgressBar
-#' @importFrom foreach registerDoSEQ
-#' @importFrom parallel detectCores
+#' @importFrom utils askYesNo head setTxtProgressBar txtProgressBar
 "_PACKAGE"
 
+# data.table column names used
+dt_vars <- c("Elapsed","ElapsedAccum","Km","Vmax","actual","avg_decay_rate","bestModRF","channel",
+             "channels","country","cpa_total","decay_accumulated","decomp.rssd","decompAbsScaled",
+             "decomp_perc","decomp_perc_prev","depVarHat","dep_var","ds","dsMonthStart","dsWeekStart",
+             "duration","effect_share","effect_share_refresh","error_dis","exposure","halflife",
+             "holiday","i.effect_share_refresh","i.robynPareto","i.solID","i.spend_share_refresh",
+             "id","initResponseUnit","initResponseUnitTotal","initSpendUnit")
+
 if (getRversion() >= "2.15.1") {
-  globalVariables(".")
+  globalVariables(c(".", dt_vars))
 }

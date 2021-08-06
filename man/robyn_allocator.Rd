@@ -53,6 +53,3 @@ List object
 \description{
 Describe function.
 }
-\examples{
-### xxx
-}

@@ -17,7 +17,6 @@ Imports:
     data.table,
     doParallel,
     doFuture,
-    future,
     doRNG,
     foreach,
     ggplot2,

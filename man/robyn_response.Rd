@@ -35,6 +35,3 @@ robyn_response(
 \description{
 Describe function.
 }
-\examples{
-## xxx
-}

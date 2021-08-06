@@ -16,10 +16,7 @@
 #' @param pareto_fronts xxx
 #' @param plot_pareto xxx
 #' @param refresh xxx
-#' @examples
-#' ## xxx
 #' @export
-
 robyn_run <- function(InputCollect
                       ,plot_folder = getwd()
                       ,dt_hyper_fixed = NULL
@@ -259,13 +256,13 @@ robyn_run <- function(InputCollect
       # pSpendExposure <- arrangeGrob(grobs = InputCollect$plotNLSCollect
       #                               ,ncol= ifelse(length(InputCollect$plotNLSCollect)<=3, length(InputCollect$plotNLSCollect), 3)
       #                               ,top = "Spend-exposure fitting with Michaelis-Menten model")
-      #grid.draw(pSpendExposure)
+      # grid.draw(pSpendExposure)
       ggsave(paste0(plot_folder, "/", plot_folder_sub,"/", "spend_exposure_fitting.png")
              , plot = pSpendExposure
              , dpi = 600, width = 12, height = ceiling(length(InputCollect$plotNLSCollect)/3)*7)
 
     } else {
-      message("\nno spend-exposure modelling needed. all media variables used for mmm are spend variables ")
+      message("\nNo spend-exposure modelling needed. all media variables used for mmm are spend variables ")
     }
 
 
@@ -706,9 +703,7 @@ robyn_run <- function(InputCollect
 #' @param lambda.n xxx
 #' @param lambda_fixed xxx
 #' @param refresh xxx
-#' @examples
-#' ## xxx
-
+#' @export
 robyn_mmm <- function(hyper_collect
                       , InputCollect
                       , iterations = InputCollect$iterations
@@ -1261,10 +1256,7 @@ robyn_mmm <- function(hyper_collect
 #' @param dt_hyppar xxx
 #' @param dt_coef xxx
 #' @param InputCollect xxxxxx
-#' @examples
-#' ## xxx
 #' @export
-
 robyn_response <- function(robyn_object = NULL
                            , select_run = NULL
                            , paid_media_var = NULL
