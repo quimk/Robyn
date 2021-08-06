@@ -491,11 +491,10 @@ robyn_inputs <- function(dt_input = NULL
 #'
 #' Describe function.
 #'
-#' @param adstock Default to InputCollect$adstock
-#' @param all_media Default to InputCollect$all_media
+#' @param adstock Default to \code{InputCollect$adstock}
+#' @param all_media Default to \code{InputCollect$all_media}
 #' @export
-
-hyper_names <- function(adstock = InputCollect$adstock, all_media=InputCollect$all_media) {
+hyper_names <- function(adstock, all_media) {
   global_name <- c("thetas",  "shapes",  "scales",  "alphas",  "gammas",  "lambdas")
   if (adstock == "geometric") {
     local_name <- sort(apply(expand.grid(all_media, global_name[global_name %like% 'thetas|alphas|gammas']), 1, paste, collapse="_"))
@@ -510,12 +509,10 @@ hyper_names <- function(adstock = InputCollect$adstock, all_media=InputCollect$a
 #'
 #' Describe function.
 #'
-#' @param InputCollect Default to InputCollect
+#' @param InputCollect Default to \code{InputCollect}
 #' @param refresh Default to FALSE. TRUE when using in robyn_refresh()
 #' @export
-
-robyn_engineering <- function(InputCollect = InputCollect
-                              , refresh = FALSE) {
+robyn_engineering <- function(InputCollect, refresh = FALSE) {
 
   paid_media_vars <- InputCollect$paid_media_vars
   paid_media_spends <- InputCollect$paid_media_spends
@@ -788,4 +785,3 @@ robyn_engineering <- function(InputCollect = InputCollect
 
   return(InputCollect)
 }
-

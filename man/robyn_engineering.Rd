@@ -4,10 +4,10 @@
 \alias{robyn_engineering}
 \title{Transform input data}
 \usage{
-robyn_engineering(InputCollect = InputCollect, refresh = FALSE)
+robyn_engineering(InputCollect, refresh = FALSE)
 }
 \arguments{
-\item{InputCollect}{Default to InputCollect}
+\item{InputCollect}{Default to \code{InputCollect}}
 
 \item{refresh}{Default to FALSE. TRUE when using in robyn_refresh()}
 }

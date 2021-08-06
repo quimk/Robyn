@@ -4,11 +4,7 @@
 \alias{calibrate_mmm}
 \title{Calibration function}
 \usage{
-calibrate_mmm(
-  decompCollect,
-  calibration_input = InputCollect$calibration_input,
-  paid_media_vars = InputCollect$paid_media_vars
-)
+calibrate_mmm(decompCollect, calibration_input, paid_media_vars)
 }
 \arguments{
 \item{decompCollect}{xxx}

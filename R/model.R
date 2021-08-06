@@ -1469,14 +1469,15 @@ model_decomp <- function(coefs, dt_modSaturated, x, y_pred, i, dt_modRollWind, r
 #' @param decompCollect xxx
 #' @param calibration_input xxx
 #' @param paid_media_vars xxx
+calibrate_mmm <- function(decompCollect, calibration_input, paid_media_vars) {
 
+  # check if any lift channel doesn't have media var
+  check_set_lift <- any(sapply(calibration_input$channel, function(x)
+    any(str_detect(x, paid_media_vars))) == FALSE)
+  if (check_set_lift) {
+    stop("calibration_input channels must have media variable")
+  }
 
-calibrate_mmm <- function(decompCollect
-                          , calibration_input = InputCollect$calibration_input
-                          , paid_media_vars = InputCollect$paid_media_vars) {
-
-  check_set_lift <- any(sapply(calibration_input$channel, function(x) any(str_detect(x, paid_media_vars)))==FALSE) #check if any lift channel doesnt have media var
-  if (check_set_lift) {stop("calibration_input channels must have media variable")}
   ## prep lift input
   getLiftMedia <- unique(calibration_input$channel)
   getDecompVec <- decompCollect$xDecompVec

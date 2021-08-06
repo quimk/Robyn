@@ -4,12 +4,12 @@
 \alias{hyper_names}
 \title{Get hyperparameter names}
 \usage{
-hyper_names(adstock = InputCollect$adstock, all_media = InputCollect$all_media)
+hyper_names(adstock, all_media)
 }
 \arguments{
-\item{adstock}{Default to InputCollect$adstock}
+\item{adstock}{Default to \code{InputCollect$adstock}}
 
-\item{all_media}{Default to InputCollect$all_media}
+\item{all_media}{Default to \code{InputCollect$all_media}}
 }
 \description{
 Describe function.

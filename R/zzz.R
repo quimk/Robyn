@@ -8,7 +8,7 @@
     # Delay load module will only be loaded when accessed via $
     ng <<- reticulate::import("nevergrad", delay_load = TRUE)
   } else {
-    message(paste(
+    packageStartupMessage(paste(
       "Please, install nevergrad Python package and restart your R session to run Robyn:\n",
       'reticulate::use_condaenv("r-reticulate") # Run this once\n',
       'reticulate::conda_install("r-reticulate", "nevergrad", pip = TRUE)'))

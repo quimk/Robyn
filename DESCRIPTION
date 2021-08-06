@@ -19,6 +19,7 @@ Imports:
     doFuture,
     doRNG,
     foreach,
+    future,
     ggplot2,
     glmnet,
     lubridate,
