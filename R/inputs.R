@@ -190,8 +190,8 @@ robyn_inputs <- function(dt_input = NULL
                          ,window_start = NULL
                          ,window_end = NULL
                          ,cores = parallelly::availableCores()
-                         ,iterations = 500
-                         ,trials = 40
+                         ,iterations = 2000
+                         ,trials = 5
                          ,nevergrad_algo = "TwoPointsDE"
                          ,calibration_input = data.table::data.table(channel = NULL,
                                                                      liftStartDate = NULL,
@@ -365,11 +365,11 @@ robyn_inputs <- function(dt_input = NULL
     if(nrow(calibration_input)>0) {
       if ((min(calibration_input$liftStartDate) < min(dt_input[, get(date_var)])) | (max(calibration_input$liftEndDate) >  (max(dt_input[, get(date_var)]) + dayInterval-1))) {
         stop("We recommend you to only use lift results conducted within your MMM input data date range")
-      } else if (iterations < 500 | trials < 80) {
+      } else if (iterations < 2000 | trials < 10) {
         message("You are calibrating MMM. we recommend to run at least 2000 iterations per trial and at least 10 trials at the beginning")
       }
     } else {
-      if (iterations < 500 | trials < 40) {
+      if (iterations < 2000 | trials < 5) {
         warning("We recommend to run at least 2000 iterations per trial and at least 5 trials at the beginning")
       }
     }
