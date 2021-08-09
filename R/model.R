@@ -845,7 +845,9 @@ robyn_mmm <- function(hyper_collect
   resultCollectNG <- list()
   cnt <- 0
   cat('\n',"Nevergrad algorithm: ", optimizer_name,'\n')
-  if(hyper_fixed==FALSE) {pb <- txtProgressBar(max = iterTotal, style = 3)}
+  if (hyper_fixed == FALSE) {
+    pb <- txtProgressBar(max = iterTotal, style = 3)
+  }
   # assign("InputCollect", InputCollect, envir = .GlobalEnv) # adding this to enable InputCollect reading during parallel
   #opts <- list(progress = function(n) setTxtProgressBar(pb, n))
   sysTimeDopar <- system.time({
@@ -905,22 +907,8 @@ robyn_mmm <- function(hyper_collect
       # nbrOfWorkers()
 
       getDoParWorkers()
-      doparCollect <- foreach (
-        i = 1:iterPar
-        , .export = c('adstock_geometric'
-                      , 'adstock_weibull'
-                      , 'saturation_hill'
-                      , 'get_rsq'
-                      , 'model_decomp'
-                      , 'calibrate_mmm'
-                      #, 'ridge_lambda'
-                      , 'model_refit')
-        , .packages = c('glmnet'
-                        ,'stringr'
-                        ,'data.table'
-        )
-        #, .options.snow = opts
-      )  %dorng%  {
+      doparCollect <- suppressPackageStartupMessages(
+        foreach(i = 1:iterPar) %dorng% {
 
         t1 <- Sys.time()
 
@@ -1164,7 +1152,7 @@ robyn_mmm <- function(hyper_collect
         }
         return(resultCollect)
       } # end dopar
-      ## end parallel
+      ) # end parallel
 
       # stopImplicitCluster()
 
@@ -1190,13 +1178,13 @@ robyn_mmm <- function(hyper_collect
 
       resultCollectNG[[lng]] <- doparCollect
       cnt <- cnt + iterPar
-      if(hyper_fixed==FALSE) {setTxtProgressBar(pb, cnt)}
+      if (hyper_fixed == FALSE) setTxtProgressBar(pb, cnt)
 
     } ## end NG loop
   }) # end system.time
 
-  cat("\n Finished in",sysTimeDopar[3]/60,"mins\n")
-  if(hyper_fixed==FALSE) {close(pb)}
+  cat("\n Finished in", sysTimeDopar[3]/60, "mins")
+  if (hyper_fixed == FALSE) close(pb)
   registerDoSEQ(); getDoParWorkers()
 
   #####################################
