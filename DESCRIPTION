@@ -1,7 +1,7 @@
 Package: Robyn
 Type: Package
 Title: Robyn MMM Open Source 3.0 - a Beta Project from Facebook Marketing Science 
-Version: 0.0.1
+Version: 3.0.0
 Authors@R: c(
     person("Gufeng", "Zhou", , "gufeng@fb.com", c("aut")),
     person("Leonel", "Sentana", , "leonelsentana@fb.com", c("aut")),
@@ -34,6 +34,12 @@ Imports:
     stringr
 Suggests:
     shiny
+Config/reticulate:
+  list(
+    packages = list(
+      list(package = "nevergrad", pip = TRUE)
+    )
+  )
 URL: https://github.com/facebookexperimental/Robyn, https://facebookexperimental.github.io/Robyn/
 BugReports: https://github.com/facebookexperimental/Robyn/issues
 RoxygenNote: 7.1.1

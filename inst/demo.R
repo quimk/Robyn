@@ -225,7 +225,7 @@ OutputCollect <- robyn_run(InputCollect = InputCollect
 ## that mostly represents your business reality
 
 OutputCollect$allSolutions
-select_model <- "2_12_1"
+select_model <- "2_13_3"
 robyn_save(robyn_object = robyn_object
            , select_model = select_model
            , InputCollect = InputCollect

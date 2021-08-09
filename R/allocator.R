@@ -181,9 +181,9 @@ robyn_allocator <- function(robyn_object = NULL
     mm_lm_coefs <- c()
   }
 
-  sl=4;coeff = coefs[sl]; alpha = alphas[sl]; gammaTran = gammaTrans[sl]; chnName = mediaVarSortedFiltered[sl]; vmax = vmaxVec[sl]; km = kmVec[sl]; criteria = costSelectorSortedFiltered[sl]
+  # sl=4;coeff = coefs[sl]; alpha = alphas[sl]; gammaTran = gammaTrans[sl]; chnName = mediaVarSortedFiltered[sl]; vmax = vmaxVec[sl]; km = kmVec[sl]; criteria = costSelectorSortedFiltered[sl]
   #coeff* saturation_hill(x=chnAdstocked[, get(chnName)], alpha = alpha, gamma = gammas[sl], x_marginal = mic_men(x=256198.38, Vmax=vmax, Km=km))
-  coeff* saturation_hill(x=chnAdstocked[, get(chnName)], alpha = alpha, gamma = gammas[sl], x_marginal =257771.9)
+  # coeff* saturation_hill(x=chnAdstocked[, get(chnName)], alpha = alpha, gamma = gammas[sl], x_marginal =257771.9)
 
   eval_f <- function(X) {
     return(
@@ -528,7 +528,7 @@ robyn_allocator <- function(robyn_object = NULL
          , plot = g
          , dpi = 400, width = 18, height = 14)
 
-  fwrite(dt_optimOut, paste0(OutputCollect$folder_path, select_model,"_reallocated.csv"))
+  fwrite(dt_optimOut, paste0(OutputCollect$plot_folder, select_model,"_reallocated.csv"))
 
   listAllocator <- list(dt_optimOut=dt_optimOut, nlsMod=nlsMod)
   #assign("listOutputAllocator", listAllocator, envir = .GlobalEnv)
