@@ -6,3 +6,4 @@
 ^ISSUE_TEMPLATE
 ^PULL_REQUEST_TEMPLATE
 \.prettierrc
+\.github$
