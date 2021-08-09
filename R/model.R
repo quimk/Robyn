@@ -618,7 +618,6 @@ robyn_run <- function(InputCollect
         geom_smooth(se = TRUE, method = 'loess', formula = 'y ~ x') +
         xlab("fitted") + ylab("resid") + ggtitle("fitted vs. residual")
 
-
       ## save and aggregate one-pager plots
 
       onepagerTitle <- paste0("Model one-pager, on pareto front ", pf,", ID: ", uniqueSol[j])
@@ -709,8 +708,13 @@ robyn_mmm <- function(hyper_collect
                       , iterations = InputCollect$iterations
                       , lambda.n = 100
                       , lambda_fixed = NULL
-                      , refresh = FALSE
-) {
+                      , refresh = FALSE) {
+
+  if (reticulate::py_module_available("nevergrad")) {
+    ng <- reticulate::import("nevergrad", delay_load = TRUE)
+  } else {
+    stop("You must have nevergrad python library installed.")
+  }
 
   ################################################
   #### Collect hyperparameters
@@ -728,13 +732,15 @@ robyn_mmm <- function(hyper_collect
   }
 
   # get hyperparameters for Nevergrad
-  hyper_which <- which(sapply(hyper_bound_list, length)==2)
+  hyper_which <- which(sapply(hyper_bound_list, length) == 2)
   hyper_bound_list_updated <- hyper_bound_list[hyper_which]
   hyper_bound_list_updated_name <- names(hyper_bound_list_updated)
   hyper_count <- length(hyper_bound_list_updated)
   if (hyper_count == 0) {
     hyper_fixed <- TRUE
-    if (is.null(lambda_fixed)) {stop("when hyperparameters are fixed, lambda_fixed must be provided from the selected lambda in old model")}
+    if (is.null(lambda_fixed)) {
+      stop("when hyperparameters are fixed, lambda_fixed must be provided from the selected lambda in old model")
+    }
   }
 
   # get fixed hyperparameters
@@ -744,7 +750,7 @@ robyn_mmm <- function(hyper_collect
   hyper_count_fixed <- length(hyper_bound_list_fixed)
 
   #hyper_bound_list_fixed <- list(print_S_alphas = 1 , print_S_gammas = 0.5)
-  if (InputCollect$cores >1) {
+  if (InputCollect$cores > 1) {
     dt_hyperFixed <- data.table(sapply(hyper_bound_list_fixed, function(x) rep(x, InputCollect$cores)))
   } else {
     dt_hyperFixed <- as.data.table(matrix(hyper_bound_list_fixed, nrow = 1))
@@ -754,7 +760,9 @@ robyn_mmm <- function(hyper_collect
   ################################################
   #### Setup environment
 
-  if (is.null(InputCollect$dt_mod)) {stop("Run InputCollect$dt_mod <- robyn_engineering() first to get the dt_mod")}
+  if (is.null(InputCollect$dt_mod)) {
+    stop("Run InputCollect$dt_mod <- robyn_engineering() first to get the dt_mod")
+  }
 
   ## get environment for parallel backend
   InputCollect <- InputCollect
@@ -782,8 +790,6 @@ robyn_mmm <- function(hyper_collect
   calibration_input <- InputCollect$calibration_input
   optimizer_name <- InputCollect$nevergrad_algo
   cores <- InputCollect$cores
-
-  ng <- import("nevergrad")
 
   ################################################
   #### Get spend share

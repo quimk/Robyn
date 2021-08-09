@@ -5,7 +5,4 @@
 
 .onLoad <- function(libname, pkgname) {
   reticulate::configure_environment(pkgname)
-  if (reticulate::py_module_available("nevergrad")) {
-    ng <<- reticulate::import("nevergrad", delay_load = TRUE)
-  }
 }
