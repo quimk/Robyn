@@ -9,7 +9,7 @@
 #############################################################################################
 
 ################################################################
-#### Step 0: setup environement
+#### Step 0: setup environment
 
 ## Install and load libraries
 library(Robyn) # devtools::install_github("facebookexperimental/Robyn@package_test")
@@ -212,7 +212,6 @@ InputCollect <- robyn_inputs(InputCollect = InputCollect
 ################################################################
 #### Step 4: Build initial model
 
-
 OutputCollect <- robyn_run(InputCollect = InputCollect
                            , plot_folder = robyn_object
                            , pareto_fronts = 1
@@ -222,7 +221,7 @@ OutputCollect <- robyn_run(InputCollect = InputCollect
 ################################################################
 #### Step 5: Select and save the initial model
 
-## Compare all model onepagers in the plot folder and select one
+## Compare all model one-pagers in the plot folder and select one
 ## that mostly represents your business reality
 
 OutputCollect$allSolutions
