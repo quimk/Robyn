@@ -1,6 +1,6 @@
 Package: Robyn
 Type: Package
-Title: Robyn MMM Open Source 3.0 - a Beta Project from Facebook Marketing Science 
+Title: Automated Marketing Mix Modeling (MMM) Open Source Beta Project from Facebook Marketing Science 
 Version: 3.0.0
 Authors@R: c(
     person("Gufeng", "Zhou", , "gufeng@fb.com", c("aut")),
