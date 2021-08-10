@@ -25,12 +25,12 @@ robyn_inputs(
   hyperparameters = NULL,
   window_start = NULL,
   window_end = NULL,
-  cores = parallelly::availableCores(),
+  cores = parallel::detectCores(),
   iterations = 2000,
   trials = 5,
   nevergrad_algo = "TwoPointsDE",
-  calibration_input = data.table::data.table(channel = NULL, liftStartDate = NULL,
-    liftEndDate = NULL, liftAbs = NULL),
+  calibration_input = data.frame(channel = NULL, liftStartDate = NULL, liftEndDate =
+    NULL, liftAbs = NULL),
   InputCollect = NULL
 )
 }

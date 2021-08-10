@@ -13,6 +13,7 @@
 
 ## Install and load libraries
 library(Robyn) # devtools::install_github("facebookexperimental/Robyn@package_test")
+set.seed(123)
 
 ## Must install the python library Nevergrad once
 ## please see here for more info about installing Python packages via reticulate

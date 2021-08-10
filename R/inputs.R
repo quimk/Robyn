@@ -189,14 +189,15 @@ robyn_inputs <- function(dt_input = NULL
                          ,hyperparameters = NULL
                          ,window_start = NULL
                          ,window_end = NULL
-                         ,cores = parallelly::availableCores()
+                         ,cores = parallel::detectCores()
                          ,iterations = 2000
                          ,trials = 5
                          ,nevergrad_algo = "TwoPointsDE"
-                         ,calibration_input = data.table::data.table(channel = NULL,
-                                                                     liftStartDate = NULL,
-                                                                     liftEndDate = NULL,
-                                                                     liftAbs = NULL)
+                         ,calibration_input = data.frame(
+                           channel = NULL,
+                           liftStartDate = NULL,
+                           liftEndDate = NULL,
+                           liftAbs = NULL)
                          ,InputCollect = NULL
 
 ) {
@@ -361,8 +362,8 @@ robyn_inputs <- function(dt_input = NULL
 
 
     ## check calibration
-
-    if(nrow(calibration_input)>0) {
+    calibration_input <- as.data.table(calibration_input)
+    if (nrow(calibration_input) > 0) {
       if ((min(calibration_input$liftStartDate) < min(dt_input[, get(date_var)])) | (max(calibration_input$liftEndDate) >  (max(dt_input[, get(date_var)]) + dayInterval-1))) {
         stop("We recommend you to only use lift results conducted within your MMM input data date range")
       } else if (iterations < 2000 | trials < 10) {

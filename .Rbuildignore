@@ -7,3 +7,4 @@
 ^PULL_REQUEST_TEMPLATE
 \.prettierrc
 \.github$
+^tests$
