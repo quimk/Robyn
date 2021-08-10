@@ -172,6 +172,7 @@ robyn_allocator <- function(robyn_object = NULL
   names(gammaTrans) <- names(gammas)
 
   coefs <- dt_coef[,coef]; names(coefs) <- dt_coef[,rn]
+  coefsFiltered <- coefs[mediaVarSortedFiltered]
 
   ## build evaluation funciton
   if(any(InputCollect$costSelector)) {
@@ -181,7 +182,7 @@ robyn_allocator <- function(robyn_object = NULL
     mm_lm_coefs <- c()
   }
 
-  # sl=4;coeff = coefs[sl]; alpha = alphas[sl]; gammaTran = gammaTrans[sl]; chnName = mediaVarSortedFiltered[sl]; vmax = vmaxVec[sl]; km = kmVec[sl]; criteria = costSelectorSortedFiltered[sl]
+  # sl=4;coeff = coefsFiltered[sl]; alpha = alphas[sl]; gammaTran = gammaTrans[sl]; chnName = mediaVarSortedFiltered[sl]; vmax = vmaxVec[sl]; km = kmVec[sl]; criteria = costSelectorSortedFiltered[sl]
   #coeff* saturation_hill(x=chnAdstocked[, get(chnName)], alpha = alpha, gamma = gammas[sl], x_marginal = mic_men(x=256198.38, Vmax=vmax, Km=km))
   # coeff* saturation_hill(x=chnAdstocked[, get(chnName)], alpha = alpha, gamma = gammas[sl], x_marginal =257771.9)
 
@@ -212,7 +213,7 @@ robyn_allocator <- function(robyn_object = NULL
 
             return(xOut)
           }, x=X #, costMultiplier = costMultiplierVec, adstockMultiplier=adstockMultiplierVec
-          , coeff = coefs
+          , coeff = coefsFiltered
           , alpha = alphas, gammaTran = gammaTrans
           , chnName = mediaVarSortedFiltered
           , vmax = vmaxVec, km = kmVec, criteria = costSelectorSortedFiltered
@@ -241,7 +242,7 @@ robyn_allocator <- function(robyn_object = NULL
 
             return(xOut)
           }, x=X #, costMultiplier = costMultiplierVec, adstockMultiplier=adstockMultiplierVec
-          , coeff = coefs
+          , coeff = coefsFiltered
           , alpha = alphas, gammaTran = gammaTrans
           , chnName = mediaVarSortedFiltered
           , vmax = vmaxVec, km = kmVec, criteria = costSelectorSortedFiltered
@@ -271,7 +272,7 @@ robyn_allocator <- function(robyn_object = NULL
 
             return(xOut)
           }, x=X #, costMultiplier = costMultiplierVec, adstockMultiplier=adstockMultiplierVec
-          , coeff = coefs
+          , coeff = coefsFiltered
           , alpha = alphas, gammaTran = gammaTrans
           , chnName = mediaVarSortedFiltered
           , vmax = vmaxVec, km = kmVec, criteria = costSelectorSortedFiltered
