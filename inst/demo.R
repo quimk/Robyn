@@ -204,8 +204,7 @@ hyperparameters <- list(
 
 #### 2a-3: Third, add hyperparameters into robyn_inputs()
 
-InputCollect <- robyn_inputs(InputCollect = InputCollect
-                             , hyperparameters = hyperparameters)
+InputCollect <- robyn_inputs(InputCollect = InputCollect, hyperparameters = hyperparameters)
 
 
 #### 2a-4: Fourth (optional), model calibration / add experimental input
@@ -294,7 +293,6 @@ InputCollect <- robyn_inputs(InputCollect = InputCollect
 #   # Time estimation: with geometric adstock, 2000 iterations * 5 trials
 #   # and 6 cores, it takes less than 1 hour. Weibull takes at least twice as much time.
 # )
-
 
 ################################################################
 #### Step 3: Build initial model

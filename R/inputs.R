@@ -204,140 +204,66 @@ robyn_inputs <- function(dt_input = NULL
     date_var <- date_input$date_var # when date_var = "auto"
     dayInterval <- date_input$dayInterval
     intervalType <- date_input$intervalType
+
     ## check dependent var
     check_depvar(dt_input, dep_var, dep_var_type)
+
     ## check prophet
     check_prophet(dt_holidays, prophet_country, prophet_vars, prophet_signs)
 
-    ## check baseline variables
-    if (is.null(context_vars)) {
-      context_signs <- NULL
-    } else if ( !all(context_vars %in% names(dt_input)) ) {
-      stop("Provided context_vars is not included in input data")
-    } else if (is.null(context_signs)) {
-      context_signs <- rep("default", length(context_vars))
-      message("context_signs is not provided. 'default' is used")
-    } else if (length(context_signs) != length(context_vars) | !all(context_signs %in% c("positive", "negative", "default"))) {
-      stop("context_signs must have same length as context_vars. allowed values are 'positive', 'negative', 'default'")
-    }
+    ## check baseline variables (and maybe transform context_signs)
+    context <- check_context(dt_input, context_vars, context_signs)
+    context_signs <- context$context_signs
 
-    ## check paid media variables
-    mediaVarCount <- length(paid_media_vars)
-    spendVarCount <- length(paid_media_spends)
-    if (is.null(paid_media_vars) | is.null(paid_media_spends)) {
-      stop("Must provide paid_media_vars and paid_media_spends")
-    } else if ( !all(paid_media_vars %in% names(dt_input)) ) {
-      stop("Provided paid_media_vars is not included in input data")
-    } else if (is.null(paid_media_signs)) {
-      paid_media_signs <- rep("positive", mediaVarCount)
-      message("paid_media_signs is not provided. 'positive' is used")
-    } else if (length(paid_media_signs) != mediaVarCount | !all(paid_media_signs %in% c("positive", "negative", "default"))) {
-      stop("paid_media_signs must have same length as paid_media_vars. allowed values are 'positive', 'negative', 'default'")
-    } else if (!all(paid_media_spends %in% names(dt_input))) {
-      stop("Provided paid_media_spends is not included in input data")
-    } else if (spendVarCount != mediaVarCount) {
-      stop("paid_media_spends must have same length as paid_media_vars.")
-    } else if (any(dt_input[, unique(c(paid_media_vars, paid_media_spends)), with=FALSE]<0)) {
-      check_media_names <- unique(c(paid_media_vars, paid_media_spends))
-      check_media_val <- sapply(dt_input[, check_media_names, with=FALSE], function(X) { any(X <0) })
-      stop( paste(names(check_media_val)[check_media_val], collapse = ", "), " contains negative values. Media must be >=0")
-    }
+    ## check paid media variables (set mediaVarCount and maybe transform paid_media_signs)
+    paidmedia <- check_paidmedia(dt_input, paid_media_vars, paid_media_signs, paid_media_spends)
+    paid_media_signs <- paidmedia$paid_media_signs
+    mediaVarCount <- paidmedia$mediaVarCount
+    exposureVarName <- paid_media_vars[!(paid_media_vars == paid_media_spends)]
 
-    exposureVarName <- paid_media_vars[!(paid_media_vars==paid_media_spends)]
-
-    ## check organic media variables
-    if (!all(organic_vars %in% names(dt_input)) ) {
-      stop("Provided organic_vars is not included in input data")
-    } else if (!is.null(organic_vars) & is.null(organic_signs)) {
-      organic_signs <- rep("positive", length(organic_vars))
-      message("organic_signs is not provided. 'positive' is used")
-    } else if (length(organic_signs) != length(organic_vars) | !all(organic_signs %in% c("positive", "negative", "default"))) {
-      stop("organic_signs must have same length as organic_vars. allowed values are 'positive', 'negative', 'default'")
-    }
+    ## check organic media variables (and maybe transform organic_signs)
+    organic <- check_organicvars(dt_input, organic_vars, organic_signs)
+    context_signs <- organic$context_signs
 
     ## check factor_vars
-    if (!is.null(factor_vars)) {
-      if (!all(factor_vars %in% c(context_vars, organic_vars))) {stop("factor_vars must be from context_vars or organic_vars")}
-    }
+    check_factorvars(factor_vars, context_vars, organic_vars)
 
     ## check all vars
     all_media <- c(paid_media_vars, organic_vars)
-    all_ind_vars <- unique(c(prophet_vars, context_vars, all_media))
-    all_ind_vars_check <- c(prophet_vars, context_vars, all_media)
-    if(!identical(all_ind_vars, all_ind_vars_check)) {stop("Input variables must have unique names")}
+    all_ind_vars <- c(prophet_vars, context_vars, all_media)
+    check_allvars(all_ind_vars)
 
     ## check data dimension
-    num_obs <- nrow(dt_input)
-    all_ind_vars
-    if (num_obs < length(all_ind_vars)*10 ) {
-      message("There are ",length(all_ind_vars), " independent variables & ", num_obs, " data points. We recommend row:column ratio >= 10:1")
-    }
+    check_datadim(dt_input, all_ind_vars, rel = 10)
 
-
-    ## check window_start & window_end
-    if (is.null(window_start)) {
-      window_start <- min(as.character(dt_input[, get(date_var)]))
-    } else if (is.na(as.Date(window_start, "%Y-%m-%d"))) {
-      stop("window_start must have format '2020-12-31'")
-    } else if (window_start < min(as.character(dt_input[, get(date_var)]))) {
-      window_start <- min(as.character(dt_input[, get(date_var)]))
-      message("window_start is smaller than the earliest date in input data. It's set to the earliest date")
-    } else if (window_start > max(as.character(dt_input[, get(date_var)]))) {
-      stop("window_start can't be larger than the the latest date in input data")
-    }
-
-    rollingWindowStartWhich <- which.min(abs(difftime(as.Date(dt_input[, get(date_var)]), as.Date(window_start), units = "days")))
-    if (!(as.Date(window_start) %in% dt_input[, get(date_var)])) {
-      window_start <- dt_input[rollingWindowStartWhich, get(date_var)]
-      message("window_start is adapted to the closest date contained in input data: ", window_start)
-    }
-    refreshAddedStart <- window_start
-
-    if (is.null(window_end)) {
-      window_end <- max(as.character(dt_input[, get(date_var)]))
-    } else if (is.na(as.Date(window_end, "%Y-%m-%d"))) {
-      stop("window_end must have format '2020-12-31'")
-    } else if (window_end > max(as.character(dt_input[, get(date_var)]))) {
-      window_end <- max(as.character(dt_input[, get(date_var)]))
-      message("window_end is larger than the latest date in input data. It's set to the latest date")
-    } else if (window_end < window_start) {
-      window_end <- max(as.character(dt_input[, get(date_var)]))
-      message("window_end must be >= window_start. It's set to latest date in input data")
-    }
-
-    rollingWindowEndWhich <- which.min(abs(difftime(as.Date(dt_input[, get(date_var)]), as.Date(window_end), units = "days")))
-    if (!(as.Date(window_end) %in% dt_input[, get(date_var)])) {
-      window_end <- dt_input[rollingWindowEndWhich, get(date_var)]
-      message("window_end is adapted to the closest date contained in input data: ", window_end)
-    }
-
-    rollingWindowLength <- rollingWindowEndWhich - rollingWindowStartWhich +1
-
-    dt_init <- dt_input[rollingWindowStartWhich:rollingWindowEndWhich, all_media, with =FALSE]
-    init_all0 <- colSums(dt_init)==0
-    if(any(init_all0)) {
-      stop("These media channels contains only 0 within training period ",dt_input[rollingWindowStartWhich, get(date_var)], " to ", dt_input[rollingWindowEndWhich, get(date_var)], ": ", paste(names(dt_init)[init_all0], collapse = ", ")
-           , " \nRecommendation: adapt InputCollect$window_start, remove or combine these channels")
-    }
+    ## check window_start & window_end (and transform parameters/data)
+    windows <- check_windows(dt_input, date_var, all_media, window_start, window_end)
+    dt_input <- windows$dt_input
+    window_start <- windows$window_start
+    rollingWindowStartWhich <- windows$rollingWindowStartWhich
+    refreshAddedStart <- windows$refreshAddedStart
+    window_end <- windows$window_end
+    rollingWindowEndWhich <- windows$rollingWindowEndWhich
+    rollingWindowLength <- windows$rollingWindowLength
 
     ## check adstock
-
-    if((adstock %in% c("geometric", "weibull")) == FALSE) {stop("adstock must be 'geometric' or 'weibull'")}
+    check_adstock(adstock)
 
     ## get all hyper names
-    global_name <- c("thetas",  "shapes",  "scales",  "alphas",  "gammas",  "lambdas")
-    if (adstock == "geometric") {
-      local_name <- sort(apply(expand.grid(all_media, global_name[global_name %like% 'thetas|alphas|gammas']), 1, paste, collapse="_"))
-    } else if (adstock == "weibull") {
-      local_name <- sort(apply(expand.grid(all_media, global_name[global_name %like% 'shapes|scales|alphas|gammas']), 1, paste, collapse="_"))
-    }
+    local_name <- hyper_names(adstock, all_media)
+
+    ## check hyperparameters
+    check_hyperparameters(hyperparameters, adstock, all_media)
+
+    ## check calibration
+    check_calibration(dt_input, date_var, calibration_input, dayInterval, iterations, trials)
 
     ## collect input
     InputCollect <- list(dt_input=dt_input
-                         , dt_holidays=dt_holidays
-                         , dt_mod=NULL
-                         , dt_modRollWind=NULL
-                         , xDecompAggPrev = NULL
+                         ,dt_holidays=dt_holidays
+                         ,dt_mod=NULL
+                         ,dt_modRollWind=NULL
+                         ,xDecompAggPrev = NULL
                          ,date_var=date_var
                          ,dayInterval=dayInterval
                          ,intervalType=intervalType
@@ -381,97 +307,17 @@ robyn_inputs <- function(dt_input = NULL
 
                          ,hyperparameters = hyperparameters
                          ,local_name=local_name
-                         ,calibration_input=calibration_input
-    )
+                         ,calibration_input=calibration_input)
 
-
-    ## output condition check
-
-    # no InputCollect, when hyperparameters is not provided
-    if (is.null(hyperparameters)) {
-
-      message("hyperparameters are not provided yet. Run robyn_inputs(InputCollect = InputCollect, hyperparameters = ...) to add it")
-      invisible(InputCollect)
-
-      # no InputCollect, when hyperparameters is provided wrongly
-    } else if (!identical(sort(names(hyperparameters)), local_name)) {
-
-      stop("hyperparameters must be a list and contain vectors or values named as followed: ", paste(local_name, collapse = ", "))
-
-      # no InputCollect, when hyperparameters is provided correctly
-    } else {
-
-      ## check calibration
-
-      if (!is.null(calibration_input)) {
-
-        calibration_input <- as.data.table(calibration_input)
-        if ((min(calibration_input$liftStartDate) < min(dt_input[, get(date_var)])) | (max(calibration_input$liftEndDate) >  (max(dt_input[, get(date_var)]) + dayInterval-1))) {
-          stop("We recommend you to only use lift results conducted within your MMM input data date range")
-        } else if (iterations < 2000 | trials < 10) {
-          warning("You are calibrating MMM. We recommend to run at least 2000 iterations per trial and at least 10 trials at the beginning")
-        }
-        InputCollect$calibration_input <- calibration_input
-
-      } else {
-        if (iterations < 2000 | trials < 5) {
-          warning("We recommend to run at least 2000 iterations per trial and at least 5 trials at the beginning")
-        }
-      }
-
-      # when all provided once correctly
-      message(">>> All input in robyn_inputs() are valid. Running robyn_engineering()...")
-      outFeatEng <- robyn_engineering(InputCollect = InputCollect, refresh = FALSE)
-      invisible(outFeatEng)
-
-    }
-
-  } else if (!is.null(InputCollect) & is.null(hyperparameters) & is.null(InputCollect$hyperparameters) ) {
-
-    # when InputCollect is provided, but hyperparameters not
-    stop("hyperparameters are not provided yet. Run robyn_inputs(InputCollect = InputCollect, hyperparameters = ...) to add it")
+    invisible(return(InputCollect))
 
   } else {
-
-    if (is.null(InputCollect$hyperparameters)) {InputCollect$hyperparameters <- hyperparameters}
-
     # when adding hyperparameters
-    global_name <- c("thetas",  "shapes",  "scales",  "alphas",  "gammas",  "lambdas")
-    if (InputCollect$adstock == "geometric") {
-      local_name <- sort(apply(expand.grid(InputCollect$all_media, global_name[global_name %like% 'thetas|alphas|gammas']), 1, paste, collapse="_"))
-    } else if (InputCollect$adstock == "weibull") {
-      local_name <- sort(apply(expand.grid(InputCollect$all_media, global_name[global_name %like% 'shapes|scales|alphas|gammas']), 1, paste, collapse="_"))
-    }
-
-    if (!identical(sort(names(InputCollect$hyperparameters)), local_name)) {
-
-      stop("hyperparameters must be a list and contain vectors or values named as followed: ", paste(local_name, collapse = ", "))
-
-    } else {
-
-      ## check calibration
-
-      if (!is.null(calibration_input)) {
-        calibration_input <- as.data.table(calibration_input)
-        if ((min(calibration_input$liftStartDate) < min(InputCollect$dt_input[, get(InputCollect$date_var)])) |
-            (max(calibration_input$liftEndDate) >  (max(InputCollect$dt_input[, get(InputCollect$date_var)]) + InputCollect$dayInterval-1))) {
-          stop("We recommend you to only use experimental results conducted within your MMM input data date range")
-        } else if (InputCollect$iterations < 2000 | InputCollect$trials < 10) {
-          warning("You are calibrating MMM. We recommend to run at least 2000 iterations per trial and at least 10 trials at the beginning")
-        }
-        InputCollect$calibration_input <- calibration_input
-
-      } else {
-        if (InputCollect$iterations < 2000 | InputCollect$trials < 5) {
-          warning("We recommend to run at least 2000 iterations per trial and at least 5 trials at the beginning")
-        }
-      }
-
-      message("All input in robyn_inputs() are valid. Running robyn_engineering()...")
-      outFeatEng <- robyn_engineering(InputCollect = InputCollect, refresh = FALSE)
-      invisible(outFeatEng)
-
-    }
+    check_hyperparameters(hyperparameters, InputCollect$adstock, InputCollect$all_media)
+    InputCollect$hyperparameters <- hyperparameters
+    # when all provided inputs are valid and have everything needed -> robyn_engineering()
+    outFeatEng <- robyn_engineering(InputCollect = InputCollect, refresh = FALSE)
+    invisible(return(outFeatEng))
   }
 }
 
