@@ -103,10 +103,10 @@ robyn_run <- function(InputCollect
 
     for (ngt in 1:InputCollect$trials) {
 
-      # if (nrow(InputCollect$calibration_input)==0) {
+      # if (is.null(InputCollect$calibration_input)) {
       #   cat("\nRunning trial nr.", ngt,"out of",InputCollect$trials,"...\n")
       # } else {
-      cat("\nRunning trial nr.", ngt,"out of",InputCollect$trials,"with",InputCollect$iterations, "iterations per trial", ifelse(nrow(InputCollect$calibration_input)==0, "...\n","with calibration...\n"))
+      cat("\nRunning trial nr.", ngt,"out of",InputCollect$trials,"with",InputCollect$iterations, "iterations per trial", ifelse(is.null(InputCollect$calibration_input), "...\n","with calibration...\n"))
       #}
 
       model_output <- robyn_mmm(hyper_collect = InputCollect$hyperparameters
@@ -285,7 +285,7 @@ robyn_run <- function(InputCollect
 
 
     ## plot Pareto front
-    if (nrow(InputCollect$calibration_input)>0) {resultHypParam[, iterations:= ifelse(is.na(robynPareto), NA, iterations)]}
+    if (!is.null(InputCollect$calibration_input)) {resultHypParam[, iterations:= ifelse(is.na(robynPareto), NA, iterations)]}
     pParFront <- ggplot(data = resultHypParam, aes(x=nrmse, y=decomp.rssd, color = iterations)) +
       geom_point(size = 0.5) +
       #stat_smooth(data = resultHypParam, method = 'gam', formula = y ~ s(x, bs = "cs"), size = 0.2, fill = "grey100", linetype="dashed")+
@@ -293,7 +293,7 @@ robyn_run <- function(InputCollect
       #geom_line(data = resultHypParam[robynPareto ==2], aes(x=nrmse, y=decomp.rssd), colour = "coral3")+
       #geom_line(data = resultHypParam[robynPareto ==3], aes(x=nrmse, y=decomp.rssd), colour = "coral")+
       scale_colour_gradient(low = "navyblue", high = "skyblue") +
-      labs(title=ifelse(nrow(InputCollect$calibration_input)==0, "Model selection", "Model selection with top 10% calibration"),
+      labs(title=ifelse(is.null(InputCollect$calibration_input), "Model selection", "Model selection with top 10% calibration"),
            subtitle=paste0("2D Pareto front 1-3 with ",InputCollect$nevergrad_algo,", iterations = ", InputCollect$iterations , " * ", InputCollect$trials, " trial"),
            x="NRMSE",
            y="DECOMP.RSSD")
@@ -340,7 +340,7 @@ robyn_run <- function(InputCollect
       rsq_train_plot <- plotMediaShareLoop[, round(unique(rsq_train),4)]
       nrmse_plot <- plotMediaShareLoop[, round(unique(nrmse),4)]
       decomp_rssd_plot <- plotMediaShareLoop[, round(unique(decomp.rssd),4)]
-      mape_lift_plot <- ifelse(nrow(InputCollect$calibration_input)>0, plotMediaShareLoop[, round(unique(mape),4)], NA)
+      mape_lift_plot <- ifelse(!is.null(InputCollect$calibration_input), plotMediaShareLoop[, round(unique(mape),4)], NA)
 
       suppressWarnings(plotMediaShareLoop <- melt.data.table(plotMediaShareLoop, id.vars = c("rn", "nrmse", "decomp.rssd", "rsq_train" ), measure.vars = c("spend_share", "effect_share", "roi_total", "cpa_total")))
       plotMediaShareLoop[, rn:= factor(rn, levels = sort(InputCollect$paid_media_vars))]
@@ -838,7 +838,7 @@ robyn_mmm <- function(hyper_collect
     instrumentation <- ng$p$Array(shape=my_tuple, lower=0., upper=1.)
     #instrumentation$set_bounds(0., 1.)
     optimizer <-  ng$optimizers$registry[optimizer_name](instrumentation, budget=iterTotal, num_workers=cores)
-    if (nrow(calibration_input)==0) {
+    if (is.null(calibration_input)) {
       optimizer$tell(ng$p$MultiobjectiveReference(), tuple(1.0, 1.0))
     } else {
       optimizer$tell(ng$p$MultiobjectiveReference(), tuple(1.0, 1.0, 1.0))
@@ -1042,7 +1042,7 @@ robyn_mmm <- function(hyper_collect
         #####################################
         #### get calibration mape
 
-        if (nrow(calibration_input)>0) {
+        if (!is.null(calibration_input)) {
 
           liftCollect <- calibrate_mmm(decompCollect=decompCollect, calibration_input=calibration_input)
           mape <- liftCollect[, mean(mape_lift)]
@@ -1123,7 +1123,7 @@ robyn_mmm <- function(hyper_collect
                                                        ,iterPar= i
                                                        ,iterNG = lng
                                                        ,df.int = df.int)] ,
-          liftCalibration = if (nrow(calibration_input)>0) {liftCollect[, ':='(mape = mape
+          liftCalibration = if (!is.null(calibration_input)) {liftCollect[, ':='(mape = mape
                                                                                ,nrmse = nrmse
                                                                                ,decomp.rssd = decomp.rssd
                                                                                #,adstock.ssisd = adstock.ssisd
@@ -1171,7 +1171,7 @@ robyn_mmm <- function(hyper_collect
       #### Nevergrad tells objectives
 
       if (hyper_fixed == FALSE) {
-        if (nrow(calibration_input)==0) {
+        if (is.null(calibration_input)) {
           for (co in 1:iterPar) {
             optimizer$tell(nevergrad_hp[[co]], tuple(nrmse.collect[co], decomp.rssd.collect[co]))
           }
@@ -1199,7 +1199,7 @@ robyn_mmm <- function(hyper_collect
   # if (hyper_fixed == FALSE) {
   #   pareto_results <- data.table::transpose(rbind(as.data.table(sapply(optimizer$pareto_front(997, subset="domain-covering", subset_tentatives=500), function(p) round(p$value[],4))),
   #                                                 as.data.table(sapply(optimizer$pareto_front(997, subset="domain-covering", subset_tentatives=500), function(p) round(p$losses[],4)))))
-  #   if (nrow(calibration_input)==0) {
+  #   if (is.null(calibration_input)) {
   #     pareto_results_names<-setnames(pareto_results, old=names(pareto_results), new=c(hyper_bound_list_updated_name,"nrmse", "decomp.rssd") )
   #     pareto_results_ordered<-setorder(pareto_results_names, "nrmse", "decomp.rssd")
   #   } else {
@@ -1218,7 +1218,7 @@ robyn_mmm <- function(hyper_collect
     resultHypParam = rbindlist(lapply(resultCollectNG, function(x) {rbindlist(lapply(x, function(y) y$resultHypParam))}))[order(nrmse)]
     ,xDecompVec = if (hyper_fixed==TRUE) {rbindlist(lapply(resultCollectNG, function(x) {rbindlist(lapply(x, function(y) y$xDecompVec))}))[order(nrmse, ds)]} else {NULL}
     ,xDecompAgg =   rbindlist(lapply(resultCollectNG, function(x) {rbindlist(lapply(x, function(y) y$xDecompAgg))}))[order(nrmse)]
-    ,liftCalibration = if(nrow(calibration_input)>0) {rbindlist(lapply(resultCollectNG, function(x) {rbindlist(lapply(x, function(y) y$liftCalibration))}))[order(mape, liftMedia, liftStart)]} else {NULL}
+    ,liftCalibration = if(!is.null(calibration_input)) {rbindlist(lapply(resultCollectNG, function(x) {rbindlist(lapply(x, function(y) y$liftCalibration))}))[order(mape, liftMedia, liftStart)]} else {NULL}
     ,decompSpendDist = rbindlist(lapply(resultCollectNG, function(x) {rbindlist(lapply(x, function(y) y$decompSpendDist))}))[order(nrmse)]
     # ,mape = unlist(lapply(doparCollect, function(x) x$mape))
     # ,iterRS = unlist(lapply(doparCollect, function(x) x$iterRS))

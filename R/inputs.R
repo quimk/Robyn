@@ -185,7 +185,7 @@ robyn_inputs <- function(dt_input = NULL
                          ,organic_vars = NULL
                          ,organic_signs = NULL
                          ,factor_vars = NULL
-                         ,adstock = "geometric"
+                         ,adstock = NULL
                          ,hyperparameters = NULL
                          ,window_start = NULL
                          ,window_end = NULL
@@ -193,11 +193,7 @@ robyn_inputs <- function(dt_input = NULL
                          ,iterations = 2000
                          ,trials = 5
                          ,nevergrad_algo = "TwoPointsDE"
-                         ,calibration_input = data.frame(
-                           channel = NULL,
-                           liftStartDate = NULL,
-                           liftEndDate = NULL,
-                           liftAbs = NULL)
+                         ,calibration_input = NULL
                          ,InputCollect = NULL
 
 ) {
@@ -360,21 +356,6 @@ robyn_inputs <- function(dt_input = NULL
 
     if((adstock %in% c("geometric", "weibull")) == FALSE) {stop("adstock must be 'geometric' or 'weibull'")}
 
-
-    ## check calibration
-    calibration_input <- as.data.table(calibration_input)
-    if (nrow(calibration_input) > 0) {
-      if ((min(calibration_input$liftStartDate) < min(dt_input[, get(date_var)])) | (max(calibration_input$liftEndDate) >  (max(dt_input[, get(date_var)]) + dayInterval-1))) {
-        stop("We recommend you to only use lift results conducted within your MMM input data date range")
-      } else if (iterations < 2000 | trials < 10) {
-        message("You are calibrating MMM. we recommend to run at least 2000 iterations per trial and at least 10 trials at the beginning")
-      }
-    } else {
-      if (iterations < 2000 | trials < 5) {
-        warning("We recommend to run at least 2000 iterations per trial and at least 5 trials at the beginning")
-      }
-    }
-
     ## get all hyper names
     global_name <- c("thetas",  "shapes",  "scales",  "alphas",  "gammas",  "lambdas")
     if (adstock == "geometric") {
@@ -435,20 +416,40 @@ robyn_inputs <- function(dt_input = NULL
                          ,calibration_input=calibration_input
     )
 
-    ## check hyperparameter names in hyperparameters
 
-    # when hyperparameters is not provided
+    ## output condition check
+
+    # no InputCollect, when hyperparameters is not provided
     if (is.null(hyperparameters)) {
 
-      message(">>> hyperparameters are not provided yet. Run robyn_inputs(InputCollect, hyperparameter = ...) to include them")
+      message("\nhyperparameters is not provided yet. Run robyn_inputs(InputCollect = InputCollect, hyperparameter = ...) to add it\n")
       invisible(InputCollect)
 
-      # when hyperparameters is provided wrongly
+      # no InputCollect, when hyperparameters is provided wrongly
     } else if (!identical(sort(names(hyperparameters)), local_name)) {
 
-      stop("hyperparameters must be a list and contain vectors or values named as followed: ", paste(local_name, collapse = ", "), "\n")
+      stop("\nhyperparameters must be a list and contain vectors or values named as followed: ", paste(local_name, collapse = ", "), "\n")
 
+      # no InputCollect, when hyperparameters is provided correctly
     } else {
+
+      ## check calibration
+
+      if (!is.null(calibration_input)) {
+
+        calibration_input <- as.data.table(calibration_input)
+        if ((min(calibration_input$liftStartDate) < min(dt_input[, get(date_var)])) | (max(calibration_input$liftEndDate) >  (max(dt_input[, get(date_var)]) + dayInterval-1))) {
+          stop("We recommend you to only use lift results conducted within your MMM input data date range")
+        } else if (iterations < 2000 | trials < 10) {
+          message("You are calibrating MMM. We recommend to run at least 2000 iterations per trial and at least 10 trials at the beginning")
+        }
+        InputCollect$calibration_input <- calibration_input
+
+      } else {
+        if (iterations < 2000 | trials < 5) {
+          warning("We recommend to run at least 2000 iterations per trial and at least 5 trials at the beginning")
+        }
+      }
 
       # when all provided once correctly
       message("All input in robyn_inputs() are valid. Running robyn_engineering()...")
@@ -457,28 +458,45 @@ robyn_inputs <- function(dt_input = NULL
 
     }
 
-  } else if (!is.null(InputCollect) & is.null(hyperparameters)) {
+  } else if (!is.null(InputCollect) & is.null(hyperparameters) & is.null(InputCollect$hyperparameters) ) {
 
-    # when adding hyperparameters and InputCollect is provided, but hyperparameters not
-    stop("hyperparameters are not provided yet. Run robyn_inputs(InputCollect, hyperparameter = ...) to include them")
+    # when InputCollect is provided, but hyperparameters not
+    stop("\nhyperparameters is not provided yet. Run robyn_inputs(InputCollect = InputCollect, hyperparameter = ...) to add it\n")
 
   } else {
 
-    # when adding hyperparameters correctly
+    if (is.null(InputCollect$hyperparameters)) {InputCollect$hyperparameters <- hyperparameters}
+
+    # when adding hyperparameters
     global_name <- c("thetas",  "shapes",  "scales",  "alphas",  "gammas",  "lambdas")
-    if (adstock == "geometric") {
+    if (InputCollect$adstock == "geometric") {
       local_name <- sort(apply(expand.grid(InputCollect$all_media, global_name[global_name %like% 'thetas|alphas|gammas']), 1, paste, collapse="_"))
-    } else if (adstock == "weibull") {
+    } else if (InputCollect$adstock == "weibull") {
       local_name <- sort(apply(expand.grid(InputCollect$all_media, global_name[global_name %like% 'shapes|scales|alphas|gammas']), 1, paste, collapse="_"))
     }
 
-    if (!identical(sort(names(hyperparameters)), local_name)) {
+    if (!identical(sort(names(InputCollect$hyperparameters)), local_name)) {
 
-      stop("hyperparameters must be a list and contain vectors or values named as followed: ", paste(local_name, collapse = ", "), "\n")
+      stop("\nhyperparameters must be a list and contain vectors or values named as followed: ", paste(local_name, collapse = ", "), "\n")
 
     } else {
 
-      InputCollect$hyperparameters <- hyperparameters
+      ## check calibration
+
+      if (!is.null(calibration_input)) {
+        calibration_input <- as.data.table(calibration_input)
+        if ((min(calibration_input$liftStartDate) < min(InputCollect$dt_input[, get(InputCollect$date_var)])) |
+            (max(calibration_input$liftEndDate) >  (max(InputCollect$dt_input[, get(InputCollect$date_var)]) + InputCollect$dayInterval-1))) {
+          stop("We recommend you to only use experimental results conducted within your MMM input data date range")
+        } else if (InputCollect$iterations < 2000 | InputCollect$trials < 10) {
+          message("You are calibrating MMM. We recommend to run at least 2000 iterations per trial and at least 10 trials at the beginning")
+        }
+        InputCollect$calibration_input <- calibration_input
+
+      } else {
+        if (InputCollect$iterations < 2000 | InputCollect$trials < 5) {message("We recommend to run at least 2000 iterations per trial and at least 5 trials at the beginning")}
+      }
+
       message("All input in robyn_inputs() are valid. Running robyn_engineering()...")
       outFeatEng <- robyn_engineering(InputCollect = InputCollect, refresh = FALSE)
       invisible(outFeatEng)

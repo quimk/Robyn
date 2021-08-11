@@ -21,7 +21,7 @@ robyn_inputs(
   organic_vars = NULL,
   organic_signs = NULL,
   factor_vars = NULL,
-  adstock = "geometric",
+  adstock = NULL,
   hyperparameters = NULL,
   window_start = NULL,
   window_end = NULL,
@@ -29,8 +29,7 @@ robyn_inputs(
   iterations = 2000,
   trials = 5,
   nevergrad_algo = "TwoPointsDE",
-  calibration_input = data.frame(channel = NULL, liftStartDate = NULL, liftEndDate =
-    NULL, liftAbs = NULL),
+  calibration_input = NULL,
   InputCollect = NULL
 )
 }
