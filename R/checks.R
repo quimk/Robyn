@@ -5,17 +5,29 @@
 
 ############# Auxiliary non-exported functions #############
 
-check_datevar <- function(dt_input, date_var) {
+check_datevar <- function(dt_input, date_var = "auto") {
+  if (date_var[1] == "auto") {
+    is_date <- which(unlist(lapply(dt_input, is.Date)))
+    if (length(is_date) == 1) {
+      date_var <- names(is_date)
+      message(paste("Automatically detected 'date_var':", date_var))
+    } else {
+      stop("Can't automatically find a single date variable to set 'date_var'")
+    }
+  }
+  if (is.null(date_var) | length(date_var) > 1 | !(date_var %in% names(dt_input))) {
+    stop("You must provide only 1 correct date variable name for 'date_var'")
+  }
   inputLen <- length(dt_input[, get(date_var)])
   inputLenUnique <- length(unique(dt_input[, get(date_var)]))
-  if (is.null(date_var) | !(date_var %in% names(dt_input)) | length(date_var) > 1) {
-    stop("Must provide correct only 1 date variable name for date_var")
-  } else if (any(is.na(as.Date(as.character(dt_input[, get(date_var)]), "%Y-%m-%d")))) {
-    stop("Date variable in date_var must have format '2020-12-31'")
-  } else if (inputLen != inputLenUnique) {
+  if (inputLen != inputLenUnique) {
     stop("Date variable has duplicated dates. Please clean data first")
-  } else if (any(apply(dt_input, 2, function(x) any(is.na(x) | is.infinite(x))))) {
-    stop("dt_input has NA or Inf. Please clean data first")
+  }
+  if (any(is.na(as.Date(as.character(dt_input[, get(date_var)]), "%Y-%m-%d")))) {
+    stop("Dates in 'date_var' must have format '2020-12-31'")
+  }
+  if (any(apply(dt_input, 2, function(x) any(is.na(x) | is.infinite(x))))) {
+    stop("'dt_input' has NA or Inf. Please clean data before you proceed")
   }
   dt_input <- dt_input[order(as.Date(dt_input[, get(date_var)]))]
   dayInterval <- as.integer(difftime(
@@ -34,7 +46,11 @@ check_datevar <- function(dt_input, date_var) {
   } else {
     stop(paste(date_var, "data has to be daily, weekly or monthly"))
   }
-  invisible(return(list(dayInterval = dayInterval, intervalType = intervalType)))
+  invisible(return(list(
+    date_var = date_var,
+    dayInterval = dayInterval,
+    intervalType = intervalType
+  )))
 }
 
 check_depvar <- function(dt_input, dep_var, dep_var_type) {
@@ -63,7 +79,7 @@ check_prophet <- function(dt_holidays, prophet_country, prophet_vars, prophet_si
   } else if (is.null(prophet_signs)) {
     prophet_signs <- rep("default", length(prophet_vars))
     message("'prophet_signs' is not provided. 'default' is used")
-  } else if (length(prophet_signs) != length(prophet_vars) |!all(prophet_signs %in% c("positive", "negative", "default"))) {
+  } else if (length(prophet_signs) != length(prophet_vars) | !all(prophet_signs %in% c("positive", "negative", "default"))) {
     stop("'prophet_signs' must have same length as 'prophet_vars'. Allowed values are 'positive', 'negative', 'default'")
   }
 }

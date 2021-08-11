@@ -171,7 +171,7 @@
 #' @export
 robyn_inputs <- function(dt_input = NULL
                          ,dt_holidays = NULL
-                         ,date_var = NULL
+                         ,date_var = "auto"
                          ,dep_var = NULL
                          ,dep_var_type = NULL
                          ,prophet_vars = NULL
@@ -201,6 +201,7 @@ robyn_inputs <- function(dt_input = NULL
 
     ## check date input (and set dayInterval and intervalType)
     date_input <- check_datevar(dt_input, date_var)
+    date_var <- date_input$date_var # when date_var = "auto"
     dayInterval <- date_input$dayInterval
     intervalType <- date_input$intervalType
     ## check dependent var

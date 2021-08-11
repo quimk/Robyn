@@ -7,7 +7,7 @@
 robyn_inputs(
   dt_input = NULL,
   dt_holidays = NULL,
-  date_var = NULL,
+  date_var = "auto",
   dep_var = NULL,
   dep_var_type = NULL,
   prophet_vars = NULL,
