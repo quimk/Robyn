@@ -18,7 +18,6 @@
 #' @author Leonel Sentana (leonelsentana@@fb.com)
 #' @author Antonio Prada (aprada@@fb.com)
 #' @author Igor Skokan (igorskokan@@fb.com)
-#' @importFrom corrplot corrplot
 #' @import data.table
 #' @importFrom doFuture registerDoFuture
 #' @importFrom doRNG %dorng%

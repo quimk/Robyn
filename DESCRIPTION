@@ -13,7 +13,6 @@ Description: Automated Marketing Mix Modeling (MMM) package that aims to reduce 
 Depends:
     R (>= 3.5)
 Imports:
-    corrplot,
     data.table,
     doParallel,
     doFuture,
@@ -26,11 +25,9 @@ Imports:
     minpack.lm,
     nloptr,
     patchwork,
-    PerformanceAnalytics,
     prophet,
     reticulate,
     rPref,
-    see,
     stringr
 Suggests:
     shiny,
