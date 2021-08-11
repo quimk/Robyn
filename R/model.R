@@ -833,11 +833,11 @@ robyn_mmm <- function(hyper_collect
 
   ## start Nevergrad optimiser
 
-  if (length(hyper_bound_list_updated) !=0) {
+  if (length(hyper_bound_list_updated) != 0) {
     my_tuple <- tuple(hyper_count)
-    instrumentation <- ng$p$Array(shape=my_tuple, lower=0., upper=1.)
+    instrumentation <- ng$p$Array(shape = my_tuple, lower = 0., upper = 1.)
     #instrumentation$set_bounds(0., 1.)
-    optimizer <-  ng$optimizers$registry[optimizer_name](instrumentation, budget=iterTotal, num_workers=cores)
+    optimizer <- ng$optimizers$registry[optimizer_name](instrumentation, budget=iterTotal, num_workers=cores)
     if (is.null(calibration_input)) {
       optimizer$tell(ng$p$MultiobjectiveReference(), tuple(1.0, 1.0))
     } else {
@@ -1259,7 +1259,6 @@ robyn_response <- function(robyn_object = NULL
                            , dt_hyppar = NULL # OutputCollect$resultHypParam
                            , dt_coef = NULL # OutputCollect$xDecompAgg
                            , InputCollect = NULL# InputCollect
-
 ) {
 
   ## get input
@@ -1314,8 +1313,6 @@ robyn_response <- function(robyn_object = NULL
   if (!is.null(Spend)) {
     if (length(Spend) !=1 | Spend <= 0 | !is.numeric(Spend)) {stop("Spend must be a positive number")}
   }
-
-
 
   ## transform spend to exposure if necessary
   if (paid_media_var %in% InputCollect$exposureVarName) {
@@ -1385,7 +1382,6 @@ robyn_response <- function(robyn_object = NULL
 #' @param i xxx
 #' @param dt_modRollWind xxx
 #' @param refreshAddedStart xxx
-
 model_decomp <- function(coefs, dt_modSaturated, x, y_pred, i, dt_modRollWind, refreshAddedStart) {
 
   ## input for decomp
@@ -1526,8 +1522,6 @@ calibrate_mmm <- function(decompCollect, calibration_input, paid_media_vars) {
 #' @param lambda xxx
 #' @param lower.limits xxx
 #' @param upper.limits xxx
-
-
 model_refit <- function(x_train, y_train, lambda, lower.limits, upper.limits) {
   mod <- glmnet(
     x_train
@@ -1590,7 +1584,6 @@ model_refit <- function(x_train, y_train, lambda, lower.limits, upper.limits) {
 #' @param y xxx
 #' @param seq_len xxx
 #' @param lambda_min_ratio xxx
-
 ridge_lambda <- function(x
                          , y
                          , seq_len = 100

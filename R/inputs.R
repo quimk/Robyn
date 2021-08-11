@@ -83,8 +83,8 @@
 #' "DiscreteOnePlusOne", "PortfolioDiscreteOnePlusOne", "NaiveTBPSA",
 #' "cGA", "RandomSearch")}
 #' @param calibration_input A data.table. Optional provide experimental results.
-#' @param InputCollect Default to NULL. Required when adding hyperparameters
-#' Not yet implemented!
+#' @param InputCollect Default to NULL. \code{robyn_inputs}'s output when
+#' \code{hyperparameters} are not yet set.
 #' @examples
 #' \dontrun{
 #' data("dt_simulated_weekly")
@@ -165,7 +165,7 @@
 #' )
 #'
 #' ## Add hyperparameters into robyn_inputs()
-#' InputCollect <- robyn_inputs(InputCollect, hyperparameters = hyperparameters)
+#' InputCollect <- robyn_inputs(InputCollect = InputCollect, hyperparameters = hyperparameters)
 #' }
 #' @return List object
 #' @export
@@ -195,51 +195,18 @@ robyn_inputs <- function(dt_input = NULL
                          ,nevergrad_algo = "TwoPointsDE"
                          ,calibration_input = NULL
                          ,InputCollect = NULL
-
 ) {
 
   if (is.null(InputCollect)) {
 
-    ## check date input
-    inputLen <- length(dt_input[, get(date_var)])
-    inputLenUnique <- length(unique(dt_input[, get(date_var)]))
-
-    if (is.null(date_var) | !(date_var %in% names(dt_input)) | length(date_var)>1) {
-      stop("Must provide correct only 1 date variable name for date_var")
-    } else if (any(is.na(as.Date(as.character(dt_input[, get(date_var)]), "%Y-%m-%d")))) {
-      stop("Date variable in date_var must have format '2020-12-31'")
-    } else if (inputLen != inputLenUnique) {
-      stop("Date variable has duplicated dates. Please clean data first")
-    } else if (any(apply(dt_input, 2, function(x) any(is.na(x) | is.infinite(x))))) {
-      stop("dt_input has NA or Inf. Please clean data first")
-    }
-
-    dt_input <- dt_input[order(as.Date(dt_input[, get(date_var)]))]
-    dayInterval <- as.integer(difftime(as.Date(dt_input[, get(date_var)])[2], as.Date(dt_input[, get(date_var)])[1], units = "days"))
-    intervalType <- if(dayInterval==1) {"day"} else if (dayInterval==7) {"week"} else if (dayInterval %in% 28:31) {"month"} else {stop("input data has to be daily, weekly or monthly")}
-
+    ## check date input (and set dayInterval and intervalType)
+    date_input <- check_datevar(dt_input, date_var)
+    dayInterval <- date_input$dayInterval
+    intervalType <- date_input$intervalType
     ## check dependent var
-    if (is.null(dep_var) | !(dep_var %in% names(dt_input)) | length(dep_var)>1) {
-      stop("Must provide only 1 correct dependent variable name for dep_var")
-    } else if ( !(is.numeric(dt_input[, get(dep_var)]) | is.integer(dt_input[, get(dep_var)]))) {
-      stop("dep_var must be numeric or integer")
-    } else if (!(dep_var_type %in% c("conversion", "revenue")) | length(dep_var_type)!=1) {
-      stop("dep_var_type must be conversion or revenue")
-    }
-
+    check_depvar(dt_input, dep_var, dep_var_type)
     ## check prophet
-    if (is.null(prophet_vars)) {
-      prophet_signs <- NULL; prophet_country <- NULL
-    } else if (!all(prophet_vars %in% c("trend","season", "weekday", "holiday"))) {
-      stop("allowed values for prophet_vars are 'trend', 'season', 'weekday' and 'holiday'")
-    } else if (is.null(prophet_country) | length(prophet_country) >1) {
-      stop("1 country code must be provided in prophet_country. ",dt_holidays[, uniqueN(country)], " countries are included: ", paste(dt_holidays[, unique(country)], collapse = ", "), ". If your country is not available, please add it to the holidays.csv first")
-    } else if (is.null(prophet_signs)) {
-      prophet_signs <- rep("default", length(prophet_vars))
-      message("prophet_signs is not provided. 'default' is used")
-    } else if (length(prophet_signs) != length(prophet_vars) | !all(prophet_signs %in% c("positive", "negative", "default"))) {
-      stop("prophet_signs must have same length as prophet_vars. allowed values are 'positive', 'negative', 'default'")
-    }
+    check_prophet(dt_holidays, prophet_country, prophet_vars, prophet_signs)
 
     ## check baseline variables
     if (is.null(context_vars)) {
@@ -422,13 +389,13 @@ robyn_inputs <- function(dt_input = NULL
     # no InputCollect, when hyperparameters is not provided
     if (is.null(hyperparameters)) {
 
-      message("\nhyperparameters is not provided yet. Run robyn_inputs(InputCollect = InputCollect, hyperparameter = ...) to add it\n")
+      message("hyperparameters are not provided yet. Run robyn_inputs(InputCollect = InputCollect, hyperparameters = ...) to add it")
       invisible(InputCollect)
 
       # no InputCollect, when hyperparameters is provided wrongly
     } else if (!identical(sort(names(hyperparameters)), local_name)) {
 
-      stop("\nhyperparameters must be a list and contain vectors or values named as followed: ", paste(local_name, collapse = ", "), "\n")
+      stop("hyperparameters must be a list and contain vectors or values named as followed: ", paste(local_name, collapse = ", "))
 
       # no InputCollect, when hyperparameters is provided correctly
     } else {
@@ -441,7 +408,7 @@ robyn_inputs <- function(dt_input = NULL
         if ((min(calibration_input$liftStartDate) < min(dt_input[, get(date_var)])) | (max(calibration_input$liftEndDate) >  (max(dt_input[, get(date_var)]) + dayInterval-1))) {
           stop("We recommend you to only use lift results conducted within your MMM input data date range")
         } else if (iterations < 2000 | trials < 10) {
-          message("You are calibrating MMM. We recommend to run at least 2000 iterations per trial and at least 10 trials at the beginning")
+          warning("You are calibrating MMM. We recommend to run at least 2000 iterations per trial and at least 10 trials at the beginning")
         }
         InputCollect$calibration_input <- calibration_input
 
@@ -452,7 +419,7 @@ robyn_inputs <- function(dt_input = NULL
       }
 
       # when all provided once correctly
-      message("All input in robyn_inputs() are valid. Running robyn_engineering()...")
+      message(">>> All input in robyn_inputs() are valid. Running robyn_engineering()...")
       outFeatEng <- robyn_engineering(InputCollect = InputCollect, refresh = FALSE)
       invisible(outFeatEng)
 
@@ -461,7 +428,7 @@ robyn_inputs <- function(dt_input = NULL
   } else if (!is.null(InputCollect) & is.null(hyperparameters) & is.null(InputCollect$hyperparameters) ) {
 
     # when InputCollect is provided, but hyperparameters not
-    stop("\nhyperparameters is not provided yet. Run robyn_inputs(InputCollect = InputCollect, hyperparameter = ...) to add it\n")
+    stop("hyperparameters are not provided yet. Run robyn_inputs(InputCollect = InputCollect, hyperparameters = ...) to add it")
 
   } else {
 
@@ -477,7 +444,7 @@ robyn_inputs <- function(dt_input = NULL
 
     if (!identical(sort(names(InputCollect$hyperparameters)), local_name)) {
 
-      stop("\nhyperparameters must be a list and contain vectors or values named as followed: ", paste(local_name, collapse = ", "), "\n")
+      stop("hyperparameters must be a list and contain vectors or values named as followed: ", paste(local_name, collapse = ", "))
 
     } else {
 
@@ -489,12 +456,14 @@ robyn_inputs <- function(dt_input = NULL
             (max(calibration_input$liftEndDate) >  (max(InputCollect$dt_input[, get(InputCollect$date_var)]) + InputCollect$dayInterval-1))) {
           stop("We recommend you to only use experimental results conducted within your MMM input data date range")
         } else if (InputCollect$iterations < 2000 | InputCollect$trials < 10) {
-          message("You are calibrating MMM. We recommend to run at least 2000 iterations per trial and at least 10 trials at the beginning")
+          warning("You are calibrating MMM. We recommend to run at least 2000 iterations per trial and at least 10 trials at the beginning")
         }
         InputCollect$calibration_input <- calibration_input
 
       } else {
-        if (InputCollect$iterations < 2000 | InputCollect$trials < 5) {message("We recommend to run at least 2000 iterations per trial and at least 5 trials at the beginning")}
+        if (InputCollect$iterations < 2000 | InputCollect$trials < 5) {
+          warning("We recommend to run at least 2000 iterations per trial and at least 5 trials at the beginning")
+        }
       }
 
       message("All input in robyn_inputs() are valid. Running robyn_engineering()...")

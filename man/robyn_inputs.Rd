@@ -132,8 +132,8 @@ to have ratio of independent variable: data points of 1:10.}
 
 \item{calibration_input}{A data.table. Optional provide experimental results.}
 
-\item{InputCollect}{Default to NULL. Required when adding hyperparameters
-Not yet implemented!}
+\item{InputCollect}{Default to NULL. \code{robyn_inputs}'s output when
+\code{hyperparameters} are not yet set.}
 }
 \value{
 List object
@@ -221,6 +221,6 @@ hyperparameters <- list(
 )
 
 ## Add hyperparameters into robyn_inputs()
-InputCollect <- robyn_inputs(InputCollect, hyperparameters = hyperparameters)
+InputCollect <- robyn_inputs(InputCollect = InputCollect, hyperparameters = hyperparameters)
 }
 }
