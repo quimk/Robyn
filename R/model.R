@@ -1044,7 +1044,7 @@ robyn_mmm <- function(hyper_collect
 
         if (!is.null(calibration_input)) {
 
-          liftCollect <- calibrate_mmm(decompCollect=decompCollect, calibration_input=calibration_input)
+          liftCollect <- calibrate_mmm(decompCollect=decompCollect, calibration_input=calibration_input, paid_media_vars = paid_media_vars)
           mape <- liftCollect[, mean(mape_lift)]
 
         }
