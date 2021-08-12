@@ -142,7 +142,6 @@ List object
 Describe function.
 }
 \examples{
-\dontrun{
 data("dt_simulated_weekly")
 data("dt_prophet_holidays")
 
@@ -222,5 +221,4 @@ hyperparameters <- list(
 
 ## Add hyperparameters into robyn_inputs()
 InputCollect <- robyn_inputs(InputCollect = InputCollect, hyperparameters = hyperparameters)
-}
 }

@@ -94,7 +94,7 @@ check_prophet <- function(dt_holidays, prophet_country, prophet_vars, prophet_si
       paste(unique(dt_holidays$country), collapse = ", "),
       "\nIf your country is not available, please manually add it to 'dt_holidays'"
     ))
-  } 
+  }
   if (is.null(prophet_signs)) {
     prophet_signs <- rep("default", length(prophet_vars))
     message("'prophet_signs' were not provided. 'default' is used")
@@ -306,7 +306,7 @@ check_calibration <- function(dt_input, date_var, calibration_input, dayInterval
     if ((min(calibration_input$liftStartDate) < min(dt_input[, get(date_var)])) |
       (max(calibration_input$liftEndDate) > (max(dt_input[, get(date_var)]) + dayInterval - 1))) {
       stop("We recommend you to only use lift results conducted within your MMM input data date range")
-    } 
+    }
   }
   return(calibration_input)
 }
@@ -320,4 +320,19 @@ check_iteration <- function(calibration_input, iterations, trials) {
       "trials to build initial model"
     ))
   }
+}
+
+check_InputCollect <- function(list) {
+  names_list <- c("dt_input","paid_media_vars","paid_media_spends","context_vars",
+                  "organic_vars","all_ind_vars","date_var","dep_var",
+                  "rollingWindowStartWhich","rollingWindowEndWhich","mediaVarCount",
+                  "factor_vars","prophet_vars","prophet_signs","prophet_country",
+                  "intervalType","dt_holidays")
+  if (!all(names_list %in% names(list))) {
+    not_present <- names_list[!names_list %in% names(list)]
+    stop(paste("Some elements where not provided in your inputs list:",
+               paste(not_present, collapse = ", ")))
+  }
+  if (length(dt_input) <= 1)
+    stop("Check your 'dt_input' object")
 }

@@ -99,16 +99,19 @@ robyn_refresh <- function(robyn_object
       listOutputPrev <- Robyn$listInit$OutputCollect
       InputCollectRF$xDecompAggPrev <- listOutputPrev$xDecompAgg
 
-      message("\n###### initial model loaded ... ######")
-      if (length(unique(Robyn$listInit$OutputCollect$resultHypParam$solID))>1) {stop("Run robyn_save first to select one initial model")}
+      message(">>> Initial model loaded")
+      if (length(unique(Robyn$listInit$OutputCollect$resultHypParam$solID)) > 1) {
+        stop("Run robyn_save first to select one initial model")
+      }
 
     } else {
+
       listName <- paste0("listRefresh",refreshCounter-1)
       InputCollectRF <- Robyn[[listName]][["InputCollect"]]
       listOutputPrev <- Robyn[[listName]][["OutputCollect"]]
       listReportPrev <- Robyn[[listName]][["ReportCollect"]]
 
-      message(paste0("\n###### refresh model nr.",refreshCounter-1," loaded ... ######"))
+      message(paste0(">>> Refresh model nr.", refreshCounter-1," loaded"))
 
       ## model selection from previous build
       listOutputPrev$resultHypParam <- listOutputPrev$resultHypParam[bestModRF==TRUE]
@@ -143,15 +146,19 @@ robyn_refresh <- function(robyn_object
     InputCollectRF$rollingWindowEndWhich <- refreshEndWhich
     InputCollectRF$rollingWindowLength <- refreshEndWhich - refreshStartWhich +1
 
-    if (refreshEnd > max(totalDates)) {stop("Not enough data for this refresh. Input data from date ", refreshEnd, " or later required")}
+    if (refreshEnd > max(totalDates)) {
+      stop("Not enough data for this refresh. Input data from date ", refreshEnd, " or later required")
+    }
 
     if (refresh_mode == "manual") {
       refreshLooper <- 1
-      message("###### refreshing model nr.",refreshCounter, " in ", refresh_mode, " mode ... ######")
+      message(paste(">>> Refreshing model nr.", refreshCounter, "in", refresh_mode, "mode"))
       refreshControl <- FALSE
     } else {
-      refreshLooper <- floor(as.numeric(difftime(max(totalDates), refreshEnd, units = "days")) / InputCollectRF$dayInterval / refresh_steps)
-      message("###### refreshing model nr.",refreshCounter, " in ",refresh_mode," mode. ",refreshLooper," more to go ... ######")
+      refreshLooper <- floor(as.numeric(difftime(max(totalDates), refreshEnd, units = "days")) /
+                               InputCollectRF$dayInterval / refresh_steps)
+      message(paste(">>> Refreshing model nr.", refreshCounter, "in",
+                    refresh_mode, "mode.", refreshLooper, "more to go..."))
     }
 
     #### update refresh model parameters

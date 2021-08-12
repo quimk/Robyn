@@ -26,7 +26,7 @@
 #' @importFrom future multicore plan
 #' @import ggplot2
 #' @importFrom glmnet cv.glmnet glmnet
-#' @importFrom lubridate is.Date day
+#' @importFrom lubridate is.Date day floor_date
 #' @importFrom minpack.lm nlsLM
 #' @importFrom nloptr nloptr
 #' @importFrom parallel detectCores
