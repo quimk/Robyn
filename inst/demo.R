@@ -232,25 +232,25 @@ InputCollect <- robyn_inputs(InputCollect = InputCollect
 # InputCollect <- robyn_inputs(
 #   dt_input = dt_simulated_weekly
 #   ,dt_holidays = dt_prophet_holidays
-# 
+#
 #   ### set variables
-# 
+#
 #   ,date_var = "DATE" # date format must be "2020-01-01"
 #   ,dep_var = "revenue" # there should be only one dependent variable
 #   ,dep_var_type = "revenue" # "revenue" or "conversion"
-# 
+#
 #   ,prophet_vars = c("trend", "season", "holiday") # "trend","season", "weekday", "holiday"
 #   # are provided and case-sensitive. Recommended to at least keep Trend & Holidays
 #   ,prophet_signs = c("default","default", "default") # c("default", "positive", and "negative").
 #   # Recommend as default.Must be same length as prophet_vars
 #   ,prophet_country = "DE"# only one country allowed once. Including national holidays
 #   # for 59 countries, whose list can be found on our githut guide
-# 
+#
 #   ,context_vars = c("competitor_sales_B", "events") # typically competitors, price &
 #   # promotion, temperature, unemployment rate etc
 #   ,context_signs = c("default", "default") # c("default", " positive", and "negative"),
 #   # control the signs of coefficients for baseline variables
-# 
+#
 #   ,paid_media_vars = c("tv_S", "ooh_S"	,	"print_S"	,"facebook_I" ,"search_clicks_P")
 #   # c("tv_S"	,"ooh_S",	"print_S"	,"facebook_I", "facebook_S","search_clicks_P"	,"search_S")
 #   # we recommend to use media exposure metrics like impressions, GRP etc for the model.
@@ -260,36 +260,36 @@ InputCollect <- robyn_inputs(InputCollect = InputCollect
 #   # Controls the signs of coefficients for media variables
 #   ,paid_media_spends = c("tv_S","ooh_S",	"print_S"	,"facebook_S", "search_S")
 #   # spends must have same order and same length as paid_media_vars
-# 
+#
 #   ,organic_vars = c("newsletter")
 #   ,organic_signs = c("positive") # must have same length as organic_vars
-# 
+#
 #   ,factor_vars = c("events") # specify which variables in context_vars and
 #   # organic_vars are factorial
-# 
+#
 #   ### set model parameters
-# 
+#
 #   ## set cores for parallel computing
 #   ,cores = 6 # I am using 6 cores from 8 on my local machine. Use availableCores() to find out cores
-# 
+#
 #   ## set rolling window start
 #   ,window_start = "2016-11-23"
 #   ,window_end = "2018-08-22"
-# 
+#
 #   ## set model core features
 #   ,adstock = "geometric" # geometric or weibull. weibull is more flexible, yet has one more
 #   # parameter and thus takes longer
 #   ,iterations = 100  # number of allowed iterations per trial. 2000 is recommended
-# 
+#
 #   ,nevergrad_algo = "TwoPointsDE" # recommended algorithm for Nevergrad, the gradient-free
 #   # optimisation library https://facebookresearch.github.io/nevergrad/index.html
 #   ,trials = 2 # number of allowed iterations per trial. 5 is recommended without calibration,
 #   # 10 with calibration.
-# 
+#
 #   ,hyperparameters = hyperparameters # as in 2a-2 above
-# 
+#
 #   ,calibration_input = dt_calibration # as in 2a-4 above
-# 
+#
 #   # Time estimation: with geometric adstock, 2000 iterations * 5 trials
 #   # and 6 cores, it takes less than 1 hour. Weibull takes at least twice as much time.
 # )
@@ -301,15 +301,15 @@ OutputCollect <- robyn_run(
   InputCollect = InputCollect # feed in all model specification
   , plot_folder = robyn_object # plots will be saved in the same folder as robyn_object.
   # Other paths are also possible
-  , pareto_fronts = 1 # How many pareto fronts to be exported as model output. The higher,
-  # the more model results/ onepagers provided
-  , plot_pareto = T # Disabling plat_pareto speeds up processing time in the end,
+  , pareto_fronts = 1 # How many Pareto fronts to be exported as model output. The higher,
+  # the more model results/ one-pagers provided
+  , plot_pareto = TRUE # Disabling plat_pareto speeds up processing time in the end,
   # but plots won't be saved
   )
 
-## Besides onepager plots: there're 4 csv output saved in the folder for further usage
-# pareto_hyperparameters.csv, hyperparameters per pareto output model
-# pareto_aggregated.csv, aggregated decomposition per independent variable of all pareto output
+## Besides one-pager plots: there are 4 csv output saved in the folder for further usage
+# pareto_hyperparameters.csv, hyperparameters per Pareto output model
+# pareto_aggregated.csv, aggregated decomposition per independent variable of all Pareto output
 # pareto_media_transform_matrix.csv, all media transformation vectors
 # pareto_alldecomp_matrix.csv, all decomposition vectors of independent variables
 
@@ -321,7 +321,7 @@ OutputCollect <- robyn_run(
 ## your business reality
 
 OutputCollect$allSolutions # get all model IDs in result
-select_model <- "1_14_2" # select one from above
+select_model <- OutputCollect$allSolutions[1] # select one from above (first?)
 robyn_save(robyn_object = robyn_object # model object location and name
            , select_model = select_model # selected model ID
            , InputCollect = InputCollect # all model input
@@ -401,8 +401,6 @@ Robyn <- robyn_refresh(
 # report_aggregated.csv, aggregated decomposition per independent variable
 # report_media_transform_matrix.csv, all media transformation vectors
 # report_alldecomp_matrix.csv,all decomposition vectors of independent variables
-
-
 
 
 ################################################################

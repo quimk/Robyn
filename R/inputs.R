@@ -86,7 +86,6 @@
 #' @param InputCollect Default to NULL. \code{robyn_inputs}'s output when
 #' \code{hyperparameters} are not yet set.
 #' @examples
-#' \dontrun{
 #' data("dt_simulated_weekly")
 #' data("dt_prophet_holidays")
 #'
@@ -166,7 +165,6 @@
 #'
 #' ## Add hyperparameters into robyn_inputs()
 #' InputCollect <- robyn_inputs(InputCollect = InputCollect, hyperparameters = hyperparameters)
-#' }
 #' @return List object
 #' @export
 robyn_inputs <- function(dt_input = NULL
@@ -309,13 +307,13 @@ robyn_inputs <- function(dt_input = NULL
 
     ### Use case 1: running robyn_inputs() for the first time
     if (is.null(hyperparameters)) {
-      
+
       ### conditional output 1.1
       ## running robyn_inputs() for the 1st time & no 'hyperparameters' yet
       invisible(return(InputCollect))
-      
-    } else { 
-      
+
+    } else {
+
       ### conditional output 1.2
       ## running robyn_inputs() for the 1st time & 'hyperparameters' provided --> run robyn_engineering()
       check_iteration(calibration_input, iterations, trials)
@@ -323,35 +321,40 @@ robyn_inputs <- function(dt_input = NULL
       invisible(return(outFeatEng))
     }
 
-  } else { 
-    ### Use case 2: adding 'hyperparameters' and/or 'calibration_input' using robyn_inputs() 
-    
+  } else {
+
+    ### Use case 2: adding 'hyperparameters' and/or 'calibration_input' using robyn_inputs()
+
     ## check calibration and iters/trials
     calibration_input <- check_calibration(
       InputCollect$dt_input
       ,InputCollect$date_var
       ,calibration_input
       ,InputCollect$dayInterval)
-    
+
     ## update calibration_input
-    if (!is.null(calibration_input))  {InputCollect$calibration_input <- calibration_input}
+    if (!is.null(calibration_input)) {
+      InputCollect$calibration_input <- calibration_input
+    }
 
     if (is.null(InputCollect$hyperparameters) & is.null(hyperparameters)) {
-      
+
       ### conditional output 2.1
       ## when 'hyperparameters' is still not yet provided
       invisible(return(InputCollect))
-      
-    } else { 
-      
+
+    } else {
+
       ### conditional output 2.2
       ## 'hyperparameters' provided --> run robyn_engineering()
-      
+
       ## update & check hyperparameters
-      if (is.null(InputCollect$hyperparameters)) {InputCollect$hyperparameters <- hyperparameters}
+      if (is.null(InputCollect$hyperparameters)) {
+        InputCollect$hyperparameters <- hyperparameters
+      }
       check_hyperparameters(InputCollect$hyperparameters, InputCollect$adstock, InputCollect$all_media)
       check_iteration(InputCollect$calibration_input, InputCollect$iterations, InputCollect$trials)
-      
+
       outFeatEng <- robyn_engineering(InputCollect = InputCollect, refresh = FALSE)
       invisible(return(outFeatEng))
     }
@@ -387,268 +390,172 @@ hyper_names <- function(adstock, all_media) {
 #' @export
 robyn_engineering <- function(InputCollect, refresh = FALSE) {
 
+  check_InputCollect(InputCollect)
+
+  dt_input <- InputCollect$dt_input
   paid_media_vars <- InputCollect$paid_media_vars
   paid_media_spends <- InputCollect$paid_media_spends
   context_vars <- InputCollect$context_vars
   organic_vars <- InputCollect$organic_vars
-  all_media <- InputCollect$all_media
   all_ind_vars <- InputCollect$all_ind_vars
+  date_var <- InputCollect$date_var
+  dep_var <- InputCollect$dep_var
+  rollingWindowStartWhich <- InputCollect$rollingWindowStartWhich
+  rollingWindowEndWhich <- InputCollect$rollingWindowEndWhich
+  mediaVarCount <- InputCollect$mediaVarCount
+  factor_vars <- InputCollect$factor_vars
+  prophet_vars <- InputCollect$prophet_vars
+  prophet_signs <- InputCollect$prophet_signs
+  prophet_country <- InputCollect$prophet_country
+  intervalType <- InputCollect$intervalType
+  dt_holidays <- InputCollect$dt_holidays
 
-  dt_input <- copy(InputCollect$dt_input) # dt_input <- copy(InputCollect$dt_input)
+  # dt_inputRollWind
+  dt_inputRollWind <- dt_input[rollingWindowStartWhich:rollingWindowEndWhich,]
 
-  dt_inputRollWind <- dt_input[InputCollect$rollingWindowStartWhich:InputCollect$rollingWindowEndWhich]
+  # dt_transform
+  dt_transform <- dt_input
+  colnames(dt_transform)[colnames(dt_transform) == date_var] <- "ds"
+  colnames(dt_transform)[colnames(dt_transform) == dep_var] <- "dep_var"
+  dt_transform <- dt_transform[order(dt_transform$ds),]
 
-  dt_transform <- copy(InputCollect$dt_input) # dt_transform <- copy(InputCollect$dt_input)
-  setnames(dt_transform, InputCollect$date_var, "ds", skip_absent = TRUE)
-  dt_transform <- dt_transform[, ':='(ds= as.Date(ds))][order(ds)]
-  dt_transformRollWind <- dt_transform[InputCollect$rollingWindowStartWhich:InputCollect$rollingWindowEndWhich]
-
-  setnames(dt_transform, InputCollect$dep_var, "dep_var", skip_absent = TRUE)
+  # dt_transformRollWind
+  dt_transformRollWind <- dt_transform[rollingWindowStartWhich:rollingWindowEndWhich,]
 
   ################################################################
   #### model exposure metric from spend
 
-  mediaCostFactor <- unlist(dt_inputRollWind[, lapply(.SD, sum), .SDcols = paid_media_spends] / dt_inputRollWind[, lapply(.SD, sum), .SDcols = paid_media_vars])
-  names(mediaCostFactor) <- paid_media_vars
-  costSelector <- !(paid_media_spends == paid_media_vars)
+  mediaCostFactor <- colSums(subset(dt_inputRollWind, select = paid_media_spends), na.rm = TRUE) /
+    colSums(subset(dt_inputRollWind, select = paid_media_vars), na.rm = TRUE)
+
+  costSelector <- paid_media_spends != paid_media_vars
   names(costSelector) <- paid_media_vars
 
   if (any(costSelector)) {
+
     modNLSCollect <- list()
     yhatCollect <- list()
     plotNLSCollect <- list()
-    for (i in 1:InputCollect$mediaVarCount) {
+
+    for (i in 1:mediaVarCount) {
+
       if (costSelector[i]) {
-        dt_spendModInput <- dt_inputRollWind[, c(paid_media_spends[i],paid_media_vars[i]), with =FALSE]
-        setnames(dt_spendModInput, names(dt_spendModInput), c("spend", "exposure"))
-        #dt_spendModInput <- dt_spendModInput[spend !=0 & exposure != 0]
 
-        # scale 0 spend and exposure to a tiny number
-        dt_spendModInput[, spend:=as.numeric(spend)][spend==0, spend:=0.01] # remove spend == 0 to avoid DIV/0 error
-        dt_spendModInput[, exposure:=as.numeric(exposure)][exposure==0, exposure:=spend / mediaCostFactor[i]] # adapt exposure with avg when spend == 0
-
-        tryCatch(
-          {
-            #dt_spendModInput[, exposure:= rep(0,(nrow(dt_spendModInput)))]
-            nlsStartVal <- list(Vmax = dt_spendModInput[, max(exposure)], Km = dt_spendModInput[, max(exposure)/2])
-            suppressWarnings(modNLS <- nlsLM(exposure ~ Vmax * spend/(Km + spend), #Michaelis-Menten model Vmax * spend/(Km + spend)
-                                             data = dt_spendModInput,
-                                             start = nlsStartVal
-                                             ,control = nls.control(warnOnly = TRUE)))
-
-            yhatNLS <- predict(modNLS)
-            modNLSSum <- summary(modNLS)
-
-            # QA nls model prediction
-            yhatNLSQA <- modNLSSum$coefficients[1,1] * dt_spendModInput$spend / (modNLSSum$coefficients[2,1] + dt_spendModInput$spend) #exposure = v  * spend / (k + spend)
-            identical(yhatNLS, yhatNLSQA)
-
-            rsq_nls <- get_rsq(true = dt_spendModInput$exposure, predicted = yhatNLS)
-          },
-
-          error=function(cond) {
-            message("michaelis menten fitting for ", paid_media_vars[i]," out of range. using lm instead")
-          }
-        )
-        if (!exists("modNLS")) {modNLS <- NULL; yhatNLS <- NULL; modNLSSum <- NULL; rsq_nls <- NULL}
-        # build lm comparison model
-        modLM <- lm(exposure ~ spend-1, data = dt_spendModInput)
-        yhatLM <- predict(modLM)
-        modLMSum <- summary(modLM)
-        rsq_lm <- get_rsq(true = dt_spendModInput$exposure, predicted = yhatLM)
-        if (is.na(rsq_lm)) {stop("please check if ",paid_media_vars[i]," constains only 0")}
-
+        # run models (NLS and/or LM)
+        dt_spendModInput <- subset(dt_inputRollWind, select = c(paid_media_spends[i], paid_media_vars[i]))
+        results <- runmodels(dt_spendModInput, mediaCostFactor[i], paid_media_vars[i])
+        mod <- results$res
         # compare NLS & LM, takes LM if NLS fits worse
-        costSelector[i] <- if(is.null(rsq_nls)) {FALSE} else {rsq_nls > rsq_lm}
-
-        modNLSCollect[[paid_media_vars[i]]] <- data.table(channel = paid_media_vars[i],
-                                                          Vmax = if (!is.null(modNLS)) {modNLSSum$coefficients[1,1]} else {NA},
-                                                          Km =  if (!is.null(modNLS)) {modNLSSum$coefficients[2,1]} else {NA},
-                                                          aic_nls = if (!is.null(modNLS)) {AIC(modNLS)} else {NA},
-                                                          aic_lm = AIC(modLM),
-                                                          bic_nls = if (!is.null(modNLS)) {BIC(modNLS)} else {NA},
-                                                          bic_lm = BIC(modLM),
-                                                          rsq_nls = if (!is.null(modNLS)) {rsq_nls} else {0},
-                                                          rsq_lm = rsq_lm,
-                                                          coef_lm = coef(modLMSum)[1]
-        )
-
-        dt_plotNLS <- data.table(channel = paid_media_vars[i],
-                                 yhatNLS = if(costSelector[i]) {yhatNLS} else {yhatLM},
-                                 yhatLM = yhatLM,
-                                 y = dt_spendModInput$exposure,
-                                 x = dt_spendModInput$spend)
-        dt_plotNLS <- melt.data.table(dt_plotNLS, id.vars = c("channel", "y", "x"), variable.name = "models", value.name = "yhat")
-        dt_plotNLS[, models:= str_remove(tolower(models), "yhat")]
-
-        yhatCollect[[paid_media_vars[i]]] <- dt_plotNLS
-
+        costSelector[i] <- if (is.null(mod$rsq_nls)) FALSE else mod$rsq_nls > mod$rsq_lm
         # create plot
-        plotNLSCollect[[paid_media_vars[i]]] <- ggplot(dt_plotNLS, aes(x=x, y=y, color = models)) +
+        dt_plotNLS <- data.table(channel = paid_media_vars[i],
+                                 yhatNLS = if (costSelector[i]) results$yhatNLS else results$yhatLM,
+                                 yhatLM = results$yhatLM,
+                                 y = results$data$exposure,
+                                 x = results$data$spend)
+        dt_plotNLS <- melt.data.table(dt_plotNLS, id.vars = c("channel", "y", "x"),
+                                      variable.name = "models", value.name = "yhat")
+        dt_plotNLS[, models:= str_remove(tolower(models), "yhat")]
+        yhatCollect[[paid_media_vars[i]]] <- dt_plotNLS
+        models_plot <- ggplot(
+          dt_plotNLS, aes(x=.data$x, y=.data$y, color = .data$models)) +
           geom_point() +
-          geom_line(aes(y=yhat, x=x, color = models)) +
-          labs(subtitle = paste0("y=",paid_media_vars[i],", x=", paid_media_spends[i],
-                                 "\nnls: aic=", round(AIC(if(costSelector[i]) {modNLS} else {modLM}),0), ", rsq=", round(if(costSelector[i]) {rsq_nls} else {rsq_lm},4),
-                                 "\nlm: aic= ", round(AIC(modLM),0), ", rsq=", round(rsq_lm,4)),
-               x = "spend",
-               y = "exposure"
-          ) +
-          theme(legend.position = 'bottom')
+          geom_line(aes(y=.data$yhat, x=.data$x, color = .data$models)) +
+          labs(caption = paste0(
+            "y=", paid_media_vars[i], ", x=", paid_media_spends[i],
+            "\nnls: aic=", round(AIC(if(costSelector[i]) results$modNLS else results$modLM), 0),
+            ", rsq=", round(if(costSelector[i]) mod$rsq_nls else mod$rsq_lm, 4),
+            "\nlm: aic= ", round(AIC(results$modLM),0), ", rsq=", round(mod$rsq_lm, 4)),
+            title = "Models fit comparison",
+            x = "Spend", y = "Exposure", color = "Model") +
+          theme_minimal() +
+          theme(legend.position = 'top', legend.justification = "left")
 
+        # save results into modNLSCollect and plotNLSCollect
+        modNLSCollect[[paid_media_vars[i]]] <- mod
+        plotNLSCollect[[paid_media_vars[i]]] <- models_plot
       }
     }
 
     modNLSCollect <- rbindlist(modNLSCollect)
     yhatNLSCollect <- rbindlist(yhatCollect)
-    yhatNLSCollect[, ds:= rep(dt_transformRollWind$ds, nrow(yhatNLSCollect)/nrow(dt_transformRollWind))]
+    yhatNLSCollect$ds <- rep(dt_transformRollWind$ds, nrow(yhatNLSCollect)/nrow(dt_transformRollWind))
 
   } else {
-    modNLSCollect <- NULL
-    plotNLSCollect <- NULL
-    yhatNLSCollect <- NULL
+    modNLSCollect <- plotNLSCollect <- yhatNLSCollect <- NULL
   }
 
-  getSpendSum <- dt_input[, lapply(.SD, sum), .SDcols=paid_media_spends]
-  names(getSpendSum) <- paid_media_vars
-  getSpendSum <- suppressWarnings(melt.data.table(getSpendSum, measure.vars= paid_media_vars, variable.name = "rn", value.name = "spend"))
+  getSpendSum <- colSums(subset(dt_input, select = paid_media_spends), na.rm = TRUE)
+  getSpendSum <- data.frame(rn = names(getSpendSum), spend = getSpendSum, row.names = NULL)
 
   ################################################################
   #### clean & aggregate data
 
   ## transform all factor variables
-  factor_vars <- InputCollect$factor_vars
-  if (length(factor_vars)>0) {
-    dt_transform[, (factor_vars):= lapply(.SD, as.factor), .SDcols = factor_vars ]
+  if (length(factor_vars) > 0) {
+    dt_transform[, (factor_vars):= lapply(.SD, as.factor), .SDcols = factor_vars]
   }
 
   ################################################################
-  #### Obtain prophet trend, seasonality and changepoints
+  #### Obtain prophet trend, seasonality and change-points
 
-  if ( !is.null(InputCollect$prophet_vars) ) {
+  if (!is.null(prophet_vars) ) {
 
-    if(length(InputCollect$prophet_vars) != length(InputCollect$prophet_signs)) {stop("InputCollect$prophet_vars and InputCollect$prophet_signs have to be the same length")}
-    if(any(length(InputCollect$prophet_vars)==0, length(InputCollect$prophet_signs)==0)) {stop("InputCollect$prophet_vars and InputCollect$prophet_signs must be both specified")}
-    if(!(InputCollect$prophet_country %in% InputCollect$dt_holidays$country)) {stop("InputCollect$prophet_country must be already included in the holidays.csv and as ISO 3166-1 alpha-2 abbreviation")}
+    check_prophet(dt_holidays, prophet_country, prophet_vars, prophet_signs)
 
-    recurrance <- dt_transform[, .(ds = ds, y = dep_var)]
-    use_trend <- any(str_detect("trend", InputCollect$prophet_vars))
-    use_season <- any(str_detect("season", InputCollect$prophet_vars))
-    use_weekday <- any(str_detect("weekday", InputCollect$prophet_vars))
-    use_holiday <- any(str_detect("holiday", InputCollect$prophet_vars))
+    recurrance <- subset(dt_transform, select = c("ds", "dep_var"))
+    colnames(recurrance)[2] <- "y"
 
-    if (InputCollect$intervalType == "day") {
-
-      holidays <- InputCollect$dt_holidays
-
-    } else if (InputCollect$intervalType == "week") {
-
-      weekStartInput <- wday(dt_transform[1, ds])
-      weekStartMonday <- if(weekStartInput==2) {TRUE} else if (weekStartInput==1) {FALSE} else {stop("week start has to be Monday or Sunday")}
-      InputCollect$dt_holidays[, dsWeekStart:= cut(as.Date(ds), breaks = InputCollect$intervalType, start.on.monday = weekStartMonday)]
-      holidays <- InputCollect$dt_holidays[, .(ds=dsWeekStart, holiday, country, year)]
-      holidays <- holidays[, lapply(.SD, paste0, collapse="#"), by = c("ds", "country", "year"), .SDcols = "holiday"]
-
-    } else if (InputCollect$intervalType == "month") {
-
-      monthStartInput <- all(day(dt_transform[, ds]) == 1)
-      if (monthStartInput == FALSE) {
-        stop("Monthly data should have first day of month as datestampe, e.g.'2020-01-01'")
-      }
-      InputCollect$dt_holidays[, dsMonthStart:= cut(as.Date(ds), InputCollect$intervalType)]
-      holidays <- InputCollect$dt_holidays[, .(ds=dsMonthStart, holiday, country, year)]
-      holidays <- holidays[, lapply(.SD, paste0, collapse = "#"), by = c("ds", "country", "year"), .SDcols = "holiday"]
-
-    }
-
+    holidays <- set_holidays(dt_transform, dt_holidays, intervalType)
+    use_trend <- any(str_detect("trend", prophet_vars))
+    use_season <- any(str_detect("season", prophet_vars))
+    use_weekday <- any(str_detect("weekday", prophet_vars))
+    use_holiday <- any(str_detect("holiday", prophet_vars))
 
     if (!is.null(factor_vars)) {
-      dt_regressors <- cbind(recurrance, dt_transform[, c(context_vars, paid_media_vars), with =FALSE])
-      modelRecurrance <- prophet(holidays = if(use_holiday) {holidays[country==InputCollect$prophet_country]} else {NULL}
-                                 ,yearly.seasonality = use_season
-                                 ,weekly.seasonality = use_weekday
-                                 ,daily.seasonality= FALSE)
-      # for (addreg in factor_vars) {
-      #   modelRecurrance <- add_regressor(modelRecurrance, addreg)
-      # }
-
+      dt_regressors <- cbind(recurrance, subset(dt_transform, select = c(context_vars, paid_media_vars)))
+      modelRecurrance <- prophet(
+        holidays = if (use_holiday) holidays[country == prophet_country] else NULL
+        ,yearly.seasonality = use_season
+        ,weekly.seasonality = use_weekday
+        ,daily.seasonality = FALSE)
       dt_ohe <- as.data.table(model.matrix(y ~., dt_regressors[, c("y",factor_vars), with =FALSE])[,-1])
       ohe_names <- names(dt_ohe)
-      for (addreg in ohe_names) {
-        modelRecurrance <- add_regressor(modelRecurrance, addreg)
-      }
-      dt_ohe <- cbind(dt_regressors[, !factor_vars, with=FALSE], dt_ohe)
+      for (addreg in ohe_names) modelRecurrance <- add_regressor(modelRecurrance, addreg)
+      dt_ohe <- cbind(dt_regressors[, !factor_vars, with = FALSE], dt_ohe)
       mod_ohe <- fit.prophet(modelRecurrance, dt_ohe)
-      # prophet::regressor_coefficients(mxxx)
       dt_forecastRegressor <- predict(mod_ohe, dt_ohe)
-      # prophet::prophet_plot_components(mod_ohe, dt_forecastRegressor)
-
-      forecastRecurrance <- dt_forecastRegressor[, str_detect(names(dt_forecastRegressor), "_lower$|_upper$", negate = TRUE), with =FALSE]
+      forecastRecurrance <- dt_forecastRegressor[, str_detect(
+        names(dt_forecastRegressor), "_lower$|_upper$", negate = TRUE), with = FALSE]
       for (aggreg in factor_vars) {
         oheRegNames <- na.omit(str_extract(names(forecastRecurrance), paste0("^",aggreg, ".*")))
         forecastRecurrance[, (aggreg):=rowSums(.SD), .SDcols=oheRegNames]
         get_reg <- forecastRecurrance[, get(aggreg)]
         dt_transform[, (aggreg):= scale(get_reg, center = min(get_reg), scale = FALSE)]
-        #dt_transform[, (aggreg):= get_reg]
       }
-      # modelRecurrance <- fit.prophet(modelRecurrance, dt_regressors)
-      # forecastRecurrance <- predict(modelRecurrance, dt_transform[, c("ds",context_vars, paid_media_vars), with =FALSE])
-      # prophet_plot_components(modelRecurrance, forecastRecurrance)
 
     } else {
-      modelRecurrance<- prophet(recurrance
-                                ,holidays = if(use_holiday) {holidays[country==InputCollect$prophet_country]} else {NULL}
-                                ,yearly.seasonality = use_season
-                                ,weekly.seasonality = use_weekday
-                                ,daily.seasonality= FALSE
-                                #,changepoint.range = 0.8
-                                #,seasonality.mode = 'multiplicative'
-                                #,changepoint.prior.scale = 0.1
-      )
-
-      #futureDS <- make_future_dataframe(modelRecurrance, periods=1, freq = InputCollect$intervalType)
-      forecastRecurrance <- predict(modelRecurrance, dt_transform[, "ds", with =FALSE])
-
+      modelRecurrance <- prophet(
+        holidays = if (use_holiday) holidays[country == prophet_country] else NULL
+        ,yearly.seasonality = use_season
+        ,weekly.seasonality = use_weekday
+        ,daily.seasonality = FALSE)
+      forecastRecurrance <- predict(modelRecurrance, dt_transform$ds)
     }
 
-    # plot(modelRecurrance, forecastRecurrance)
-    # prophet_plot_components(modelRecurrance, forecastRecurrance, render_plot = TRUE)
+    # use trend, season, weekday, holiday data
+    dt_transform <- feats_forecast(dt_transform, recurrance, prophet_vars, forecastRecurrance)
 
-    if (use_trend) {
-      fc_trend <- forecastRecurrance$trend[1:NROW(recurrance)]
-      dt_transform[, trend := fc_trend]
-      # recurrance[, trend := scale(fc_trend, center = min(fc_trend), scale = FALSE) + 1]
-      # dt_transform[, trend := recurrance$trend]
-    }
-    if (use_season) {
-      fc_season <- forecastRecurrance$yearly[1:NROW(recurrance)]
-      dt_transform[, season := fc_season]
-      # recurrance[, seasonal := scale(fc_season, center = min(fc_season), scale = FALSE) + 1]
-      # dt_transform[, season := recurrance$seasonal]
-    }
-    if (use_weekday) {
-      fc_weekday <- forecastRecurrance$weekly[1:NROW(recurrance)]
-      dt_transform[, weekday := fc_weekday]
-      # recurrance[, weekday := scale(fc_weekday, center = min(fc_weekday), scale = FALSE) + 1]
-      # dt_transform[, weekday := recurrance$weekday]
-    }
-    if (use_holiday) {
-      fc_holiday <- forecastRecurrance$holidays[1:NROW(recurrance)]
-      dt_transform[, holiday := fc_holiday]
-      # recurrance[, holidays := scale(fc_holiday, center = min(fc_holiday), scale = FALSE) + 1]
-      # dt_transform[, holiday := recurrance$holidays]
-    }
   }
 
   ################################################################
   #### Finalize input
 
-  #dt <- dt[, all_name, with = FALSE]
   dt_transform <- dt_transform[, c("ds", "dep_var", all_ind_vars), with = FALSE]
 
   InputCollect$dt_mod <- dt_transform
-  InputCollect$dt_modRollWind <- dt_transform[InputCollect$rollingWindowStartWhich:InputCollect$rollingWindowEndWhich]
+  InputCollect$dt_modRollWind <- dt_transform[rollingWindowStartWhich:rollingWindowEndWhich,]
   InputCollect$dt_inputRollWind <- dt_inputRollWind
-  InputCollect$all_media <- all_media
 
   InputCollect[['modNLSCollect']] <- modNLSCollect
   InputCollect[['plotNLSCollect']] <- plotNLSCollect
@@ -657,4 +564,121 @@ robyn_engineering <- function(InputCollect, refresh = FALSE) {
   InputCollect[['mediaCostFactor']] <- mediaCostFactor
 
   return(InputCollect)
+}
+
+runmodels <- function(dt_spendModInput, mediaCostFactor, paid_media_vars) {
+
+  if (ncol(dt_spendModInput) != 2) stop("Pass only 2 columns")
+  colnames(dt_spendModInput) <- c("spend", "exposure")
+
+  # remove spend == 0 to avoid DIV/0 error
+  dt_spendModInput$spend[dt_spendModInput$spend == 0] <- 0.01
+  # adapt exposure with avg when spend == 0
+  dt_spendModInput$exposure <- ifelse(
+    dt_spendModInput$exposure == 0, dt_spendModInput$spend / mediaCostFactor,
+    dt_spendModInput$exposure)
+
+  # Model 1: Michaelis-Menten model Vmax * spend/(Km + spend)
+  tryCatch({
+    nlsStartVal <- list(Vmax = dt_spendModInput[, max(exposure)],
+                        Km = dt_spendModInput[, max(exposure)/2])
+
+    modNLS <- nlsLM(exposure ~ Vmax * spend/(Km + spend),
+                    data = dt_spendModInput,
+                    start = nlsStartVal,
+                    control = nls.control(warnOnly = TRUE))
+    yhatNLS <- predict(modNLS)
+    modNLSSum <- summary(modNLS)
+    rsq_nls <- get_rsq(true = dt_spendModInput$exposure, predicted = yhatNLS)
+
+    # # QA nls model prediction: check
+    # yhatNLSQA <- modNLSSum$coefficients[1,1] * dt_spendModInput$spend / (modNLSSum$coefficients[2,1] + dt_spendModInput$spend) #exposure = v  * spend / (k + spend)
+    # identical(yhatNLS, yhatNLSQA)
+  },
+
+  error = function(cond) {
+    message("Michaelis-Menten fitting for ", paid_media_vars," out of range. Using lm instead")
+    modNLS <- yhatNLS <- modNLSSum <- rsq_nls <- NULL
+  })
+
+  # build lm comparison model
+  modLM <- lm(exposure ~ spend-1, data = dt_spendModInput)
+  yhatLM <- predict(modLM)
+  modLMSum <- summary(modLM)
+  rsq_lm <- get_rsq(true = dt_spendModInput$exposure, predicted = yhatLM)
+  if (is.na(rsq_lm)) stop("Please check if ", paid_media_vars, " contains only 0s")
+
+  output <- list(res = data.table(
+    channel = paid_media_vars,
+    Vmax = if (!is.null(modNLS)) modNLSSum$coefficients[1,1] else NA,
+    Km =  if (!is.null(modNLS)) modNLSSum$coefficients[2,1] else NA,
+    aic_nls = if (!is.null(modNLS)) AIC(modNLS) else NA,
+    aic_lm = AIC(modLM),
+    bic_nls = if (!is.null(modNLS)) BIC(modNLS) else NA,
+    bic_lm = BIC(modLM),
+    rsq_nls = if (!is.null(modNLS)) rsq_nls else 0,
+    rsq_lm = rsq_lm,
+    coef_lm = coef(modLMSum)[1]),
+    yhatNLS = yhatNLS,
+    modNLS = modNLS,
+    yhatLM = yhatLM,
+    modLM = modLM,
+    data = dt_spendModInput)
+
+  return(output)
+}
+
+set_holidays <- function(dt_transform, dt_holidays, intervalType) {
+
+  opts <- c("day","week","month")
+  if (!intervalType %in% opts) {
+    stop("Pass a valid 'intervalType'. Any of: ", paste(opts, collapse = ", "))
+  }
+
+  if (intervalType == "day") {
+    holidays <- dt_holidays
+  }
+
+  if (intervalType == "week") {
+    weekStartInput <- lubridate::wday(dt_transform$ds[1], week_start = 1)
+    if (!weekStartInput %in% c(1, 2)) stop("Week start has to be Monday or Sunday")
+    dt_holidays$dsWeekStart <- floor_date(dt_holidays$ds, unit = "week", week_start = 1)
+    holidays <- dt_holidays[, .(ds=dsWeekStart, holiday, country, year)]
+    holidays <- holidays[, lapply(.SD, paste0, collapse="#"), by = c("ds", "country", "year"), .SDcols = "holiday"]
+  }
+
+  if (intervalType == "month") {
+    monthStartInput <- all(day(dt_transform[, ds]) == 1)
+    if (!monthStartInput) {
+      stop("Monthly data should have first day of month as datestampe, e.g.'2020-01-01'")
+    }
+    dt_holidays[, dsMonthStart:= cut(as.Date(ds), intervalType)]
+    holidays <- dt_holidays[, .(ds=dsMonthStart, holiday, country, year)]
+    holidays <- holidays[, lapply(.SD, paste0, collapse = "#"), by = c("ds", "country", "year"), .SDcols = "holiday"]
+  }
+
+  return(holidays)
+
+}
+
+feats_forecast <- function(dt_transform, recurrance, prophet_vars, forecastRecurrance) {
+
+  use_trend <- any(str_detect("trend", prophet_vars))
+  use_season <- any(str_detect("season", prophet_vars))
+  use_weekday <- any(str_detect("weekday", prophet_vars))
+  use_holiday <- any(str_detect("holiday", prophet_vars))
+
+  if (use_trend) {
+    dt_transform$trend <- forecastRecurrance$trend[1:nrow(recurrance)]
+  }
+  if (use_season) {
+    dt_transform$season <- forecastRecurrance$yearly[1:nrow(recurrance)]
+  }
+  if (use_weekday) {
+    dt_transform$weekday <- forecastRecurrance$weekly[1:nrow(recurrance)]
+  }
+  if (use_holiday) {
+    dt_transform$holiday <- forecastRecurrance$holidays[1:nrow(recurrance)]
+  }
+  return(dt_transform)
 }
