@@ -19,10 +19,11 @@
 #' @export
 robyn_run <- function(InputCollect
                       ,plot_folder = getwd()
-                      ,dt_hyper_fixed = NULL
                       ,pareto_fronts = 1
                       ,plot_pareto = TRUE
-                      ,refresh = FALSE) {
+                      ,refresh = FALSE
+                      ,dt_hyper_fixed = NULL
+                      ) {
 
   #####################################
   #### Set local environment
@@ -913,14 +914,14 @@ robyn_mmm <- function(hyper_collect
 
       getDoParWorkers()
       doparCollect <- suppressPackageStartupMessages(
-        foreach(i = 1:iterPar) %dorng% {
+        foreach(iPar = 1:iterPar) %dorng% {
 
         t1 <- Sys.time()
 
         #####################################
         #### Get hyperparameter sample
 
-        hypParamSam <- unlist(hypParamSamNG[i])
+        hypParamSam <- unlist(hypParamSamNG[iPar])
 
         #### Tranform media with hyperparameters
         dt_modAdstocked <- dt_mod[, .SD, .SDcols = setdiff(names(dt_mod), "ds")]
@@ -1025,14 +1026,14 @@ robyn_mmm <- function(hyper_collect
           mod_out <- model_refit(x_train, y_train, lambda=cvmod$lambda.1se, lower.limits, upper.limits)
           lambda <- cvmod$lambda.1se
         } else {
-          mod_out <- model_refit(x_train, y_train, lambda=lambda_fixed[i], lower.limits, upper.limits)
-          lambda <- lambda_fixed[i]
+          mod_out <- model_refit(x_train, y_train, lambda=lambda_fixed[iPar], lower.limits, upper.limits)
+          lambda <- lambda_fixed[iPar]
         }
 
         #hypParamSam["lambdas"] <- cvmod$lambda.1se
         #hypParamSamName <- names(hypParamSam)
 
-        decompCollect <- model_decomp(coefs=mod_out$coefs, dt_modSaturated=dt_modSaturated, x=x_train, y_pred=mod_out$y_pred, i=i, dt_modRollWind=dt_modRollWind, refreshAddedStart = refreshAddedStart)
+        decompCollect <- model_decomp(coefs=mod_out$coefs, dt_modSaturated=dt_modSaturated, x=x_train, y_pred=mod_out$y_pred, i=iPar, dt_modRollWind=dt_modRollWind, refreshAddedStart = refreshAddedStart)
         nrmse <- mod_out$nrmse_train
         mape <- 0
         df.int <- mod_out$df.int
@@ -1098,7 +1099,7 @@ robyn_mmm <- function(hyper_collect
                                                  #,Score = -mape
                                                  ,Elapsed = as.numeric(difftime(Sys.time(),t1, units = "secs"))
                                                  ,ElapsedAccum = as.numeric(difftime(Sys.time(),t0, units = "secs"))
-                                                 ,iterPar= i
+                                                 ,iterPar= iPar
                                                  ,iterNG = lng
                                                  ,df.int = df.int)],
           xDecompVec = if (hyper_fixed == TRUE) {decompCollect$xDecompVec[, ':='(intercept = decompCollect$xDecompAgg[rn=="(Intercept)", xDecompAgg]
@@ -1109,7 +1110,7 @@ robyn_mmm <- function(hyper_collect
                                                                                  ,rsq_train = mod_out$rsq_train
                                                                                  #,rsq_test = mod_out$rsq_test
                                                                                  ,lambda=lambda
-                                                                                 ,iterPar= i
+                                                                                 ,iterPar= iPar
                                                                                  ,iterNG = lng
                                                                                  ,df.int = df.int)]} else{NULL} ,
           xDecompAgg = decompCollect$xDecompAgg[, ':='(mape = mape
@@ -1119,7 +1120,7 @@ robyn_mmm <- function(hyper_collect
                                                        ,rsq_train = mod_out$rsq_train
                                                        #,rsq_test = mod_out$rsq_test
                                                        ,lambda=lambda
-                                                       ,iterPar= i
+                                                       ,iterPar= iPar
                                                        ,iterNG = lng
                                                        ,df.int = df.int)] ,
           liftCalibration = if (!is.null(calibration_input)) {liftCollect[, ':='(mape = mape
@@ -1129,7 +1130,7 @@ robyn_mmm <- function(hyper_collect
                                                                                ,rsq_train = mod_out$rsq_train
                                                                                #,rsq_test = mod_out$rsq_test
                                                                                ,lambda=lambda
-                                                                               ,iterPar= i
+                                                                               ,iterPar= iPar
                                                                                ,iterNG = lng)] } else {NULL},
           decompSpendDist = dt_decompSpendDist[, ':='(mape = mape
                                                       ,nrmse = nrmse
@@ -1138,13 +1139,13 @@ robyn_mmm <- function(hyper_collect
                                                       ,rsq_train = mod_out$rsq_train
                                                       #,rsq_test = mod_out$rsq_test
                                                       ,lambda=lambda
-                                                      ,iterPar= i
+                                                      ,iterPar= iPar
                                                       ,iterNG = lng
                                                       ,df.int = df.int)],
           mape.lift = mape,
           nrmse = nrmse,
           decomp.rssd = decomp.rssd,
-          iterPar = i,
+          iterPar = iPar,
           iterNG = lng,
           df.int = df.int
           #,cvmod = cvmod
