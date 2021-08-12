@@ -298,7 +298,6 @@ InputCollect <- robyn_inputs(InputCollect = InputCollect, hyperparameters = hype
 #### Step 3: Build initial model
 
 OutputCollect <- robyn_run(
-
   InputCollect = InputCollect # feed in all model specification
   , plot_folder = robyn_object # plots will be saved in the same folder as robyn_object.
   # Other paths are also possible

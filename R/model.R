@@ -246,7 +246,7 @@ robyn_run <- function(InputCollect
 
     ## plot spend exposure model
 
-    if(any(InputCollect$costSelector)) {
+    if (any(InputCollect$costSelector)) {
       pSpendExposure <- wrap_plots(
         InputCollect$plotNLSCollect,
         ncol = ifelse(length(InputCollect$plotNLSCollect) <= 3, length(InputCollect$plotNLSCollect), 3)) +
@@ -262,13 +262,12 @@ robyn_run <- function(InputCollect
              , dpi = 600, width = 12, height = ceiling(length(InputCollect$plotNLSCollect)/3)*7)
 
     } else {
-      message("\nNo spend-exposure modelling needed. all media variables used for mmm are spend variables ")
+      message("No spend-exposure modelling needed. all media variables used for mmm are spend variables ")
     }
 
-
     ## plot hyperparameter sampling distribution
-
-    resultHypParam.melted <- melt.data.table(resultHypParam[, c(InputCollect$local_name,"robynPareto"), with = FALSE], id.vars = c("robynPareto"))
+    local_name <- names(InputCollect$hyperparameters)
+    resultHypParam.melted <- melt.data.table(resultHypParam[, c(local_name,"robynPareto"), with = FALSE], id.vars = c("robynPareto"))
 
     pSamp <- ggplot(data = resultHypParam.melted,  aes( x = value, y=variable, color = variable, fill = variable) ) +
       geom_violin(alpha = .5, size = 0) +
@@ -397,7 +396,7 @@ robyn_run <- function(InputCollect
 
       resultHypParamLoop <- resultHypParam[solID == uniqueSol[j]]
 
-      hypParam <- unlist(resultHypParamLoop[, InputCollect$local_name, with =FALSE])
+      hypParam <- unlist(resultHypParamLoop[, local_name, with =FALSE])
       dt_transformPlot <- dt_mod[, c("ds", InputCollect$all_media), with =FALSE] # independent variables
       dt_transformSpend <- cbind(dt_transformPlot[,.(ds)], InputCollect$dt_input[, c(InputCollect$paid_media_spends), with =FALSE]) # spends of indep vars
       setnames(dt_transformSpend, names(dt_transformSpend), c("ds", InputCollect$paid_media_vars))

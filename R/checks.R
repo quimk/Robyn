@@ -5,6 +5,8 @@
 
 ############# Auxiliary non-exported functions #############
 
+opts_pnd <- c("positive", "negative", "default")
+
 check_datevar <- function(dt_input, date_var = "auto") {
   if (date_var[1] == "auto") {
     is_date <- which(unlist(lapply(dt_input, is.Date)))
@@ -54,11 +56,22 @@ check_datevar <- function(dt_input, date_var = "auto") {
 }
 
 check_depvar <- function(dt_input, dep_var, dep_var_type) {
-  if (is.null(dep_var) | !(dep_var %in% names(dt_input)) | length(dep_var) > 1) {
-    stop("Must provide only 1 correct dependent variable name for dep_var")
-  } else if (!(is.numeric(dt_input[, get(dep_var)]) | is.integer(dt_input[, get(dep_var)]))) {
+  if (is.null(dep_var)) {
+    stop("Must provide a valid dependent variable name for 'dep_var'")
+  }
+  if (!dep_var %in% names(dt_input)) {
+    stop("Must provide a valid dependent name for 'dep_var'")
+  }
+  if (length(dep_var) > 1) {
+    stop("Must provide only 1 dependent variable name for 'dep_var'")
+  }
+  if (!(is.numeric(dt_input[, get(dep_var)]) | is.integer(dt_input[, get(dep_var)]))) {
     stop("'dep_var' must be a numeric or integer variable")
-  } else if (!(dep_var_type %in% c("conversion", "revenue")) | length(dep_var_type) != 1) {
+  }
+  if (is.null(dep_var_type)) {
+    stop("Must provide a dependent variable type for 'dep_var_type'")
+  }
+  if (!dep_var_type %in% c("conversion", "revenue") | length(dep_var_type) != 1) {
     stop("'dep_var_type' must be 'conversion' or 'revenue'")
   }
 }
@@ -75,21 +88,21 @@ check_prophet <- function(dt_holidays, prophet_country, prophet_vars, prophet_si
   if (!all(prophet_vars %in% opts)) {
     stop("Allowed values for 'prophet_vars' are: ", paste(opts, collapse = ", "))
   }
-  if (is.null(prophet_country) | length(prophet_country) > 1) {
+  if (is.null(prophet_country) | length(prophet_country) > 1 |
+      !prophet_country %in% unique(dt_holidays$country)) {
     stop(paste(
       "You must provide 1 country code in 'prophet_country' input.",
-      dt_holidays[, uniqueN(country)], "countries are included:",
-      paste(dt_holidays[, unique(country)], collapse = ", "),
-      "\nIf your country is not available, please add it to the 'holidays.csv' first"
+      length(unique(dt_holidays$country)), "countries are included:",
+      paste(unique(dt_holidays$country), collapse = ", "),
+      "\nIf your country is not available, please add it to your 'holidays.csv' first"
     ))
   }
   if (is.null(prophet_signs)) {
     prophet_signs <- rep("default", length(prophet_vars))
     message("'prophet_signs' were not provided. 'default' is used")
   }
-  opts <- c("positive", "negative", "default")
-  if (!all(prophet_signs %in% opts)) {
-    stop("Allowed values for 'prophet_signs' are: ", paste(opts, collapse = ", "))
+  if (!all(prophet_signs %in% opts_pnd)) {
+    stop("Allowed values for 'prophet_signs' are: ", paste(opts_pnd, collapse = ", "))
   }
   if (length(prophet_signs) != length(prophet_vars)) {
     stop("'prophet_signs' must have same length as 'prophet_vars'")
@@ -107,9 +120,8 @@ check_context <- function(dt_input, context_vars, context_signs) {
     context_signs <- rep("default", length(context_vars))
     message("'context_signs' were not provided. Using 'default'")
   }
-  opts <- c("positive", "negative", "default")
-  if (!all(context_signs %in% opts)) {
-    stop("Allowed values for 'context_signs' are: ", paste(opts, collapse = ", "))
+  if (!all(context_signs %in% opts_pnd)) {
+    stop("Allowed values for 'context_signs' are: ", paste(opts_pnd, collapse = ", "))
   }
   if (length(context_signs) != length(context_vars)) {
     stop("'context_signs' must have same length as 'context_vars'")
@@ -135,9 +147,8 @@ check_paidmedia <- function(dt_input, paid_media_vars, paid_media_signs, paid_me
     paid_media_signs <- rep("positive", mediaVarCount)
     message("'paid_media_signs' were not provided. Using 'positive'")
   }
-  opts <- c("positive", "negative", "default")
-  if (!all(paid_media_signs %in% opts)) {
-    stop("Allowed values for 'paid_media_signs' are: ", paste(opts, collapse = ", "))
+  if (!all(paid_media_signs %in% opts_pnd)) {
+    stop("Allowed values for 'paid_media_signs' are: ", paste(opts_pnd, collapse = ", "))
   }
   if (length(paid_media_signs) != length(paid_media_vars)) {
     stop("'paid_media_signs' must have same length as 'paid_media_vars'")
@@ -169,9 +180,8 @@ check_organicvars <- function(dt_input, organic_vars, organic_signs) {
     organic_signs <- rep("positive", length(organic_vars))
     message("'organic_signs' were not provided. Using 'positive'")
   }
-  opts <- c("positive", "negative", "default")
-  if (!all(organic_signs %in% opts)) {
-    stop("Allowed values for 'organic_signs' are: ", paste(opts, collapse = ", "))
+  if (!all(organic_signs %in% opts_pnd)) {
+    stop("Allowed values for 'organic_signs' are: ", paste(opts_pnd, collapse = ", "))
   }
   if (length(organic_signs) != length(organic_vars)) {
     stop("'organic_signs' must have same length as 'organic_vars'")

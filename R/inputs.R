@@ -249,13 +249,10 @@ robyn_inputs <- function(dt_input = NULL
     ## check adstock
     check_adstock(adstock)
 
-    ## get all hyper names
-    local_name <- hyper_names(adstock, all_media)
-
-    ## check hyperparameters
+    ## check hyperparameters (if passed)
     check_hyperparameters(hyperparameters, adstock, all_media)
 
-    ## check calibration
+    ## check calibration and iters/trials
     check_calibration(dt_input, date_var, calibration_input, dayInterval, iterations, trials)
 
     ## collect input
@@ -306,7 +303,6 @@ robyn_inputs <- function(dt_input = NULL
                          ,trials=trials
 
                          ,hyperparameters = hyperparameters
-                         ,local_name=local_name
                          ,calibration_input=calibration_input)
 
     invisible(return(InputCollect))
@@ -330,6 +326,7 @@ robyn_inputs <- function(dt_input = NULL
 #' @param all_media Default to \code{InputCollect$all_media}
 #' @export
 hyper_names <- function(adstock, all_media) {
+  check_adstock(adstock)
   global_name <- c("thetas",  "shapes",  "scales",  "alphas",  "gammas",  "lambdas")
   if (adstock == "geometric") {
     local_name <- sort(apply(expand.grid(all_media, global_name[global_name %like% 'thetas|alphas|gammas']), 1, paste, collapse="_"))
