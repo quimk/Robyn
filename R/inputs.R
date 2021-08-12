@@ -197,6 +197,7 @@ robyn_inputs <- function(dt_input = NULL
                          ,InputCollect = NULL
 ) {
 
+  ### Use case 1: running robyn_inputs() for the first time
   if (is.null(InputCollect)) {
 
     ## check date input (and set dayInterval and intervalType)
@@ -223,7 +224,7 @@ robyn_inputs <- function(dt_input = NULL
 
     ## check organic media variables (and maybe transform organic_signs)
     organic <- check_organicvars(dt_input, organic_vars, organic_signs)
-    context_signs <- organic$context_signs
+    organic_signs <- organic$organic_signs
 
     ## check factor_vars
     check_factorvars(factor_vars, context_vars, organic_vars)
@@ -253,7 +254,7 @@ robyn_inputs <- function(dt_input = NULL
     check_hyperparameters(hyperparameters, adstock, all_media)
 
     ## check calibration and iters/trials
-    check_calibration(dt_input, date_var, calibration_input, dayInterval, iterations, trials)
+    calibration_input <- check_calibration(dt_input, date_var, calibration_input, dayInterval)
 
     ## collect input
     InputCollect <- list(dt_input=dt_input
@@ -303,17 +304,57 @@ robyn_inputs <- function(dt_input = NULL
                          ,trials=trials
 
                          ,hyperparameters = hyperparameters
-                         ,calibration_input=calibration_input)
+                         ,calibration_input = calibration_input)
 
-    invisible(return(InputCollect))
 
-  } else {
-    # when adding hyperparameters
-    check_hyperparameters(hyperparameters, InputCollect$adstock, InputCollect$all_media)
-    InputCollect$hyperparameters <- hyperparameters
-    # when all provided inputs are valid and have everything needed -> robyn_engineering()
-    outFeatEng <- robyn_engineering(InputCollect = InputCollect, refresh = FALSE)
-    invisible(return(outFeatEng))
+    ### Use case 1: running robyn_inputs() for the first time
+    if (is.null(hyperparameters)) {
+      
+      ### conditional output 1.1
+      ## running robyn_inputs() for the 1st time & no 'hyperparameters' yet
+      invisible(return(InputCollect))
+      
+    } else { 
+      
+      ### conditional output 1.2
+      ## running robyn_inputs() for the 1st time & 'hyperparameters' provided --> run robyn_engineering()
+      check_iteration(calibration_input, iterations, trials)
+      outFeatEng <- robyn_engineering(InputCollect = InputCollect, refresh = FALSE)
+      invisible(return(outFeatEng))
+    }
+
+  } else { 
+    ### Use case 2: adding 'hyperparameters' and/or 'calibration_input' using robyn_inputs() 
+    
+    ## check calibration and iters/trials
+    calibration_input <- check_calibration(
+      InputCollect$dt_input
+      ,InputCollect$date_var
+      ,calibration_input
+      ,InputCollect$dayInterval)
+    
+    ## update calibration_input
+    if (!is.null(calibration_input))  {InputCollect$calibration_input <- calibration_input}
+
+    if (is.null(InputCollect$hyperparameters) & is.null(hyperparameters)) {
+      
+      ### conditional output 2.1
+      ## when 'hyperparameters' is still not yet provided
+      invisible(return(InputCollect))
+      
+    } else { 
+      
+      ### conditional output 2.2
+      ## 'hyperparameters' provided --> run robyn_engineering()
+      
+      ## update & check hyperparameters
+      if (is.null(InputCollect$hyperparameters)) {InputCollect$hyperparameters <- hyperparameters}
+      check_hyperparameters(InputCollect$hyperparameters, InputCollect$adstock, InputCollect$all_media)
+      check_iteration(InputCollect$calibration_input, InputCollect$iterations, InputCollect$trials)
+      
+      outFeatEng <- robyn_engineering(InputCollect = InputCollect, refresh = FALSE)
+      invisible(return(outFeatEng))
+    }
   }
 }
 

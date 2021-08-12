@@ -78,11 +78,9 @@ check_depvar <- function(dt_input, dep_var, dep_var_type) {
 
 check_prophet <- function(dt_holidays, prophet_country, prophet_vars, prophet_signs) {
   if (is.null(prophet_vars)) {
-    return(invisible(NULL))
-  }
-  if (is.null(prophet_vars)) {
     prophet_signs <- NULL
     prophet_country <- NULL
+    return(invisible(NULL))
   }
   opts <- c("trend", "season", "weekday", "holiday")
   if (!all(prophet_vars %in% opts)) {
@@ -94,9 +92,9 @@ check_prophet <- function(dt_holidays, prophet_country, prophet_vars, prophet_si
       "You must provide 1 country code in 'prophet_country' input.",
       length(unique(dt_holidays$country)), "countries are included:",
       paste(unique(dt_holidays$country), collapse = ", "),
-      "\nIf your country is not available, please add it to your 'holidays.csv' first"
+      "\nIf your country is not available, please manually add it to 'dt_holidays'"
     ))
-  }
+  } 
   if (is.null(prophet_signs)) {
     prophet_signs <- rep("default", length(prophet_vars))
     message("'prophet_signs' were not provided. 'default' is used")
@@ -110,22 +108,21 @@ check_prophet <- function(dt_holidays, prophet_country, prophet_vars, prophet_si
 }
 
 check_context <- function(dt_input, context_vars, context_signs) {
-  if (is.null(context_vars)) {
-    return(invisible(NULL))
+  if (!is.null(context_vars) & !is.null(context_signs)) {
+    if (!all(context_vars %in% names(dt_input))) {
+      stop("Provided 'context_vars' is not valid because it's not in your input data")
+    } else if (!all(context_signs %in% opts_pnd)) {
+      stop("Allowed values for 'context_signs' are: ", paste(opts_pnd, collapse = ", "))
+    } else if (length(context_signs) != length(context_vars)) {
+      stop("'context_signs' must have same length as 'context_vars'")
+    }
+    return(invisible(list(context_signs = context_signs)))
+  } else if (is.null(context_vars) & is.null(context_signs)) {
+    return(invisible(list(context_signs = context_signs)))
+  } else {
+    stop("Provide 'context_vars' and 'context_signs' at the same time")
   }
-  if (!all(context_vars %in% names(dt_input))) {
-    stop("Provided 'context_vars' is not valid because it's not in your input data")
-  }
-  if (is.null(context_signs)) {
-    context_signs <- rep("default", length(context_vars))
-    message("'context_signs' were not provided. Using 'default'")
-  }
-  if (!all(context_signs %in% opts_pnd)) {
-    stop("Allowed values for 'context_signs' are: ", paste(opts_pnd, collapse = ", "))
-  }
-  if (length(context_signs) != length(context_vars)) {
-    stop("'context_signs' must have same length as 'context_vars'")
-  }
+
   return(invisible(list(context_signs = context_signs)))
 }
 
@@ -206,7 +203,7 @@ check_allvars <- function(all_ind_vars) {
 check_datadim <- function(dt_input, all_ind_vars, rel = 10) {
   num_obs <- nrow(dt_input)
   if (num_obs < length(all_ind_vars) * rel) {
-    message(paste(
+    warning(paste(
       "There are", length(all_ind_vars), "independent variables &",
       num_obs, "data points.", "We recommend row:column ratio of", rel, "to 1"
     ))
@@ -300,21 +297,27 @@ check_hyperparameters <- function(hyperparameters = NULL, adstock = NULL, all_me
   }
 }
 
-check_calibration <- function(dt_input, date_var, calibration_input, dayInterval, iterations, trials) {
+check_calibration <- function(dt_input, date_var, calibration_input, dayInterval) {
   if (!is.null(calibration_input)) {
     calibration_input <- as.data.table(calibration_input)
+    if (!all(names(calibration_input) %in% c("channel", "liftStartDate", "liftEndDate", "liftAbs"))) {
+      stop("calibration_input must contain columns 'channel', 'liftStartDate', 'liftEndDate', 'liftAbs'")
+    }
     if ((min(calibration_input$liftStartDate) < min(dt_input[, get(date_var)])) |
       (max(calibration_input$liftEndDate) > (max(dt_input[, get(date_var)]) + dayInterval - 1))) {
       stop("We recommend you to only use lift results conducted within your MMM input data date range")
-    } else if (iterations < 2000 | trials < 10) {
-      warning(paste(
-        "You are calibrating MMM. We recommend to run at least 2000 iterations per trial and",
-        "at least 10 trials at the beginning"
-      ))
-    }
-  } else {
-    if (iterations < 2000 | trials < 5) {
-      warning("We recommend to run at least 2000 iterations per trial and at least 5 trials at the beginning")
-    }
+    } 
+  }
+  return(calibration_input)
+}
+
+check_iteration <- function(calibration_input, iterations, trials) {
+  if (is.null(calibration_input) & (iterations < 2000 | trials < 5)) {
+    warning("We recommend to run at least 2000 iterations per trial and 5 trials to build initial model")
+  } else if (!is.null(calibration_input) & (iterations < 2000 | trials < 10)) {
+    warning(paste(
+      "You are calibrating MMM. We recommend to run at least 2000 iterations per trial and",
+      "trials to build initial model"
+    ))
   }
 }

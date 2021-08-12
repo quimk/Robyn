@@ -209,19 +209,19 @@ InputCollect <- robyn_inputs(InputCollect = InputCollect, hyperparameters = hype
 
 #### 2a-4: Fourth (optional), model calibration / add experimental input
 
-# dt_calibration <- data.frame(
-#   channel = c("facebook_I",  "tv_S", "facebook_I")
-#   # channel name must in paid_media_vars
-#   , liftStartDate = as.Date(c("2018-05-01", "2017-11-27", "2018-07-01"))
-#   # liftStartDate must be within input data range
-#   , liftEndDate = as.Date(c("2018-06-10", "2017-12-03", "2018-07-20"))
-#   # liftEndDate must be within input data range
-#   , liftAbs = c(400000, 300000, 200000) # Provided value must be
-#   # tested on same campaign level in model and same metric as dep_var_type
-# )
-#
-# InputCollect <- robyn_inputs(InputCollect = InputCollect
-#                              , calibration_input = dt_calibration)
+dt_calibration <- data.frame(
+  channel = c("facebook_I",  "tv_S", "facebook_I")
+  # channel name must in paid_media_vars
+  , liftStartDate = as.Date(c("2018-05-01", "2017-11-27", "2018-07-01"))
+  # liftStartDate must be within input data range
+  , liftEndDate = as.Date(c("2018-06-10", "2017-12-03", "2018-07-20"))
+  # liftEndDate must be within input data range
+  , liftAbs = c(400000, 300000, 200000) # Provided value must be
+  # tested on same campaign level in model and same metric as dep_var_type
+)
+
+InputCollect <- robyn_inputs(InputCollect = InputCollect
+                             , calibration_input = dt_calibration)
 
 
 ################################################################
@@ -232,25 +232,25 @@ InputCollect <- robyn_inputs(InputCollect = InputCollect, hyperparameters = hype
 # InputCollect <- robyn_inputs(
 #   dt_input = dt_simulated_weekly
 #   ,dt_holidays = dt_prophet_holidays
-#
+# 
 #   ### set variables
-#
+# 
 #   ,date_var = "DATE" # date format must be "2020-01-01"
 #   ,dep_var = "revenue" # there should be only one dependent variable
 #   ,dep_var_type = "revenue" # "revenue" or "conversion"
-#
+# 
 #   ,prophet_vars = c("trend", "season", "holiday") # "trend","season", "weekday", "holiday"
 #   # are provided and case-sensitive. Recommended to at least keep Trend & Holidays
 #   ,prophet_signs = c("default","default", "default") # c("default", "positive", and "negative").
 #   # Recommend as default.Must be same length as prophet_vars
 #   ,prophet_country = "DE"# only one country allowed once. Including national holidays
 #   # for 59 countries, whose list can be found on our githut guide
-#
+# 
 #   ,context_vars = c("competitor_sales_B", "events") # typically competitors, price &
 #   # promotion, temperature, unemployment rate etc
 #   ,context_signs = c("default", "default") # c("default", " positive", and "negative"),
 #   # control the signs of coefficients for baseline variables
-#
+# 
 #   ,paid_media_vars = c("tv_S", "ooh_S"	,	"print_S"	,"facebook_I" ,"search_clicks_P")
 #   # c("tv_S"	,"ooh_S",	"print_S"	,"facebook_I", "facebook_S","search_clicks_P"	,"search_S")
 #   # we recommend to use media exposure metrics like impressions, GRP etc for the model.
@@ -260,36 +260,36 @@ InputCollect <- robyn_inputs(InputCollect = InputCollect, hyperparameters = hype
 #   # Controls the signs of coefficients for media variables
 #   ,paid_media_spends = c("tv_S","ooh_S",	"print_S"	,"facebook_S", "search_S")
 #   # spends must have same order and same length as paid_media_vars
-#
+# 
 #   ,organic_vars = c("newsletter")
 #   ,organic_signs = c("positive") # must have same length as organic_vars
-#
+# 
 #   ,factor_vars = c("events") # specify which variables in context_vars and
 #   # organic_vars are factorial
-#
+# 
 #   ### set model parameters
-#
+# 
 #   ## set cores for parallel computing
 #   ,cores = 6 # I am using 6 cores from 8 on my local machine. Use availableCores() to find out cores
-#
+# 
 #   ## set rolling window start
 #   ,window_start = "2016-11-23"
 #   ,window_end = "2018-08-22"
-#
+# 
 #   ## set model core features
 #   ,adstock = "geometric" # geometric or weibull. weibull is more flexible, yet has one more
 #   # parameter and thus takes longer
 #   ,iterations = 100  # number of allowed iterations per trial. 2000 is recommended
-#
+# 
 #   ,nevergrad_algo = "TwoPointsDE" # recommended algorithm for Nevergrad, the gradient-free
 #   # optimisation library https://facebookresearch.github.io/nevergrad/index.html
 #   ,trials = 2 # number of allowed iterations per trial. 5 is recommended without calibration,
 #   # 10 with calibration.
-#
+# 
 #   ,hyperparameters = hyperparameters # as in 2a-2 above
-#
+# 
 #   ,calibration_input = dt_calibration # as in 2a-4 above
-#
+# 
 #   # Time estimation: with geometric adstock, 2000 iterations * 5 trials
 #   # and 6 cores, it takes less than 1 hour. Weibull takes at least twice as much time.
 # )
@@ -303,7 +303,7 @@ OutputCollect <- robyn_run(
   # Other paths are also possible
   , pareto_fronts = 1 # How many pareto fronts to be exported as model output. The higher,
   # the more model results/ onepagers provided
-  , plot_pareto = F # Disabling plat_pareto speeds up processing time in the end,
+  , plot_pareto = T # Disabling plat_pareto speeds up processing time in the end,
   # but plots won't be saved
   )
 
@@ -321,7 +321,7 @@ OutputCollect <- robyn_run(
 ## your business reality
 
 OutputCollect$allSolutions # get all model IDs in result
-select_model <- "2_9_4" # select one from above
+select_model <- "1_14_2" # select one from above
 robyn_save(robyn_object = robyn_object # model object location and name
            , select_model = select_model # selected model ID
            , InputCollect = InputCollect # all model input
@@ -360,7 +360,7 @@ AllocatorCollect <- robyn_allocator(
   # , optim_algo = "SLSQP_AUGLAG" # options are "MMA_AUGLAG", "SLSQP_AUGLAG"
 )
 
-# ## QA optimal response
+## QA optimal response
 # select_media <- "search_clicks_P"
 # optimal_spend <- AllocatorCollect$dt_optimOut[channels== select_media, optmSpendUnit]
 # optimal_response_allocator <- AllocatorCollect$dt_optimOut[channels== select_media
@@ -385,8 +385,8 @@ AllocatorCollect <- robyn_allocator(
 
 Robyn <- robyn_refresh(
   robyn_object = robyn_object # the location of your Robyn.RData object
-  , dt_input = dt_input
-  , dt_holidays = dt_holidays
+  , dt_input = dt_simulated_weekly
+  , dt_holidays = dt_prophet_holidays
   , refresh_steps = 13 # refresh_steps = 4 means refresh model's rolling window will move
   #forward 4 weeks
   , refresh_mode = "auto" # "auto"  or "manual". auto means the refresh function will move

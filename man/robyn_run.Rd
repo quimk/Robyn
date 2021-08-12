@@ -7,10 +7,10 @@
 robyn_run(
   InputCollect,
   plot_folder = getwd(),
-  dt_hyper_fixed = NULL,
   pareto_fronts = 1,
   plot_pareto = TRUE,
-  refresh = FALSE
+  refresh = FALSE,
+  dt_hyper_fixed = NULL
 )
 }
 \arguments{
@@ -18,13 +18,13 @@ robyn_run(
 
 \item{plot_folder}{xxx}
 
-\item{dt_hyper_fixed}{xxx}
-
 \item{pareto_fronts}{xxx}
 
 \item{plot_pareto}{xxx}
 
 \item{refresh}{xxx}
+
+\item{dt_hyper_fixed}{xxx}
 }
 \description{
 Describe function.
