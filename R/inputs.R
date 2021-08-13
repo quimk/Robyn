@@ -677,3 +677,120 @@ set_holidays <- function(dt_transform, dt_holidays, intervalType) {
   return(holidays)
 
 }
+
+runmodels <- function(dt_spendModInput, mediaCostFactor, paid_media_vars) {
+
+  if (ncol(dt_spendModInput) != 2) stop("Pass only 2 columns")
+  colnames(dt_spendModInput) <- c("spend", "exposure")
+
+  # remove spend == 0 to avoid DIV/0 error
+  dt_spendModInput$spend[dt_spendModInput$spend == 0] <- 0.01
+  # adapt exposure with avg when spend == 0
+  dt_spendModInput$exposure <- ifelse(
+    dt_spendModInput$exposure == 0, dt_spendModInput$spend / mediaCostFactor,
+    dt_spendModInput$exposure)
+
+  # Model 1: Michaelis-Menten model Vmax * spend/(Km + spend)
+  tryCatch({
+    nlsStartVal <- list(Vmax = dt_spendModInput[, max(exposure)],
+                        Km = dt_spendModInput[, max(exposure)/2])
+
+    modNLS <- nlsLM(exposure ~ Vmax * spend/(Km + spend),
+                    data = dt_spendModInput,
+                    start = nlsStartVal,
+                    control = nls.control(warnOnly = TRUE))
+    yhatNLS <- predict(modNLS)
+    modNLSSum <- summary(modNLS)
+    rsq_nls <- get_rsq(true = dt_spendModInput$exposure, predicted = yhatNLS)
+
+    # # QA nls model prediction: check
+    # yhatNLSQA <- modNLSSum$coefficients[1,1] * dt_spendModInput$spend / (modNLSSum$coefficients[2,1] + dt_spendModInput$spend) #exposure = v  * spend / (k + spend)
+    # identical(yhatNLS, yhatNLSQA)
+  },
+
+  error = function(cond) {
+    message("Michaelis-Menten fitting for ", paid_media_vars," out of range. Using lm instead")
+    modNLS <- yhatNLS <- modNLSSum <- rsq_nls <- NULL
+  })
+
+  # build lm comparison model
+  modLM <- lm(exposure ~ spend-1, data = dt_spendModInput)
+  yhatLM <- predict(modLM)
+  modLMSum <- summary(modLM)
+  rsq_lm <- get_rsq(true = dt_spendModInput$exposure, predicted = yhatLM)
+  if (is.na(rsq_lm)) stop("Please check if ", paid_media_vars, " contains only 0s")
+
+  output <- list(res = data.table(
+    channel = paid_media_vars,
+    Vmax = if (!is.null(modNLS)) modNLSSum$coefficients[1,1] else NA,
+    Km =  if (!is.null(modNLS)) modNLSSum$coefficients[2,1] else NA,
+    aic_nls = if (!is.null(modNLS)) AIC(modNLS) else NA,
+    aic_lm = AIC(modLM),
+    bic_nls = if (!is.null(modNLS)) BIC(modNLS) else NA,
+    bic_lm = BIC(modLM),
+    rsq_nls = if (!is.null(modNLS)) rsq_nls else 0,
+    rsq_lm = rsq_lm,
+    coef_lm = coef(modLMSum)[1]),
+    yhatNLS = yhatNLS,
+    modNLS = modNLS,
+    yhatLM = yhatLM,
+    modLM = modLM,
+    data = dt_spendModInput)
+
+  return(output)
+}
+
+set_holidays <- function(dt_transform, dt_holidays, intervalType) {
+
+  opts <- c("day","week","month")
+  if (!intervalType %in% opts) {
+    stop("Pass a valid 'intervalType'. Any of: ", paste(opts, collapse = ", "))
+  }
+
+  if (intervalType == "day") {
+    holidays <- dt_holidays
+  }
+
+  if (intervalType == "week") {
+    weekStartInput <- lubridate::wday(dt_transform$ds[1], week_start = 1)
+    if (!weekStartInput %in% c(1, 2)) stop("Week start has to be Monday or Sunday")
+    dt_holidays$dsWeekStart <- floor_date(dt_holidays$ds, unit = "week", week_start = 1)
+    holidays <- dt_holidays[, .(ds=dsWeekStart, holiday, country, year)]
+    holidays <- holidays[, lapply(.SD, paste0, collapse="#"), by = c("ds", "country", "year"), .SDcols = "holiday"]
+  }
+
+  if (intervalType == "month") {
+    monthStartInput <- all(day(dt_transform[, ds]) == 1)
+    if (!monthStartInput) {
+      stop("Monthly data should have first day of month as datestampe, e.g.'2020-01-01'")
+    }
+    dt_holidays[, dsMonthStart:= cut(as.Date(ds), intervalType)]
+    holidays <- dt_holidays[, .(ds=dsMonthStart, holiday, country, year)]
+    holidays <- holidays[, lapply(.SD, paste0, collapse = "#"), by = c("ds", "country", "year"), .SDcols = "holiday"]
+  }
+
+  return(holidays)
+
+}
+
+feats_forecast <- function(dt_transform, recurrance, prophet_vars, forecastRecurrance) {
+
+  use_trend <- any(str_detect("trend", prophet_vars))
+  use_season <- any(str_detect("season", prophet_vars))
+  use_weekday <- any(str_detect("weekday", prophet_vars))
+  use_holiday <- any(str_detect("holiday", prophet_vars))
+
+  if (use_trend) {
+    dt_transform$trend <- forecastRecurrance$trend[1:nrow(recurrance)]
+  }
+  if (use_season) {
+    dt_transform$season <- forecastRecurrance$yearly[1:nrow(recurrance)]
+  }
+  if (use_weekday) {
+    dt_transform$weekday <- forecastRecurrance$weekly[1:nrow(recurrance)]
+  }
+  if (use_holiday) {
+    dt_transform$holiday <- forecastRecurrance$holidays[1:nrow(recurrance)]
+  }
+  return(dt_transform)
+}
