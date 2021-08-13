@@ -432,7 +432,7 @@ robyn_engineering <- function(InputCollect, refresh = FALSE) {
 
         # run models (NLS and/or LM)
         dt_spendModInput <- subset(dt_inputRollWind, select = c(paid_media_spends[i], paid_media_vars[i]))
-        results <- runmodels(dt_spendModInput, mediaCostFactor[i], paid_media_vars[i])
+        results <- fit_spend_exposure(dt_spendModInput, mediaCostFactor[i], paid_media_vars[i])
         # compare NLS & LM, takes LM if NLS fits worse
         mod <- results$res
         costSelector[i] <- if (is.null(mod$rsq_nls)) FALSE else mod$rsq_nls > mod$rsq_lm
@@ -475,8 +475,8 @@ robyn_engineering <- function(InputCollect, refresh = FALSE) {
     modNLSCollect <- plotNLSCollect <- yhatNLSCollect <- NULL
   }
 
-  getSpendSum <- colSums(subset(dt_input, select = paid_media_spends), na.rm = TRUE)
-  getSpendSum <- data.frame(rn = names(getSpendSum), spend = getSpendSum, row.names = NULL)
+  # getSpendSum <- colSums(subset(dt_input, select = paid_media_spends), na.rm = TRUE)
+  # getSpendSum <- data.frame(rn = paid_media_vars, spend = getSpendSum, row.names = NULL)
 
   ################################################################
   #### clean & aggregate data
@@ -491,7 +491,7 @@ robyn_engineering <- function(InputCollect, refresh = FALSE) {
 
   if (!is.null(InputCollect$prophet_vars) ) {
 
-    dt_transform <- forecast_transform(
+    dt_transform <- prophet_decomp(
       dt_transform,
       dt_holidays = InputCollect$dt_holidays,
       prophet_country = InputCollect$prophet_country,
@@ -520,7 +520,7 @@ robyn_engineering <- function(InputCollect, refresh = FALSE) {
   return(InputCollect)
 }
 
-forecast_transform <- function(
+prophet_decomp <- function(
   dt_transform, dt_holidays,
   prophet_country, prophet_vars, prophet_signs,
   factor_vars, context_vars, paid_media_vars, intervalType) {
@@ -583,7 +583,7 @@ forecast_transform <- function(
 
 }
 
-runmodels <- function(dt_spendModInput, mediaCostFactor, paid_media_vars) {
+fit_spend_exposure <- function(dt_spendModInput, mediaCostFactor, paid_media_vars) {
 
   if (ncol(dt_spendModInput) != 2) stop("Pass only 2 columns")
   colnames(dt_spendModInput) <- c("spend", "exposure")
