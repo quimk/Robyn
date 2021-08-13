@@ -333,6 +333,6 @@ check_InputCollect <- function(list) {
     stop(paste("Some elements where not provided in your inputs list:",
                paste(not_present, collapse = ", ")))
   }
-  if (length(dt_input) <= 1)
+  if (length(list$dt_input) <= 1)
     stop("Check your 'dt_input' object")
 }

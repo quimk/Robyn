@@ -28,7 +28,9 @@ robyn_run <- function(InputCollect
   #####################################
   #### Set local environment
 
-  if (is.null(InputCollect$dt_mod)) {stop("\nmust provide hyperparameters in  robyn_inputs() first\n")}
+  if (!"hyperparameters" %in% names(InputCollect)) {
+    stop("Must provide 'hyperparameters' in robyn_inputs()'s output first")
+  }
 
   t0 <- Sys.time()
 

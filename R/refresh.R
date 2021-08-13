@@ -280,8 +280,7 @@ robyn_refresh <- function(robyn_object
                               #,"\nRefresh dates: ", paste(getRefreshStarts, collapse = ", ")
            )
            ,x="date" ,y="response")
-    print(pFitRF)
-
+    #print(pFitRF)
     ggsave(filename=paste0(OutputCollectRF$plot_folder,"report_actual_fitted.png")
            , plot = pFitRF
            , dpi = 900, width = 12, height = 8)
@@ -315,9 +314,7 @@ robyn_refresh <- function(robyn_object
       theme(legend.position = "none", axis.text.x=element_blank(), axis.ticks.x=element_blank()) +
       labs(title="Model refresh: Decomposition & paid media ROI"
            ,subtitle = paste0("baseline includes intercept and all prophet vars: ", paste(InputCollectRF$prophet_vars, collapse = ", ")))
-
-    print(pBarRF)
-
+    #print(pBarRF)
     # pReport <- arrangeGrob(pFitRF,pBarRF, ncol=1, top = text_grob("Robyn report onepaper", size = 15, face = "bold"))
     ggsave(filename=paste0(OutputCollectRF$plot_folder,"report_decomposition.png")
            , plot = pBarRF

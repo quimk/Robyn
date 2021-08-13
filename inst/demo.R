@@ -206,7 +206,6 @@ hyperparameters <- list(
 
 InputCollect <- robyn_inputs(InputCollect = InputCollect, hyperparameters = hyperparameters)
 
-
 #### 2a-4: Fourth (optional), model calibration / add experimental input
 
 dt_calibration <- data.frame(
@@ -321,7 +320,7 @@ OutputCollect <- robyn_run(
 ## your business reality
 
 OutputCollect$allSolutions # get all model IDs in result
-select_model <- OutputCollect$allSolutions[1] # select one from above (first?)
+select_model <- OutputCollect$allSolutions[1] # select one from above (first as example)
 robyn_save(robyn_object = robyn_object # model object location and name
            , select_model = select_model # selected model ID
            , InputCollect = InputCollect # all model input
@@ -393,7 +392,7 @@ Robyn <- robyn_refresh(
   #forward until no more data available
   , refresh_iters = 200 # Iteration for refresh. 200 is rough estimation. We'll still
   #figuring out what's the ideal number.
-  , refresh_trials = 5 # trial for refresh
+  , refresh_trials = 3 # trial for refresh
 )
 
 ## Besides plots: there're 4 csv output saved in the folder for further usage

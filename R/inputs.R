@@ -395,28 +395,17 @@ robyn_engineering <- function(InputCollect, refresh = FALSE) {
   dt_input <- InputCollect$dt_input
   paid_media_vars <- InputCollect$paid_media_vars
   paid_media_spends <- InputCollect$paid_media_spends
-  context_vars <- InputCollect$context_vars
-  organic_vars <- InputCollect$organic_vars
-  all_ind_vars <- InputCollect$all_ind_vars
-  date_var <- InputCollect$date_var
-  dep_var <- InputCollect$dep_var
+  factor_vars <- InputCollect$factor_vars
   rollingWindowStartWhich <- InputCollect$rollingWindowStartWhich
   rollingWindowEndWhich <- InputCollect$rollingWindowEndWhich
-  mediaVarCount <- InputCollect$mediaVarCount
-  factor_vars <- InputCollect$factor_vars
-  prophet_vars <- InputCollect$prophet_vars
-  prophet_signs <- InputCollect$prophet_signs
-  prophet_country <- InputCollect$prophet_country
-  intervalType <- InputCollect$intervalType
-  dt_holidays <- InputCollect$dt_holidays
 
   # dt_inputRollWind
   dt_inputRollWind <- dt_input[rollingWindowStartWhich:rollingWindowEndWhich,]
 
   # dt_transform
   dt_transform <- dt_input
-  colnames(dt_transform)[colnames(dt_transform) == date_var] <- "ds"
-  colnames(dt_transform)[colnames(dt_transform) == dep_var] <- "dep_var"
+  colnames(dt_transform)[colnames(dt_transform) == InputCollect$date_var] <- "ds"
+  colnames(dt_transform)[colnames(dt_transform) == InputCollect$dep_var] <- "dep_var"
   dt_transform <- dt_transform[order(dt_transform$ds),]
 
   # dt_transformRollWind
@@ -437,7 +426,7 @@ robyn_engineering <- function(InputCollect, refresh = FALSE) {
     yhatCollect <- list()
     plotNLSCollect <- list()
 
-    for (i in 1:mediaVarCount) {
+    for (i in 1:InputCollect$mediaVarCount) {
 
       if (costSelector[i]) {
 
@@ -447,7 +436,7 @@ robyn_engineering <- function(InputCollect, refresh = FALSE) {
         # compare NLS & LM, takes LM if NLS fits worse
         mod <- results$res
         costSelector[i] <- if (is.null(mod$rsq_nls)) FALSE else mod$rsq_nls > mod$rsq_lm
-        # create plot
+        # data to create plot
         dt_plotNLS <- data.table(channel = paid_media_vars[i],
                                  yhatNLS = if (costSelector[i]) results$yhatNLS else results$yhatLM,
                                  yhatLM = results$yhatLM,
@@ -456,7 +445,7 @@ robyn_engineering <- function(InputCollect, refresh = FALSE) {
         dt_plotNLS <- melt.data.table(dt_plotNLS, id.vars = c("channel", "y", "x"),
                                       variable.name = "models", value.name = "yhat")
         dt_plotNLS[, models:= str_remove(tolower(models), "yhat")]
-        yhatCollect[[paid_media_vars[i]]] <- dt_plotNLS
+        # create plot
         models_plot <- ggplot(
           dt_plotNLS, aes(x=.data$x, y=.data$y, color = .data$models)) +
           geom_point() +
@@ -471,9 +460,10 @@ robyn_engineering <- function(InputCollect, refresh = FALSE) {
           theme_minimal() +
           theme(legend.position = 'top', legend.justification = "left")
 
-        # save results into modNLSCollect and plotNLSCollect
+        # save results into modNLSCollect. plotNLSCollect, yhatCollect
         modNLSCollect[[paid_media_vars[i]]] <- mod
         plotNLSCollect[[paid_media_vars[i]]] <- models_plot
+        yhatCollect[[paid_media_vars[i]]] <- dt_plotNLS
       }
     }
 
@@ -499,64 +489,28 @@ robyn_engineering <- function(InputCollect, refresh = FALSE) {
   ################################################################
   #### Obtain prophet trend, seasonality and change-points
 
-  if (!is.null(prophet_vars) ) {
+  if (!is.null(InputCollect$prophet_vars) ) {
 
-    check_prophet(dt_holidays, prophet_country, prophet_vars, prophet_signs)
-
-    recurrance <- subset(dt_transform, select = c("ds", "dep_var"))
-    colnames(recurrance)[2] <- "y"
-
-    holidays <- set_holidays(dt_transform, dt_holidays, intervalType)
-    use_trend <- any(str_detect("trend", prophet_vars))
-    use_season <- any(str_detect("season", prophet_vars))
-    use_weekday <- any(str_detect("weekday", prophet_vars))
-    use_holiday <- any(str_detect("holiday", prophet_vars))
-
-    if (!is.null(factor_vars)) {
-      dt_regressors <- cbind(recurrance, subset(dt_transform, select = c(context_vars, paid_media_vars)))
-      modelRecurrance <- prophet(
-        holidays = if (use_holiday) holidays[country == prophet_country] else NULL
-        ,yearly.seasonality = use_season
-        ,weekly.seasonality = use_weekday
-        ,daily.seasonality = FALSE)
-      dt_ohe <- as.data.table(model.matrix(y ~., dt_regressors[, c("y",factor_vars), with =FALSE])[,-1])
-      ohe_names <- names(dt_ohe)
-      for (addreg in ohe_names) modelRecurrance <- add_regressor(modelRecurrance, addreg)
-      dt_ohe <- cbind(dt_regressors[, !factor_vars, with = FALSE], dt_ohe)
-      mod_ohe <- fit.prophet(modelRecurrance, dt_ohe)
-      dt_forecastRegressor <- predict(mod_ohe, dt_ohe)
-      forecastRecurrance <- dt_forecastRegressor[, str_detect(
-        names(dt_forecastRegressor), "_lower$|_upper$", negate = TRUE), with = FALSE]
-      for (aggreg in factor_vars) {
-        oheRegNames <- na.omit(str_extract(names(forecastRecurrance), paste0("^",aggreg, ".*")))
-        forecastRecurrance[, (aggreg):=rowSums(.SD), .SDcols=oheRegNames]
-        get_reg <- forecastRecurrance[, get(aggreg)]
-        dt_transform[, (aggreg):= scale(get_reg, center = min(get_reg), scale = FALSE)]
-      }
-
-    } else {
-      modelRecurrance <- prophet(
-        holidays = if (use_holiday) holidays[country == prophet_country] else NULL
-        ,yearly.seasonality = use_season
-        ,weekly.seasonality = use_weekday
-        ,daily.seasonality = FALSE)
-      forecastRecurrance <- predict(modelRecurrance, dt_transform$ds)
-    }
-
-    # use trend, season, weekday, holiday data
-    dt_transform <- feats_forecast(dt_transform, recurrance, prophet_vars, forecastRecurrance)
+    dt_transform <- forecast_transform(
+      dt_transform,
+      dt_holidays = InputCollect$dt_holidays,
+      prophet_country = InputCollect$prophet_country,
+      prophet_vars = InputCollect$prophet_vars,
+      prophet_signs = InputCollect$prophet_signs,
+      factor_vars = factor_vars,
+      context_vars = InputCollect$context_vars,
+      paid_media_vars = paid_media_vars,
+      intervalType = InputCollect$intervalType)
 
   }
 
   ################################################################
-  #### Finalize input
+  #### Finalize enriched input
 
-  dt_transform <- dt_transform[, c("ds", "dep_var", all_ind_vars), with = FALSE]
-
+  dt_transform <- subset(dt_transform, select = c("ds", "dep_var", InputCollect$all_ind_vars))
   InputCollect$dt_mod <- dt_transform
   InputCollect$dt_modRollWind <- dt_transform[rollingWindowStartWhich:rollingWindowEndWhich,]
   InputCollect$dt_inputRollWind <- dt_inputRollWind
-
   InputCollect[['modNLSCollect']] <- modNLSCollect
   InputCollect[['plotNLSCollect']] <- plotNLSCollect
   InputCollect[['yhatNLSCollect']] <- yhatNLSCollect
@@ -564,6 +518,69 @@ robyn_engineering <- function(InputCollect, refresh = FALSE) {
   InputCollect[['mediaCostFactor']] <- mediaCostFactor
 
   return(InputCollect)
+}
+
+forecast_transform <- function(
+  dt_transform, dt_holidays,
+  prophet_country, prophet_vars, prophet_signs,
+  factor_vars, context_vars, paid_media_vars, intervalType) {
+
+  check_prophet(dt_holidays, prophet_country, prophet_vars, prophet_signs)
+  recurrance <- subset(dt_transform, select = c("ds", "dep_var"))
+  colnames(recurrance)[2] <- "y"
+
+  holidays <- set_holidays(dt_transform, dt_holidays, intervalType)
+  use_trend <- any(str_detect("trend", prophet_vars))
+  use_season <- any(str_detect("season", prophet_vars))
+  use_weekday <- any(str_detect("weekday", prophet_vars))
+  use_holiday <- any(str_detect("holiday", prophet_vars))
+
+  if (!is.null(factor_vars)) {
+    dt_regressors <- cbind(recurrance, subset(dt_transform, select = c(context_vars, paid_media_vars)))
+    modelRecurrance <- prophet(
+      holidays = if (use_holiday) holidays[country == prophet_country] else NULL
+      ,yearly.seasonality = use_season
+      ,weekly.seasonality = use_weekday
+      ,daily.seasonality = FALSE)
+    dt_ohe <- as.data.table(model.matrix(y ~., dt_regressors[, c("y",factor_vars), with =FALSE])[,-1])
+    ohe_names <- names(dt_ohe)
+    for (addreg in ohe_names) modelRecurrance <- add_regressor(modelRecurrance, addreg)
+    dt_ohe <- cbind(dt_regressors[, !factor_vars, with = FALSE], dt_ohe)
+    mod_ohe <- fit.prophet(modelRecurrance, dt_ohe)
+    dt_forecastRegressor <- predict(mod_ohe, dt_ohe)
+    forecastRecurrance <- dt_forecastRegressor[, str_detect(
+      names(dt_forecastRegressor), "_lower$|_upper$", negate = TRUE), with = FALSE]
+    for (aggreg in factor_vars) {
+      oheRegNames <- na.omit(str_extract(names(forecastRecurrance), paste0("^",aggreg, ".*")))
+      forecastRecurrance[, (aggreg):=rowSums(.SD), .SDcols=oheRegNames]
+      get_reg <- forecastRecurrance[, get(aggreg)]
+      dt_transform[, (aggreg):= scale(get_reg, center = min(get_reg), scale = FALSE)]
+    }
+
+  } else {
+    modelRecurrance <- prophet(
+      holidays = if (use_holiday) holidays[country == prophet_country] else NULL
+      ,yearly.seasonality = use_season
+      ,weekly.seasonality = use_weekday
+      ,daily.seasonality = FALSE)
+    forecastRecurrance <- predict(modelRecurrance, dt_transform$ds)
+  }
+
+  if (use_trend) {
+    dt_transform$trend <- forecastRecurrance$trend[1:nrow(recurrance)]
+  }
+  if (use_season) {
+    dt_transform$season <- forecastRecurrance$yearly[1:nrow(recurrance)]
+  }
+  if (use_weekday) {
+    dt_transform$weekday <- forecastRecurrance$weekly[1:nrow(recurrance)]
+  }
+  if (use_holiday) {
+    dt_transform$holiday <- forecastRecurrance$holidays[1:nrow(recurrance)]
+  }
+
+  return(dt_transform)
+
 }
 
 runmodels <- function(dt_spendModInput, mediaCostFactor, paid_media_vars) {
@@ -659,26 +676,4 @@ set_holidays <- function(dt_transform, dt_holidays, intervalType) {
 
   return(holidays)
 
-}
-
-feats_forecast <- function(dt_transform, recurrance, prophet_vars, forecastRecurrance) {
-
-  use_trend <- any(str_detect("trend", prophet_vars))
-  use_season <- any(str_detect("season", prophet_vars))
-  use_weekday <- any(str_detect("weekday", prophet_vars))
-  use_holiday <- any(str_detect("holiday", prophet_vars))
-
-  if (use_trend) {
-    dt_transform$trend <- forecastRecurrance$trend[1:nrow(recurrance)]
-  }
-  if (use_season) {
-    dt_transform$season <- forecastRecurrance$yearly[1:nrow(recurrance)]
-  }
-  if (use_weekday) {
-    dt_transform$weekday <- forecastRecurrance$weekly[1:nrow(recurrance)]
-  }
-  if (use_holiday) {
-    dt_transform$holiday <- forecastRecurrance$holidays[1:nrow(recurrance)]
-  }
-  return(dt_transform)
 }
