@@ -615,6 +615,16 @@ robyn_engineering <- function(InputCollect, refresh = FALSE) {
   return(InputCollect)
 }
 
+
+####################################################################
+#' Conduct prophet decomposition
+#'
+#' When \code{prophet_vars} in \code{robyn_inputs()} is specified, this
+#' function decomposes trend, season, holiday and weekday from the
+#' dependent varibale.
+#'
+#' @return A list containing all prophet decomposition output.
+#'
 prophet_decomp <- function(
   dt_transform, dt_holidays,
   prophet_country, prophet_vars, prophet_signs,
