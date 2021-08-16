@@ -2,7 +2,7 @@
 % Please edit documentation in R/inputs.R
 \name{robyn_engineering}
 \alias{robyn_engineering}
-\title{Transform input data}
+\title{Apply prophet decomposition and spend exposure transformation}
 \usage{
 robyn_engineering(InputCollect, refresh = FALSE)
 }
@@ -11,6 +11,16 @@ robyn_engineering(InputCollect, refresh = FALSE)
 
 \item{refresh}{Default to FALSE. TRUE when using in robyn_refresh()}
 }
+\value{
+A list containing the all input parameters and modified input
+data. The list is passed to further functions like
+\code{robyn_run()}, \code{robyn_save()} and \code{robyn_allocator()}.
+}
 \description{
-Describe function.
+This function is included in the \code{robyn_inputs()} function and
+will only run after all the condition checks are passed. It
+applies the decomposition of trend, season, holiday and weekday
+from \code{prophet} and builds the nonlinear fitting model when
+using non-spend variables in \code{paid_media_vars}, for example
+impressions for Facebook variables.
 }

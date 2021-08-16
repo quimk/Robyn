@@ -1,5 +1,5 @@
 ### load or reinstall pkg
-if (T) {
+if (F) {
   rm(list=ls())
   library(devtools)
   library(roxygen2)
@@ -20,7 +20,7 @@ rm(list=ls())
 
 ## load libs
 load_libs <- function() {
-  
+
   libsNeeded <- c("devtools", "roxygen2","data.table","stringr","lubridate","foreach","glmnet","car","prophet","ggplot2","nloptr","minpack.lm","rPref","reticulate","rstudioapi","doFuture", "doRNG", "patchwork"
   )
   cat(paste0("Loading required libraries: ", paste(libsNeeded, collapse = ", "), "\n"))

@@ -6,17 +6,22 @@
 # Includes function robyn_inputs(), hyper_names(), robyn_engineering()
 
 ####################################################################
-#' Input data transformation
+#' Input data sanity check & transformation
 #'
-#' Describe function.
+#' \code{robyn_inputs()} is the function to input all model parameters and
+#' check input correctness for the initial model build. It includes the
+#' \code{robyn_engineering()} function that conducts trend, season,
+#' holiday & weekday decomposition using Facebook's time-serie forecasting
+#' library \code{prophet} and fit a nonlinear model to spend and exposure
+#' metrics in case exposure metrics are used in \code{paid_media_vars}.
 #'
-#' @param dt_input A data.table. Load simulated
+#' @param dt_input A data.frame. Raw input data. Load simulated
 #' dataset using \code{data("dt_simulated_weekly")}
-#' @param dt_holidays A data.table. Load standard
+#' @param dt_holidays A data.frame. Raw input holiday data. Load standard
 #' Prophet holidays using \code{data("dt_prophet_holidays")}
-#' @param date_var Character. Name of date variable. Daily, weekly
+#' @param date_var A character. Name of date variable. Daily, weekly
 #' and monthly data supported. Weekly requires weekstart of Monday or Sunday.
-#' date_var must have format "2020-01-01"
+#' date_var must have format "2020-01-01". Default to automatic date detection.
 #' @param dep_var Character. Name of dependent variable. Only one allowed
 #' @param dep_var_type Character. Type of dependent variable
 #' as "revenue" or "conversion". Only one allowed and case sensitive.
@@ -86,10 +91,14 @@
 #' @param InputCollect Default to NULL. \code{robyn_inputs}'s output when
 #' \code{hyperparameters} are not yet set.
 #' @examples
+#'
+#' # load similated input data
 #' data("dt_simulated_weekly")
+#'
+#' # load standard prophet holidays
 #' data("dt_prophet_holidays")
 #'
-#' ## Define model input using simulated dataset
+#' \dontrun{
 #' InputCollect <- robyn_inputs(
 #'   dt_input = dt_simulated_weekly
 #'   ,dt_holidays = dt_prophet_holidays
@@ -105,9 +114,9 @@
 #'   ,context_vars = c("competitor_sales_B", "events")
 #'   ,context_signs = c("default", "default")
 #'
-#'   ,paid_media_vars = c("tv_S","ooh_S"	,	"print_S"	,"facebook_I"	,"search_clicks_P")
+#'   ,paid_media_vars = c("tv_S", "ooh_S", "print_S", "facebook_I", "search_clicks_P")
 #'   ,paid_media_signs = c("positive", "positive","positive", "positive", "positive")
-#'   ,paid_media_spends = c("tv_S","ooh_S",	"print_S"	,"facebook_S"	,"search_S")
+#'   ,paid_media_spends = c("tv_S", "ooh_S", "print_S", "facebook_S", "search_S")
 #'
 #'   ,organic_vars = c("newsletter")
 #'   ,organic_signs = c("positive")
@@ -120,52 +129,14 @@
 #'   ,adstock = "geometric"
 #'   ,iterations = 2000
 #'   ,trials = 5
+#'
+#'   ,hyperparameters = hyperparameters # to be defined separately
+#'   ,calibration_input = dt_calibration # to be defined separately
 #' )
-#'
-#' ## Define hyperparameters
-#' hyper_names(adstock = InputCollect$adstock, all_media = InputCollect$all_media)
-#'
-#' hyperparameters <- list(
-#'   facebook_I_alphas = c(0.5, 3) # example bounds for alpha
-#'   ,facebook_I_gammas = c(0.3, 1) # example bounds for gamma
-#'   ,facebook_I_thetas = c(0, 0.3) # example bounds for theta
-#'   #,facebook_I_shapes = c(0.0001, 2) # example bounds for shape
-#'   #,facebook_I_scales = c(0, 0.1) # example bounds for scale
-#'
-#'   ,print_S_alphas = c(0.5, 3)
-#'   ,print_S_gammas = c(0.3, 1)
-#'   ,print_S_thetas = c(0.1, 0.4)
-#'   #,print_S_shapes = c(0.0001, 2)
-#'   #,print_S_scales = c(0, 0.1)
-#'
-#'   ,tv_S_alphas = c(0.5, 3)
-#'   ,tv_S_gammas = c(0.3, 1)
-#'   ,tv_S_thetas = c(0.3, 0.8)
-#'   #,tv_S_shapes = c(0.0001, 2)
-#'   #,tv_S_scales= c(0, 0.1)
-#'
-#'   ,search_clicks_P_alphas = c(0.5, 3)
-#'   ,search_clicks_P_gammas = c(0.3, 1)
-#'   ,search_clicks_P_thetas = c(0, 0.3)
-#'   #,search_clicks_P_shapes = c(0.0001, 2)
-#'   #,search_clicks_P_scales = c(0, 0.1)
-#'
-#'   ,ooh_S_alphas = c(0.5, 3)
-#'   ,ooh_S_gammas = c(0.3, 1)
-#'   ,ooh_S_thetas = c(0.1, 0.4)
-#'   #,ooh_S_shapes = c(0.0001, 2)
-#'   #,ooh_S_scales = c(0, 0.1)
-#'
-#'   ,newsletter_alphas = c(0.5, 3)
-#'   ,newsletter_gammas = c(0.3, 1)
-#'   ,newsletter_thetas = c(0.1, 0.4)
-#'   #,newsletter_shapes = c(0.0001, 2)
-#'   #,newsletter_scales = c(0, 0.1)
-#' )
-#'
-#' ## Add hyperparameters into robyn_inputs()
-#' InputCollect <- robyn_inputs(InputCollect = InputCollect, hyperparameters = hyperparameters)
-#' @return List object
+#' }
+#' @return A list containing the all input parameters and modified input data from
+#' \code{robyn_engineering()}. The list is passed to further functions like
+#' \code{robyn_run()}, \code{robyn_save()} and \code{robyn_allocator()}
 #' @export
 robyn_inputs <- function(dt_input = NULL
                          ,dt_holidays = NULL
@@ -197,6 +168,9 @@ robyn_inputs <- function(dt_input = NULL
 
   ### Use case 1: running robyn_inputs() for the first time
   if (is.null(InputCollect)) {
+
+    dt_input <- as.data.table(dt_input)
+    dt_holidays <- as.data.table(dt_holidays)
 
     ## check date input (and set dayInterval and intervalType)
     date_input <- check_datevar(dt_input, date_var)
@@ -362,12 +336,124 @@ robyn_inputs <- function(dt_input = NULL
 }
 
 ####################################################################
-#' Get hyperparameter names
+#' Get correct hyperparameter names
 #'
-#' Describe function.
+#' Output all hyperparameter names and help specifying the list of hyperparameters that
+#' is inserted into the \code{hyperparameters = } parameter in \code{robyn_inputs()}
 #'
-#' @param adstock Default to \code{InputCollect$adstock}
-#' @param all_media Default to \code{InputCollect$all_media}
+#' ### Guide to setup hyperparameters
+#'
+#' ## 1. get correct hyperparameter names:
+#' All variables in \code{paid_media_vars} or \code{organic_vars} require hyperprameters
+#' and will be transformed by adstock & saturation. Difference between \code{organic_vars}
+#' and \code{organic_vars} is that \code{paid_media_vars} has spend that
+#' needs to be specified in \code{paid_media_spends} specifically. Run \code{hyper_names()}
+#' to get correct hyperparameter names. All names in hyperparameters must
+#' equal names from \code{hyper_names()}, case sensitive.
+#'
+#' ## 2. get guidance for setting hyperparameter bounds:
+#' For geometric adstock, use theta, alpha & gamma. For weibull adstock,
+#' use shape, scale, alpha, gamma.
+#'
+#' Theta: In geometric adstock, theta is decay rate. guideline for usual media genre:
+#' TV c(0.3, 0.8), OOH/Print/Radio c(0.1, 0.4), digital c(0, 0.3)
+#'
+#' Shape: In weibull adstock, shape controls the decay shape. Recommended c(0.0001, 2).
+#' The larger, the more S-shape. The smaller, the more L-shape. Channel-type specific
+#' values still to be investigated
+#'
+#' Scale: In weibull adstock, scale controls the decay inflexion point. Very conservative
+#' recommended bounce c(0, 0.1), becausee scale can increase adstocking half-life greaetly.
+#' Channel-type specific values still to be investigated
+#'
+#' Alpha: In s-curve transformation with hill function, alpha controls the shape between
+#' exponential and s-shape. Recommended c(0.5, 3). The larger the alpha, the more S-shape.
+#' The smaller, the more C-shape
+#'
+#' Gamma: In s-curve transformation with hill function, gamma controls the inflexion point.
+#' Recommended bounce c(0.3, 1). The larger the gamma, the later the inflection point
+#' in the response curve
+#'
+#' Helper plots:
+#' Run \code{plot_adstock(TRUE)} to get adstock transformation example plot,
+#' helping you understand geometric/theta and weibull/shape/scale transformation
+#' Run \code{plot_saturation(TRUE)} to get saturation curve transformation example plot,
+#' helping you understand hill/alpha/gamma transformation
+#'
+#' ## 3. set each hyperparameter bounds. They either contains two values e.g. c(0, 0.5),
+#' or only one value (in which case you've "fixed" that hyperparameter)
+#'
+#' @param adstock A character. Default to \code{InputCollect$adstock}.
+#' Accepts "geometric" or "weibull"
+#' @param all_media A character vector. Default to \code{InputCollect$all_media}.
+#' Includes \code{InputCollect$paid_media_vars} and \code{InputCollect$organic_vars}.
+#' @examples
+#' \dontrun{
+#' # Define hyper_names() for geometric adstock
+#' hyper_names(adstock = "geometric", all_media = InputCollect$all_media)
+#'
+#' hyperparameters <- list(
+#'   facebook_I_alphas = c(0.5, 3) # example bounds for alpha
+#'   ,facebook_I_gammas = c(0.3, 1) # example bounds for gamma
+#'   ,facebook_I_thetas = c(0, 0.3) # example bounds for theta
+#'
+#'   ,print_S_alphas = c(0.5, 3)
+#'   ,print_S_gammas = c(0.3, 1)
+#'   ,print_S_thetas = c(0.1, 0.4)
+#'
+#'   ,tv_S_alphas = c(0.5, 3)
+#'   ,tv_S_gammas = c(0.3, 1)
+#'   ,tv_S_thetas = c(0.3, 0.8)
+#'
+#'   ,search_clicks_P_alphas = c(0.5, 3)
+#'   ,search_clicks_P_gammas = c(0.3, 1)
+#'   ,search_clicks_P_thetas = c(0, 0.3)
+#'
+#'   ,ooh_S_alphas = c(0.5, 3)
+#'   ,ooh_S_gammas = c(0.3, 1)
+#'   ,ooh_S_thetas = c(0.1, 0.4
+#'
+#'   ,newsletter_alphas = c(0.5, 3)
+#'   ,newsletter_gammas = c(0.3, 1)
+#'   ,newsletter_thetas = c(0.1, 0.4)
+#' )
+#'
+#' # Define hyper_names() for weibull adstock
+#' hyper_names(adstock = "weibull", all_media = InputCollect$all_media)
+#'
+#' hyperparameters <- list(
+#'   facebook_I_alphas = c(0.5, 3) # example bounds for alpha
+#'   ,facebook_I_gammas = c(0.3, 1) # example bounds for gamma
+#'   ,facebook_I_shapes = c(0.0001, 2) # example bounds for shape
+#'   ,facebook_I_scales = c(0, 0.1) # example bounds for scale
+#'
+#'   ,print_S_alphas = c(0.5, 3)
+#'   ,print_S_gammas = c(0.3, 1)
+#'   ,print_S_shapes = c(0.0001, 2)
+#'   ,print_S_scales = c(0, 0.1)
+#'
+#'   ,tv_S_alphas = c(0.5, 3)
+#'   ,tv_S_gammas = c(0.3, 1)
+#'   ,tv_S_shapes = c(0.0001, 2)
+#'   ,tv_S_scales= c(0, 0.1)
+#'
+#'   ,search_clicks_P_alphas = c(0.5, 3)
+#'   ,search_clicks_P_gammas = c(0.3, 1)
+#'   ,search_clicks_P_shapes = c(0.0001, 2)
+#'   ,search_clicks_P_scales = c(0, 0.1)
+#'
+#'   ,ooh_S_alphas = c(0.5, 3)
+#'   ,ooh_S_gammas = c(0.3, 1)
+#'   ,ooh_S_shapes = c(0.0001, 2)
+#'   ,ooh_S_scales = c(0, 0.1)
+#'
+#'   ,newsletter_alphas = c(0.5, 3)
+#'   ,newsletter_gammas = c(0.3, 1)
+#'   ,newsletter_shapes = c(0.0001, 2)
+#'   ,newsletter_scales = c(0, 0.1)
+#' )
+#' }
+#'
 #' @export
 hyper_names <- function(adstock, all_media) {
   check_adstock(adstock)
@@ -381,12 +467,21 @@ hyper_names <- function(adstock, all_media) {
 }
 
 ####################################################################
-#' Transform input data
+#' Apply prophet decomposition and spend exposure transformation
 #'
-#' Describe function.
+#' This function is included in the \code{robyn_inputs()} function and
+#' will only run after all the condition checks are passed. It
+#' applies the decomposition of trend, season, holiday and weekday
+#' from \code{prophet} and builds the nonlinear fitting model when
+#' using non-spend variables in \code{paid_media_vars}, for example
+#' impressions for Facebook variables.
 #'
 #' @param InputCollect Default to \code{InputCollect}
 #' @param refresh Default to FALSE. TRUE when using in robyn_refresh()
+#' @return A list containing the all input parameters and modified input
+#' data. The list is passed to further functions like
+#' \code{robyn_run()}, \code{robyn_save()} and \code{robyn_allocator()}.
+#'
 #' @export
 robyn_engineering <- function(InputCollect, refresh = FALSE) {
 
@@ -583,6 +678,24 @@ prophet_decomp <- function(
 
 }
 
+####################################################################
+#' Fit a nonlinear model for media spend and exposure
+#'
+#' This function is called in \code{robyn_engineering()}. It uses
+#' the Michaelis-Menten function to fit the nonlinear model. Fallback
+#' model is the simple linear model \code{lm()} in case the nonlinear
+#' model is fitting worse. A bad fit here might result in unreasonable
+#' model results. Two options are recommended: Either splitting the
+#' channel into sub-channels to achieve better fit, or just use
+#' spend as \code{paid_media_vars}
+#'
+#' @param dt_spendModInput A data.frame with channel spends and exposure
+#' data
+#' @param mediaCostFactor A numeric vector. The ratio between raw media
+#' exposure and spend metrics.
+#' @param paid_media_vars A character vector. All paid media variables.
+#' @return A list containing the all spend-exposure model results.
+#'
 fit_spend_exposure <- function(dt_spendModInput, mediaCostFactor, paid_media_vars) {
 
   if (ncol(dt_spendModInput) != 2) stop("Pass only 2 columns")
@@ -645,6 +758,18 @@ fit_spend_exposure <- function(dt_spendModInput, mediaCostFactor, paid_media_var
   return(output)
 }
 
+####################################################################
+#' Detect and set date variable interval
+#'
+#' Robyn only accepts daily, weekly and monthly data. This function
+#' is only called in \code{robyn_engineering()}.
+#'
+#' @param dt_transform A data.frame. Transformed input data.
+#' @param dt_holidays A data.frame. Raw input holiday data.
+#' @param intervalType A character. Accepts one of the values:
+#' \code{c("day","week","month")}
+#' @return A list containing the all spend-exposure model results.
+#'
 set_holidays <- function(dt_transform, dt_holidays, intervalType) {
 
   opts <- c("day","week","month")

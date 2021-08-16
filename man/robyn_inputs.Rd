@@ -2,7 +2,7 @@
 % Please edit documentation in R/inputs.R
 \name{robyn_inputs}
 \alias{robyn_inputs}
-\title{Input data transformation}
+\title{Input data sanity check & transformation}
 \usage{
 robyn_inputs(
   dt_input = NULL,
@@ -34,15 +34,15 @@ robyn_inputs(
 )
 }
 \arguments{
-\item{dt_input}{A data.table. Load simulated
+\item{dt_input}{A data.frame. Raw input data. Load simulated
 dataset using \code{data("dt_simulated_weekly")}}
 
-\item{dt_holidays}{A data.table. Load standard
+\item{dt_holidays}{A data.frame. Raw input holiday data. Load standard
 Prophet holidays using \code{data("dt_prophet_holidays")}}
 
-\item{date_var}{Character. Name of date variable. Daily, weekly
+\item{date_var}{A character. Name of date variable. Daily, weekly
 and monthly data supported. Weekly requires weekstart of Monday or Sunday.
-date_var must have format "2020-01-01"}
+date_var must have format "2020-01-01". Default to automatic date detection.}
 
 \item{dep_var}{Character. Name of dependent variable. Only one allowed}
 
@@ -136,16 +136,27 @@ to have ratio of independent variable: data points of 1:10.}
 \code{hyperparameters} are not yet set.}
 }
 \value{
-List object
+A list containing the all input parameters and modified input data from
+\code{robyn_engineering()}. The list is passed to further functions like
+\code{robyn_run()}, \code{robyn_save()} and \code{robyn_allocator()}
 }
 \description{
-Describe function.
+\code{robyn_inputs()} is the function to input all model parameters and
+check input correctness for the initial model build. It includes the
+\code{robyn_engineering()} function that conducts trend, season,
+holiday & weekday decomposition using Facebook's time-serie forecasting
+library \code{prophet} and fit a nonlinear model to spend and exposure
+metrics in case exposure metrics are used in \code{paid_media_vars}.
 }
 \examples{
+
+# load similated input data
 data("dt_simulated_weekly")
+
+# load standard prophet holidays
 data("dt_prophet_holidays")
 
-## Define model input using simulated dataset
+\dontrun{
 InputCollect <- robyn_inputs(
   dt_input = dt_simulated_weekly
   ,dt_holidays = dt_prophet_holidays
@@ -161,9 +172,9 @@ InputCollect <- robyn_inputs(
   ,context_vars = c("competitor_sales_B", "events")
   ,context_signs = c("default", "default")
 
-  ,paid_media_vars = c("tv_S","ooh_S"	,	"print_S"	,"facebook_I"	,"search_clicks_P")
+  ,paid_media_vars = c("tv_S", "ooh_S", "print_S", "facebook_I", "search_clicks_P")
   ,paid_media_signs = c("positive", "positive","positive", "positive", "positive")
-  ,paid_media_spends = c("tv_S","ooh_S",	"print_S"	,"facebook_S"	,"search_S")
+  ,paid_media_spends = c("tv_S", "ooh_S", "print_S", "facebook_S", "search_S")
 
   ,organic_vars = c("newsletter")
   ,organic_signs = c("positive")
@@ -176,49 +187,9 @@ InputCollect <- robyn_inputs(
   ,adstock = "geometric"
   ,iterations = 2000
   ,trials = 5
+
+  ,hyperparameters = hyperparameters # to be defined separately
+  ,calibration_input = dt_calibration # to be defined separately
 )
-
-## Define hyperparameters
-hyper_names(adstock = InputCollect$adstock, all_media = InputCollect$all_media)
-
-hyperparameters <- list(
-  facebook_I_alphas = c(0.5, 3) # example bounds for alpha
-  ,facebook_I_gammas = c(0.3, 1) # example bounds for gamma
-  ,facebook_I_thetas = c(0, 0.3) # example bounds for theta
-  #,facebook_I_shapes = c(0.0001, 2) # example bounds for shape
-  #,facebook_I_scales = c(0, 0.1) # example bounds for scale
-
-  ,print_S_alphas = c(0.5, 3)
-  ,print_S_gammas = c(0.3, 1)
-  ,print_S_thetas = c(0.1, 0.4)
-  #,print_S_shapes = c(0.0001, 2)
-  #,print_S_scales = c(0, 0.1)
-
-  ,tv_S_alphas = c(0.5, 3)
-  ,tv_S_gammas = c(0.3, 1)
-  ,tv_S_thetas = c(0.3, 0.8)
-  #,tv_S_shapes = c(0.0001, 2)
-  #,tv_S_scales= c(0, 0.1)
-
-  ,search_clicks_P_alphas = c(0.5, 3)
-  ,search_clicks_P_gammas = c(0.3, 1)
-  ,search_clicks_P_thetas = c(0, 0.3)
-  #,search_clicks_P_shapes = c(0.0001, 2)
-  #,search_clicks_P_scales = c(0, 0.1)
-
-  ,ooh_S_alphas = c(0.5, 3)
-  ,ooh_S_gammas = c(0.3, 1)
-  ,ooh_S_thetas = c(0.1, 0.4)
-  #,ooh_S_shapes = c(0.0001, 2)
-  #,ooh_S_scales = c(0, 0.1)
-
-  ,newsletter_alphas = c(0.5, 3)
-  ,newsletter_gammas = c(0.3, 1)
-  ,newsletter_thetas = c(0.1, 0.4)
-  #,newsletter_shapes = c(0.0001, 2)
-  #,newsletter_scales = c(0, 0.1)
-)
-
-## Add hyperparameters into robyn_inputs()
-InputCollect <- robyn_inputs(InputCollect = InputCollect, hyperparameters = hyperparameters)
+}
 }
