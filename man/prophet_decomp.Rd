@@ -16,6 +16,25 @@ prophet_decomp(
   intervalType
 )
 }
+\arguments{
+\item{dt_transform}{A data.frame with all model features.}
+
+\item{dt_holidays}{As in \code{robyn_inputs()}}
+
+\item{prophet_country}{As in \code{robyn_inputs()}}
+
+\item{prophet_vars}{As in \code{robyn_inputs()}}
+
+\item{prophet_signs}{As in \code{robyn_inputs()}}
+
+\item{factor_vars}{As in \code{robyn_inputs()}}
+
+\item{context_vars}{As in \code{robyn_inputs()}}
+
+\item{paid_media_vars}{As in \code{robyn_inputs()}}
+
+\item{intervalType}{As included in \code{InputCollect}}
+}
 \value{
 A list containing all prophet decomposition output.
 }

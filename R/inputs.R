@@ -622,7 +622,15 @@ robyn_engineering <- function(InputCollect, refresh = FALSE) {
 #' When \code{prophet_vars} in \code{robyn_inputs()} is specified, this
 #' function decomposes trend, season, holiday and weekday from the
 #' dependent varibale.
-#'
+#' @param dt_transform A data.frame with all model features.
+#' @param dt_holidays As in \code{robyn_inputs()}
+#' @param prophet_country As in \code{robyn_inputs()}
+#' @param prophet_vars As in \code{robyn_inputs()}
+#' @param prophet_signs As in \code{robyn_inputs()}
+#' @param factor_vars As in \code{robyn_inputs()}
+#' @param context_vars As in \code{robyn_inputs()}
+#' @param paid_media_vars As in \code{robyn_inputs()}
+#' @param intervalType As included in \code{InputCollect}
 #' @return A list containing all prophet decomposition output.
 #'
 prophet_decomp <- function(
@@ -647,7 +655,7 @@ prophet_decomp <- function(
       ,yearly.seasonality = use_season
       ,weekly.seasonality = use_weekday
       ,daily.seasonality = FALSE)
-    dt_ohe <- as.data.table(model.matrix(y ~., dt_regressors[, c("y",factor_vars), with =FALSE])[,-1])
+    dt_ohe <- as.data.table(model.matrix(y ~., dt_regressors[, c("y",factor_vars), with =FALSE]))[,-1]
     ohe_names <- names(dt_ohe)
     for (addreg in ohe_names) modelRecurrance <- add_regressor(modelRecurrance, addreg)
     dt_ohe <- cbind(dt_regressors[, !factor_vars, with = FALSE], dt_ohe)
