@@ -2,7 +2,7 @@
 % Please edit documentation in R/model.R
 \name{robyn_mmm}
 \alias{robyn_mmm}
-\title{Major Robyn modelling function}
+\title{The core MMM function}
 \usage{
 robyn_mmm(
   hyper_collect,
@@ -14,18 +14,24 @@ robyn_mmm(
 )
 }
 \arguments{
-\item{hyper_collect}{List object}
+\item{hyper_collect}{A list containing hyperparameter bounds. Defaults to
+\code{InputCollect$hyperparameters}.}
 
-\item{InputCollect}{xxx}
+\item{InputCollect}{A List containing all input parameters for the model.}
 
-\item{iterations}{xxx}
+\item{iterations}{A integer. Number of iterations to run.}
 
-\item{lambda.n}{xxx}
+\item{lambda.n}{A integer. Number of lambda cross-validation in glmnet.
+Defaults to 100.}
 
-\item{lambda_fixed}{xxx}
+\item{lambda_fixed}{A logical. \code{lambda_fixed = TRUE} when inputting
+old model results}
 
-\item{refresh}{xxx}
+\item{refresh}{A logical value. Set to \code{TRUE} when used in \code{robyn_refresh()}}
 }
 \description{
-Describe function.
+The \code{robyn_mmm()} function activates Nevergrad to generate samples of
+hyperparameters, conducts media transformation within each loop, fits the
+Ridge regression, calibrates the model optionally, decomposes responses
+and collects the result. It's an inner function within \code{robyn_run()}.
 }

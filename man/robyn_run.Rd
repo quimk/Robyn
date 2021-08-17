@@ -2,7 +2,7 @@
 % Please edit documentation in R/model.R
 \name{robyn_run}
 \alias{robyn_run}
-\title{Major Robyn modelling function}
+\title{The major Robyn modelling function}
 \usage{
 robyn_run(
   InputCollect,
@@ -14,18 +14,35 @@ robyn_run(
 )
 }
 \arguments{
-\item{InputCollect}{List object}
+\item{InputCollect}{A List containing all input parameters for the model.}
 
-\item{plot_folder}{xxx}
+\item{plot_folder}{A character specifying location to saving plots. Default
+to \code{robyn_object} and saves plot in the same directory as robyn_object}
 
-\item{pareto_fronts}{xxx}
+\item{pareto_fronts}{A integer. Number of Pareto fronts for the output.
+\code{pareto_fronts = 1} returns the best models trading off NRMSE & DECOMP.RSSD.
+Increase \code{pareto_fronts} to get more model choices.}
 
-\item{plot_pareto}{xxx}
+\item{plot_pareto}{A logical value. Set to \code{FALSE} to deactivate plotting
+and saving model onepagers. Used when testing models.}
 
-\item{refresh}{xxx}
+\item{refresh}{A logical value. Set to \code{TRUE} when used in \code{robyn_refresh()}}
 
-\item{dt_hyper_fixed}{xxx}
+\item{dt_hyper_fixed}{A data.frame. Only provide when loading old model results.
+It consumes hyperparameters from saved csv \code{pareto_hyperparameters.csv}.}
 }
 \description{
-Describe function.
+The \code{robyn_run()} function consumes output from \code{robyn_input()},
+runs the \code{robyn_mmm()} functions and plots and collects the result.
+}
+\examples{
+
+\dontrun{
+OutputCollect <- robyn_run(
+  InputCollect = InputCollect
+  , plot_folder = robyn_object
+  , pareto_fronts = 3
+  , plot_pareto = TRUE
+)
+}
 }

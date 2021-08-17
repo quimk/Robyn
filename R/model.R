@@ -6,16 +6,32 @@
 # Includes function robyn_run, robyn_mmm, model_refit, model_decomp, calibrate_mmm, ridge_lambda
 
 ####################################################################
-#' Major Robyn modelling function
+#' The major Robyn modelling function
 #'
-#' Describe function.
+#' The \code{robyn_run()} function consumes output from \code{robyn_input()},
+#' runs the \code{robyn_mmm()} functions and plots and collects the result.
 #'
-#' @param InputCollect List object
-#' @param plot_folder xxx
-#' @param dt_hyper_fixed xxx
-#' @param pareto_fronts xxx
-#' @param plot_pareto xxx
-#' @param refresh xxx
+#' @param InputCollect A List containing all input parameters for the model.
+#' @param plot_folder A character specifying location to saving plots. Default
+#' to \code{robyn_object} and saves plot in the same directory as robyn_object
+#' @param dt_hyper_fixed A data.frame. Only provide when loading old model results.
+#' It consumes hyperparameters from saved csv \code{pareto_hyperparameters.csv}.
+#' @param pareto_fronts A integer. Number of Pareto fronts for the output.
+#' \code{pareto_fronts = 1} returns the best models trading off NRMSE & DECOMP.RSSD.
+#' Increase \code{pareto_fronts} to get more model choices.
+#' @param plot_pareto A logical value. Set to \code{FALSE} to deactivate plotting
+#' and saving model onepagers. Used when testing models.
+#' @param refresh A logical value. Set to \code{TRUE} when used in \code{robyn_refresh()}
+#' @examples
+#'
+#' \dontrun{
+#' OutputCollect <- robyn_run(
+#'   InputCollect = InputCollect
+#'   , plot_folder = robyn_object
+#'   , pareto_fronts = 3
+#'   , plot_pareto = TRUE
+#' )
+#' }
 #' @export
 robyn_run <- function(InputCollect
                       ,plot_folder = getwd()
@@ -696,19 +712,26 @@ robyn_run <- function(InputCollect
 
 }
 
-
 ####################################################################
-#' Major Robyn modelling function
+#' The core MMM function
 #'
-#' Describe function.
+#' The \code{robyn_mmm()} function activates Nevergrad to generate samples of
+#' hyperparameters, conducts media transformation within each loop, fits the
+#' Ridge regression, calibrates the model optionally, decomposes responses
+#' and collects the result. It's an inner function within \code{robyn_run()}.
 #'
-#' @param hyper_collect List object
-#' @param InputCollect xxx
-#' @param iterations xxx
-#' @param lambda.n xxx
-#' @param lambda_fixed xxx
-#' @param refresh xxx
+#' @param hyper_collect A list containing hyperparameter bounds. Defaults to
+#' \code{InputCollect$hyperparameters}.
+#' @param InputCollect A List containing all input parameters for the model.
+#' @param iterations A integer. Number of iterations to run.
+#' @param lambda.n A integer. Number of lambda cross-validation in glmnet.
+#' Defaults to 100.
+#' @param lambda_fixed A logical. \code{lambda_fixed = TRUE} when inputting
+#' old model results
+#' @param refresh A logical value. Set to \code{TRUE} when used in \code{robyn_refresh()}
+#'
 #' @export
+#'
 robyn_mmm <- function(hyper_collect
                       , InputCollect
                       , iterations = InputCollect$iterations
@@ -1244,7 +1267,26 @@ robyn_mmm <- function(hyper_collect
               ,hyperBoundFixed = hyper_bound_list_fixed))
 }
 
-
+####################################################################
+#' The response function
+#'
+#' The \code{robyn_mmm()} function activates Nevergrad to generate samples of
+#' hyperparameters, conducts media transformation within each loop, fits the
+#' Ridge regression, calibrates the model optionally, decomposes responses
+#' and collects the result. It's an inner function within \code{robyn_run()}.
+#'
+#' @param robyn_object xxx
+#' @param select_run xxx
+#' @param paid_media_var xxx
+#' @param select_model xxx
+#' @param Spend xxx
+#' @param dt_hyppar xxx
+#' @param dt_coef xxx
+#' @param InputCollect A List containing all input parameters for the model.
+#' @examples
+#'
+#' @export
+#'
 ####################################################################
 #' Robyn response function
 #'

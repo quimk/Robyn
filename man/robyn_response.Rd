@@ -2,7 +2,7 @@
 % Please edit documentation in R/model.R
 \name{robyn_response}
 \alias{robyn_response}
-\title{Robyn response function}
+\title{The response function}
 \usage{
 robyn_response(
   robyn_object = NULL,
@@ -33,5 +33,11 @@ robyn_response(
 \item{InputCollect}{xxxxxx}
 }
 \description{
-Describe function.
+The \code{robyn_mmm()} function activates Nevergrad to generate samples of
+hyperparameters, conducts media transformation within each loop, fits the
+Ridge regression, calibrates the model optionally, decomposes responses
+and collects the result. It's an inner function within \code{robyn_run()}.
+}
+\examples{
+
 }
