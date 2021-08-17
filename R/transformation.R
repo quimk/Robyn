@@ -119,6 +119,8 @@ saturation_hill <- function(x, alpha, gamma, x_marginal = NULL) {
 #' Produce example plots for both Geometric and Weibull adstock.
 #'
 #' @param plotAdstockCurves A logical value.
+#' @examples
+#' plot_adstock(TRUE)
 #' @export
 
 plot_adstock <- function(plotAdstockCurves) {
@@ -202,6 +204,8 @@ plot_adstock <- function(plotAdstockCurves) {
 #' Produce example plots for the Hill saturation curve.
 #'
 #' @param plotResponseCurves A logical value.
+#' @examples
+#' plot_saturation(TRUE)
 #' @export
 
 plot_saturation <- function(plotResponseCurves) {

@@ -80,19 +80,20 @@
 #' )
 #' }
 #' @export
-robyn_allocator <- function(robyn_object = NULL
-                            ,select_build = NULL
-                            ,InputCollect = NULL
-                            ,OutputCollect = NULL
-                            ,select_model = NULL
-                            ,optim_algo = "SLSQP_AUGLAG"
-                            ,scenario = "max_historical_response"
-                            ,expected_spend = NULL
-                            ,expected_spend_days = NULL
-                            ,channel_constr_low = 0.5
-                            ,channel_constr_up = 2
-                            ,maxeval = 100000
-                            ,constr_mode = "eq"
+robyn_allocator <- function(
+  robyn_object = NULL
+  ,select_build = NULL
+  ,InputCollect = NULL
+  ,OutputCollect = NULL
+  ,select_model = NULL
+  ,optim_algo = "SLSQP_AUGLAG"
+  ,scenario = "max_historical_response"
+  ,expected_spend = NULL
+  ,expected_spend_days = NULL
+  ,channel_constr_low = 0.5
+  ,channel_constr_up = 2
+  ,maxeval = 100000
+  ,constr_mode = "eq"
 ) {
 
   #####################################

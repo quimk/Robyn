@@ -12,3 +12,6 @@ plot_adstock(plotAdstockCurves)
 \description{
 Produce example plots for both Geometric and Weibull adstock.
 }
+\examples{
+plot_adstock(TRUE)
+}

@@ -12,3 +12,6 @@ plot_saturation(plotResponseCurves)
 \description{
 Produce example plots for the Hill saturation curve.
 }
+\examples{
+plot_saturation(TRUE)
+}

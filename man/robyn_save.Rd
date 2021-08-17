@@ -7,17 +7,40 @@
 robyn_save(robyn_object, select_model, InputCollect, OutputCollect)
 }
 \arguments{
-\item{robyn_object}{xxx}
+\item{robyn_object}{A character. A path that includes object name
+and .RData extension. For example \code{robyn_object = "~/Desktop/Robyn.RData"}}
 
-\item{select_model}{xxx}
+\item{select_model}{A character. The selected model ID of the inital model.
+Run \code{OutputCollect$allSolutions} to see all available IDs}
 
-\item{InputCollect}{xxx}
+\item{InputCollect}{A List containing all input parameters for the model.
+Required when \code{robyn_object} is not provided.}
 
-\item{OutputCollect}{xxx}
+\item{OutputCollect}{A List containing all model result. Required when
+\code{robyn_object} is not provided.}
 }
 \value{
-List object
+A list containing all information for the initial model.
 }
 \description{
-Describe function.
+Use \code{robyn_save()} to select and save the initial model.
+}
+\examples{
+
+\dontrun{
+
+## Get all model IDs in result
+OutputCollect$allSolutions
+
+## Select one from above
+select_model <- "3_10_3"
+
+## Save the robyn object. Overwriting old object needs confirmation.
+robyn_object <- "~/Desktop/Robyn.RData"
+robyn_save(robyn_object = robyn_object
+           , select_model = select_model
+           , InputCollect = InputCollect
+           , OutputCollect = OutputCollect
+)
+}
 }

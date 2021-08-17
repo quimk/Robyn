@@ -33,13 +33,14 @@
 #' )
 #' }
 #' @export
-robyn_run <- function(InputCollect
-                      ,plot_folder = getwd()
-                      ,pareto_fronts = 1
-                      ,plot_pareto = TRUE
-                      ,refresh = FALSE
-                      ,dt_hyper_fixed = NULL
-                      ) {
+robyn_run <- function(
+  InputCollect
+  ,plot_folder = getwd()
+  ,pareto_fronts = 1
+  ,plot_pareto = TRUE
+  ,refresh = FALSE
+  ,dt_hyper_fixed = NULL
+) {
 
   #####################################
   #### Set local environment
@@ -732,12 +733,13 @@ robyn_run <- function(InputCollect
 #'
 #' @export
 #'
-robyn_mmm <- function(hyper_collect
-                      , InputCollect
-                      , iterations = InputCollect$iterations
-                      , lambda.n = 100
-                      , lambda_fixed = NULL
-                      , refresh = FALSE) {
+robyn_mmm <- function(
+  hyper_collect
+  , InputCollect
+  , iterations = InputCollect$iterations
+  , lambda.n = 100
+  , lambda_fixed = NULL
+  , refresh = FALSE) {
 
   if (reticulate::py_module_available("nevergrad")) {
     ng <- reticulate::import("nevergrad", delay_load = TRUE)
@@ -1353,14 +1355,15 @@ robyn_mmm <- function(hyper_collect
 #' }
 #'
 #'
-robyn_response <- function(robyn_object = NULL
-                           , select_build = NULL
-                           , paid_media_var = NULL
-                           , select_model = NULL
-                           , Spend = NULL
-                           , dt_hyppar = NULL # OutputCollect$resultHypParam
-                           , dt_coef = NULL # OutputCollect$xDecompAgg
-                           , InputCollect = NULL# InputCollect
+robyn_response <- function(
+  robyn_object = NULL
+  , select_build = NULL
+  , paid_media_var = NULL
+  , select_model = NULL
+  , Spend = NULL
+  , dt_hyppar = NULL
+  , dt_coef = NULL
+  , InputCollect = NULL
 ) {
 
   ## get input
