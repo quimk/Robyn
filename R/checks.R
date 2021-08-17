@@ -7,6 +7,16 @@
 
 opts_pnd <- c("positive", "negative", "default")
 
+check_nas <- function(df) {
+  if (sum(is.na(df)) > 0) {
+    name <- deparse(substitute(df))
+    stop(paste(
+      "Dataset", name, "has missing values.",
+      "These values must be removed or fixed for the model to properly run"
+    ))
+  }
+}
+
 check_datevar <- function(dt_input, date_var = "auto") {
   if (date_var[1] == "auto") {
     is_date <- which(unlist(lapply(dt_input, is.Date)))
@@ -87,7 +97,7 @@ check_prophet <- function(dt_holidays, prophet_country, prophet_vars, prophet_si
     stop("Allowed values for 'prophet_vars' are: ", paste(opts, collapse = ", "))
   }
   if (is.null(prophet_country) | length(prophet_country) > 1 |
-      !prophet_country %in% unique(dt_holidays$country)) {
+    !prophet_country %in% unique(dt_holidays$country)) {
     stop(paste(
       "You must provide 1 country code in 'prophet_country' input.",
       length(unique(dt_holidays$country)), "countries are included:",
@@ -323,17 +333,22 @@ check_iteration <- function(calibration_input, iterations, trials) {
 }
 
 check_InputCollect <- function(list) {
-  names_list <- c("dt_input","paid_media_vars","paid_media_spends","context_vars",
-                  "organic_vars","all_ind_vars","date_var","dep_var",
-                  "rollingWindowStartWhich","rollingWindowEndWhich","mediaVarCount",
-                  "factor_vars","prophet_vars","prophet_signs","prophet_country",
-                  "intervalType","dt_holidays")
+  names_list <- c(
+    "dt_input", "paid_media_vars", "paid_media_spends", "context_vars",
+    "organic_vars", "all_ind_vars", "date_var", "dep_var",
+    "rollingWindowStartWhich", "rollingWindowEndWhich", "mediaVarCount",
+    "factor_vars", "prophet_vars", "prophet_signs", "prophet_country",
+    "intervalType", "dt_holidays"
+  )
   if (!all(names_list %in% names(list))) {
     not_present <- names_list[!names_list %in% names(list)]
-    stop(paste("Some elements where not provided in your inputs list:",
-               paste(not_present, collapse = ", ")))
+    stop(paste(
+      "Some elements where not provided in your inputs list:",
+      paste(not_present, collapse = ", ")
+    ))
   }
 
-  if (length(list$dt_input) <= 1)
+  if (length(list$dt_input) <= 1) {
     stop("Check your 'dt_input' object")
+  }
 }

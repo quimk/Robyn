@@ -155,41 +155,31 @@ data("dt_simulated_weekly")
 
 # load standard prophet holidays
 data("dt_prophet_holidays")
-
 \dontrun{
 InputCollect <- robyn_inputs(
-  dt_input = dt_simulated_weekly
-  ,dt_holidays = dt_prophet_holidays
-
-  ,date_var = "DATE"
-  ,dep_var = "revenue"
-  ,dep_var_type = "revenue"
-
-  ,prophet_vars = c("trend", "season", "holiday")
-  ,prophet_signs = c("default","default", "default")
-  ,prophet_country = "DE"
-
-  ,context_vars = c("competitor_sales_B", "events")
-  ,context_signs = c("default", "default")
-
-  ,paid_media_vars = c("tv_S", "ooh_S", "print_S", "facebook_I", "search_clicks_P")
-  ,paid_media_signs = c("positive", "positive","positive", "positive", "positive")
-  ,paid_media_spends = c("tv_S", "ooh_S", "print_S", "facebook_S", "search_S")
-
-  ,organic_vars = c("newsletter")
-  ,organic_signs = c("positive")
-
-  ,factor_vars = c("events")
-
-  ,window_start = "2016-11-23"
-  ,window_end = "2018-08-22"
-
-  ,adstock = "geometric"
-  ,iterations = 2000
-  ,trials = 5
-
-  ,hyperparameters = hyperparameters # to be defined separately
-  ,calibration_input = dt_calibration # to be defined separately
+  dt_input = dt_simulated_weekly,
+  dt_holidays = dt_prophet_holidays,
+  date_var = "DATE",
+  dep_var = "revenue",
+  dep_var_type = "revenue",
+  prophet_vars = c("trend", "season", "holiday"),
+  prophet_signs = c("default", "default", "default"),
+  prophet_country = "DE",
+  context_vars = c("competitor_sales_B", "events"),
+  context_signs = c("default", "default"),
+  paid_media_vars = c("tv_S", "ooh_S", "print_S", "facebook_I", "search_clicks_P"),
+  paid_media_signs = c("positive", "positive", "positive", "positive", "positive"),
+  paid_media_spends = c("tv_S", "ooh_S", "print_S", "facebook_S", "search_S"),
+  organic_vars = c("newsletter"),
+  organic_signs = c("positive"),
+  factor_vars = c("events"),
+  window_start = "2016-11-23",
+  window_end = "2018-08-22",
+  adstock = "geometric",
+  iterations = 2000,
+  trials = 5,
+  hyperparameters = hyperparameters # to be defined separately
+  , calibration_input = dt_calibration # to be defined separately
 )
 }
 }
