@@ -21,56 +21,53 @@ robyn_allocator(
 )
 }
 \arguments{
-\item{robyn_object}{A character specifying location of the Robyn.RData object
-that contains all previous modelling information.}
+\item{robyn_object}{Character. Path of the \code{Robyn.RData} object
+that contains all previous modeling information.}
 
-\item{select_build}{An integer. Default to the latest model build. \code{select_buil = 0}
+\item{select_build}{Integer. Default to the latest model build. \code{select_buil = 0}
 selects the initial model. \code{select_buil = 1} selects the first refresh model.}
 
-\item{InputCollect}{A List containing all input parameters for the model.
+\item{InputCollect}{List. Contains all input parameters for the model.
 Required when \code{robyn_object} is not provided.}
 
-\item{OutputCollect}{A List containing all model result. Required when \code{robyn_object}
-is not provided.}
+\item{OutputCollect}{List. Containing all model result.
+Required when \code{robyn_object} is not provided.}
 
-\item{select_model}{A character. A model \code{SolID}. When \code{robyn_object}
+\item{select_model}{Character. A model \code{SolID}. When \code{robyn_object}
 is provided, \code{select_model} defaults to the already selected \code{SolID}. When
-\code{robyn_object} is not provides, \code{select_model} must be provided with
-\code{InputCollect} and \code{OutputCollect} and must be one of \code{OutputCollect$allSolutions}}
+\code{robyn_object} is not provided, \code{select_model} must be provided with
+\code{InputCollect} and \code{OutputCollect}, and must be one of
+\code{OutputCollect$allSolutions}.}
 
-\item{optim_algo}{Default to \code{"SLSQP_AUGLAG"}, short for "Sequential Least-Squares
+\item{optim_algo}{Character. Default to \code{"SLSQP_AUGLAG"}, short for "Sequential Least-Squares
 Quadratic Programming" and "Augmented Lagrangian". Alternatively, "\code{"MMA_AUGLAG"},
 short for "Methods of Moving Asymptotes". More details see the documentation of
-NLopt [here](https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/)}
+NLopt \href{https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/}{here}.}
 
-\item{scenario}{A character. Accepts options are \code{"max_historical_response"} or
+\item{scenario}{Character. Accepted options are: \code{"max_historical_response"} or
 \code{"max_response_expected_spend"}. \code{"max_historical_response"} simulates the scenario
 "what's the optimal media spend allocation given the same average spend level in history?",
 while \code{"max_response_expected_spend"} simulates the scenario "what's the optimal media
 spend allocation of a given future spend level for a given period?"}
 
-\item{expected_spend}{A numeric value. The expected future spend volume. Only applies when
+\item{expected_spend}{Numeric. The expected future spend volume. Only applies when
 \code{scenario = "max_response_expected_spend"}.}
 
-\item{expected_spend_days}{An integer. The duration of the future spend volume in
+\item{expected_spend_days}{Integer. The duration of the future spend volume in
 \code{expected_spend}. Only applies when \code{scenario = "max_response_expected_spend"}.}
 
-\item{channel_constr_low}{Numeric vector. The lower bounds for each paid media variable when
-maximizing total media response. Must be between 0.01-1 and has same length and
-order as paid_media_vars}
+\item{channel_constr_low, channel_constr_up}{Numeric vector. The lower and upper bounds
+for each paid media variable when maximizing total media response. Must be between
+0.01-1 and has same length and order as \code{paid_media_vars}.}
 
-\item{channel_constr_up}{Numeric vector. The upper bounds for each paid media variable when
-maximizing total media response. Must be between 0.01-1 and has same length and
-order as paid_media_vars}
-
-\item{maxeval}{An integer. The maximum iteration of the global optimisation algorithm.
+\item{maxeval}{Integer. The maximum iteration of the global optimization algorithm.
 Defaults to 100000.}
 
-\item{constr_mode}{A character. Options are "eq" or "ineq", indicating constraits with
-equality or inequality}
+\item{constr_mode}{Character. Options are \code{"eq"} or \code{"ineq"},
+indicating constraints with equality or inequality.}
 }
 \value{
-A list object containing allocator result
+A list object containing allocator result.
 }
 \description{
 The \code{robyn_allocator()} function returns a new split of media
@@ -78,34 +75,37 @@ variable spends that maximizes the total media response.
 }
 \examples{
 \dontrun{
-
-## check media summary for selected model from the simulated data
+# Check media summary for selected model from the simulated data
 select_model <- "3_10_3"
-OutputCollect$xDecompAgg[solID == select_model & !is.na(mean_spend)
-                         , .(rn, coef,mean_spend, mean_response, roi_mean
-                             , total_spend, total_response=xDecompAgg, roi_total, solID)]
+OutputCollect$xDecompAgg[
+  solID == select_model & !is.na(mean_spend),
+  .(rn, coef, mean_spend, mean_response, roi_mean,
+    total_spend,
+    total_response = xDecompAgg, roi_total, solID
+  )
+]
 
-## Run allocator with \code{InputCollect} and \code{OutputCollect}
-## with \code{scenario = "max_historical_response"}
+# Run allocator with 'InputCollect' and 'OutputCollect'
+# with 'scenario = "max_historical_response"'
 AllocatorCollect <- robyn_allocator(
-  InputCollect = InputCollect
-  , OutputCollect = OutputCollect
-  , select_model = select_model
-  , scenario = "max_historical_response"
-  , channel_constr_low = c(0.7, 0.7, 0.7, 0.7, 0.7)
-  , channel_constr_up = c(1.2, 1.5, 1.5, 1.5, 1.5)
+  InputCollect = InputCollect,
+  OutputCollect = OutputCollect,
+  select_model = select_model,
+  scenario = "max_historical_response",
+  channel_constr_low = c(0.7, 0.7, 0.7, 0.7, 0.7),
+  channel_constr_up = c(1.2, 1.5, 1.5, 1.5, 1.5)
 )
 
-## Run allocator with \code{robyn_object} from the second model refresh
-## with \code{scenario = "max_response_expected_spend"}
+# Run allocator with a 'robyn_object' from the second model refresh
+# with 'scenario = "max_response_expected_spend"'
 AllocatorCollect <- robyn_allocator(
-  robyn_object = robyn_object
-  , select_build = 2
-  , scenario = "max_response_expected_spend"
-  , channel_constr_low = c(0.7, 0.7, 0.7, 0.7, 0.7)
-  , channel_constr_up = c(1.2, 1.5, 1.5, 1.5, 1.5)
-  , expected_spend = 100000
-  , expected_spend_days = 90
+  robyn_object = robyn_object,
+  select_build = 2,
+  scenario = "max_response_expected_spend",
+  channel_constr_low = c(0.7, 0.7, 0.7, 0.7, 0.7),
+  channel_constr_up = c(1.2, 1.5, 1.5, 1.5, 1.5),
+  expected_spend = 100000,
+  expected_spend_days = 90
 )
 }
 }

@@ -25,7 +25,7 @@
 #' head(dt_simulated_weekly)
 "dt_simulated_weekly"
 
-# dt_input <- fread('data/de_simulated_data.csv') 
+# dt_input <- fread('data/de_simulated_data.csv')
 # save(dt_input, file = "data/dt_input.RData", version = 2)
 
 ####################################################################

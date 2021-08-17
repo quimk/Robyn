@@ -9,7 +9,8 @@ robyn_engineering(InputCollect, refresh = FALSE)
 \arguments{
 \item{InputCollect}{Default to \code{InputCollect}}
 
-\item{refresh}{Default to FALSE. TRUE when using in robyn_refresh()}
+\item{refresh}{Boolean. Default to \code{FALSE}. \code{TRUE}
+when using in \code{robyn_refresh()}.}
 }
 \value{
 A list containing the all input parameters and modified input

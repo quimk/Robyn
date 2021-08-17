@@ -14,20 +14,21 @@ robyn_mmm(
 )
 }
 \arguments{
-\item{hyper_collect}{A list containing hyperparameter bounds. Defaults to
+\item{hyper_collect}{List. Containing hyperparameter bounds. Defaults to
 \code{InputCollect$hyperparameters}.}
 
-\item{InputCollect}{A List containing all input parameters for the model.}
+\item{InputCollect}{List. Contains all input parameters for the model.
+Required when \code{robyn_object} is not provided.}
 
-\item{iterations}{A integer. Number of iterations to run.}
+\item{iterations}{Integer. Number of iterations to run.}
 
-\item{lambda.n}{A integer. Number of lambda cross-validation in glmnet.
+\item{lambda.n}{Integer. Number of lambda cross-validation in \code{glmnet}.
 Defaults to 100.}
 
-\item{lambda_fixed}{A logical. \code{lambda_fixed = TRUE} when inputting
-old model results}
+\item{lambda_fixed}{Boolean. \code{lambda_fixed = TRUE} when inputting
+old model results.}
 
-\item{refresh}{A logical value. Set to \code{TRUE} when used in \code{robyn_refresh()}}
+\item{refresh}{Boolean. Set to \code{TRUE} when used in \code{robyn_refresh()}}
 }
 \description{
 The \code{robyn_mmm()} function activates Nevergrad to generate samples of

@@ -16,8 +16,8 @@ robyn_refresh(
 )
 }
 \arguments{
-\item{robyn_object}{A character. A path that includes object name
-and .RData extension. For example \code{robyn_object = "~/Desktop/Robyn.RData"}}
+\item{robyn_object}{Character. Path of the \code{Robyn.RData} object
+that contains all previous modeling information.}
 
 \item{dt_input}{A data.frame. Should include all previous data and newly added
 data for the refresh.}
@@ -81,24 +81,24 @@ data("dt_prophet_holidays")
 
 # Run \code{robyn_refresh()} with 13 weeks cadance in auto mode
 Robyn <- robyn_refresh(
-  robyn_object = robyn_object
-  , dt_input = dt_simulated_weekly
-  , dt_holidays = dt_prophet_holidays
-  , refresh_steps = 13
-  , refresh_mode = "auto"
-  , refresh_iters = 200
-  , refresh_trials = 5
+  robyn_object = robyn_object,
+  dt_input = dt_simulated_weekly,
+  dt_holidays = dt_prophet_holidays,
+  refresh_steps = 13,
+  refresh_mode = "auto",
+  refresh_iters = 200,
+  refresh_trials = 5
 )
 
 # Run \code{robyn_refresh()} with 4 weeks cadance in manual mode
 Robyn <- robyn_refresh(
-  robyn_object = robyn_object
-  , dt_input = dt_simulated_weekly
-  , dt_holidays = dt_prophet_holidays
-  , refresh_steps = 4
-  , refresh_mode = "manual"
-  , refresh_iters = 200
-  , refresh_trials = 5
+  robyn_object = robyn_object,
+  dt_input = dt_simulated_weekly,
+  dt_holidays = dt_prophet_holidays,
+  refresh_steps = 4,
+  refresh_mode = "manual",
+  refresh_iters = 200,
+  refresh_trials = 5
 )
 }
 }

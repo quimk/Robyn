@@ -14,21 +14,22 @@ robyn_run(
 )
 }
 \arguments{
-\item{InputCollect}{A List containing all input parameters for the model.}
+\item{InputCollect}{List. Contains all input parameters for the model.
+Required when \code{robyn_object} is not provided.}
 
-\item{plot_folder}{A character specifying location to saving plots. Default
-to \code{robyn_object} and saves plot in the same directory as robyn_object}
+\item{plot_folder}{Character. Path for saving plots. Default
+to \code{robyn_object} and saves plot in the same directory as \code{robyn_object}.}
 
-\item{pareto_fronts}{A integer. Number of Pareto fronts for the output.
-\code{pareto_fronts = 1} returns the best models trading off NRMSE & DECOMP.RSSD.
-Increase \code{pareto_fronts} to get more model choices.}
+\item{pareto_fronts}{Integer. Number of Pareto fronts for the output.
+\code{pareto_fronts = 1} returns the best models trading off \code{NRMSE} &
+\code{DECOMP.RSSD}. Increase \code{pareto_fronts} to get more model choices.}
 
-\item{plot_pareto}{A logical value. Set to \code{FALSE} to deactivate plotting
-and saving model onepagers. Used when testing models.}
+\item{plot_pareto}{Boolean. Set to \code{FALSE} to deactivate plotting
+and saving model one-pagers. Used when testing models.}
 
-\item{refresh}{A logical value. Set to \code{TRUE} when used in \code{robyn_refresh()}}
+\item{refresh}{Boolean. Set to \code{TRUE} when used in \code{robyn_refresh()}}
 
-\item{dt_hyper_fixed}{A data.frame. Only provide when loading old model results.
+\item{dt_hyper_fixed}{data.frame. Only provide when loading old model results.
 It consumes hyperparameters from saved csv \code{pareto_hyperparameters.csv}.}
 }
 \description{
@@ -36,13 +37,12 @@ The \code{robyn_run()} function consumes output from \code{robyn_input()},
 runs the \code{robyn_mmm()} functions and plots and collects the result.
 }
 \examples{
-
 \dontrun{
 OutputCollect <- robyn_run(
-  InputCollect = InputCollect
-  , plot_folder = robyn_object
-  , pareto_fronts = 3
-  , plot_pareto = TRUE
+  InputCollect = InputCollect,
+  plot_folder = robyn_object,
+  pareto_fronts = 3,
+  plot_pareto = TRUE
 )
 }
 }

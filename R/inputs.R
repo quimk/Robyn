@@ -91,7 +91,6 @@
 #' @param InputCollect Default to NULL. \code{robyn_inputs}'s output when
 #' \code{hyperparameters} are not yet set.
 #' @examples
-#'
 #' # load similated input data
 #' data("dt_simulated_weekly")
 #'
@@ -395,7 +394,8 @@ hyper_names <- function(adstock, all_media) {
 #' impressions for Facebook variables.
 #'
 #' @param InputCollect Default to \code{InputCollect}
-#' @param refresh Default to FALSE. TRUE when using in robyn_refresh()
+#' @param refresh Boolean. Default to \code{FALSE}. \code{TRUE}
+#' when using in \code{robyn_refresh()}.
 #' @return A list containing the all input parameters and modified input
 #' data. The list is passed to further functions like
 #' \code{robyn_run()}, \code{robyn_save()} and \code{robyn_allocator()}.

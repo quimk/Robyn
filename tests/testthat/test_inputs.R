@@ -10,30 +10,31 @@ test_that("InputCollect part 1: data wrangling", {
   InputCollect1 <- readRDS(system.file("/tests/auxs/InputCollect1.RDS", package = "Robyn"))
   expect_equal(suppressMessages(suppressWarnings(
     robyn_inputs(
-      dt_input = Robyn::dt_simulated_weekly
-      ,dt_holidays = Robyn::dt_prophet_holidays
-      ,date_var = "DATE"
-      ,dep_var = "revenue"
-      ,dep_var_type = "revenue"
-      ,prophet_vars = c("trend", "season", "holiday")
-      ,prophet_signs = c("default","default", "default")
-      ,prophet_country = "DE"
-      ,context_vars = c("competitor_sales_B", "events")
-      ,context_signs = c("default", "default")
-      ,paid_media_vars = c("tv_S","ooh_S"	,	"print_S"	,"facebook_I"	,"search_clicks_P")
-      ,paid_media_signs = c("positive", "positive","positive", "positive", "positive")
-      ,paid_media_spends = c("tv_S","ooh_S",	"print_S"	,"facebook_S"	,"search_S")
-      ,organic_vars = c("newsletter")
-      ,organic_signs = c("positive")
-      ,factor_vars = c("events")
-      ,cores = 6
-      ,window_start = "2016-11-23"
-      ,window_end = "2018-08-22"
-      ,adstock = "geometric"
-      ,iterations = 100
-      ,nevergrad_algo = "TwoPointsDE"
-      ,trials = 2)
-      )), InputCollect1)
+      dt_input = Robyn::dt_simulated_weekly,
+      dt_holidays = Robyn::dt_prophet_holidays,
+      date_var = "DATE",
+      dep_var = "revenue",
+      dep_var_type = "revenue",
+      prophet_vars = c("trend", "season", "holiday"),
+      prophet_signs = c("default", "default", "default"),
+      prophet_country = "DE",
+      context_vars = c("competitor_sales_B", "events"),
+      context_signs = c("default", "default"),
+      paid_media_vars = c("tv_S", "ooh_S", "print_S", "facebook_I", "search_clicks_P"),
+      paid_media_signs = c("positive", "positive", "positive", "positive", "positive"),
+      paid_media_spends = c("tv_S", "ooh_S", "print_S", "facebook_S", "search_S"),
+      organic_vars = c("newsletter"),
+      organic_signs = c("positive"),
+      factor_vars = c("events"),
+      cores = 6,
+      window_start = "2016-11-23",
+      window_end = "2018-08-22",
+      adstock = "geometric",
+      iterations = 100,
+      nevergrad_algo = "TwoPointsDE",
+      trials = 2
+    )
+  )), InputCollect1)
 })
 
 # test_that("robyn_engineering", {

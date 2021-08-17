@@ -4,14 +4,14 @@
 \alias{plot_saturation}
 \title{Saturation help plot}
 \usage{
-plot_saturation(plotResponseCurves)
+plot_saturation(plot = TRUE)
 }
 \arguments{
-\item{plotResponseCurves}{A logical value.}
+\item{plot}{Boolean. Do you wish to return the plot?}
 }
 \description{
 Produce example plots for the Hill saturation curve.
 }
 \examples{
-plot_saturation(TRUE)
+plot_saturation()
 }

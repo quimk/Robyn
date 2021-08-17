@@ -41,22 +41,24 @@
 "_PACKAGE"
 
 # data.table column names used
-dt_vars <- c("Elapsed","ElapsedAccum","Km","Vmax","actual","avg_decay_rate","bestModRF","channel",
-             "channels","country","cpa_total","decay_accumulated","decomp.rssd","decompAbsScaled",
-             "decomp_perc","decomp_perc_prev","depVarHat","dep_var","ds","dsMonthStart","dsWeekStart",
-             "duration","effect_share","effect_share_refresh","error_dis","exposure","halflife",
-             "holiday","i.effect_share_refresh","i.robynPareto","i.solID","i.spend_share_refresh",
-             "id","initResponseUnit","initResponseUnitTotal","initSpendUnit","iterNG","iterPar",
-             "iterations","label","liftAbs","liftEndDate","liftMedia","liftStart","liftStartDate",
-             "mape","mape.qt10","mape_lift","mean_response","mean_spend","mean_spend_scaled",
-             "models","next_unit_response","nrmse","optmResponseUnit","optmResponseUnitTotal",
-             "optmResponseUnitTotalLift","optmSpendUnit","optmSpendUnitTotalDelta","param",
-             "perc","percentage","pos","predicted","refreshStatus","response","rn","robynPareto",
-             "roi","roi_mean","roi_total","rsq_lm","rsq_nls","rsq_train","s0","scale_shape_halflife",
-             "season","sequential","shape","solID","spend","spend_share","spend_share_refresh",
-             "theta","theta_halflife","total_spend","trend","trial","type","value","variable",
-             "weekday","x","xDecompAgg","xDecompMeanNon0","xDecompMeanNon0Perc",
-             "xDecompMeanNon0PercRF","xDecompMeanNon0RF","xDecompPerc","xDecompPercRF","y","yhat")
+dt_vars <- c(
+  "Elapsed", "ElapsedAccum", "Km", "Vmax", "actual", "avg_decay_rate", "bestModRF", "channel",
+  "channels", "country", "cpa_total", "decay_accumulated", "decomp.rssd", "decompAbsScaled",
+  "decomp_perc", "decomp_perc_prev", "depVarHat", "dep_var", "ds", "dsMonthStart", "dsWeekStart",
+  "duration", "effect_share", "effect_share_refresh", "error_dis", "exposure", "halflife",
+  "holiday", "i.effect_share_refresh", "i.robynPareto", "i.solID", "i.spend_share_refresh",
+  "id", "initResponseUnit", "initResponseUnitTotal", "initSpendUnit", "iterNG", "iterPar",
+  "iterations", "label", "liftAbs", "liftEndDate", "liftMedia", "liftStart", "liftStartDate",
+  "mape", "mape.qt10", "mape_lift", "mean_response", "mean_spend", "mean_spend_scaled",
+  "models", "next_unit_response", "nrmse", "optmResponseUnit", "optmResponseUnitTotal",
+  "optmResponseUnitTotalLift", "optmSpendUnit", "optmSpendUnitTotalDelta", "param",
+  "perc", "percentage", "pos", "predicted", "refreshStatus", "response", "rn", "robynPareto",
+  "roi", "roi_mean", "roi_total", "rsq_lm", "rsq_nls", "rsq_train", "s0", "scale_shape_halflife",
+  "season", "sequential", "shape", "solID", "spend", "spend_share", "spend_share_refresh",
+  "theta", "theta_halflife", "total_spend", "trend", "trial", "type", "value", "variable",
+  "weekday", "x", "xDecompAgg", "xDecompMeanNon0", "xDecompMeanNon0Perc",
+  "xDecompMeanNon0PercRF", "xDecompMeanNon0RF", "xDecompPerc", "xDecompPercRF", "y", "yhat"
+)
 
 if (getRversion() >= "2.15.1") {
   globalVariables(c(".", dt_vars))

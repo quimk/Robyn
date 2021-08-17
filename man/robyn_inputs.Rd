@@ -149,7 +149,6 @@ library \code{prophet} and fit a nonlinear model to spend and exposure
 metrics in case exposure metrics are used in \code{paid_media_vars}.
 }
 \examples{
-
 # load similated input data
 data("dt_simulated_weekly")
 

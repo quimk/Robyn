@@ -58,7 +58,6 @@ robyn_object <- "~/Desktop/Robyn.RData"
 #### Step 2a: For first time user: Model specification in 4 steps
 
 #### 2a-1: First, specify input data & model parameters
-
 InputCollect <- robyn_inputs(
   dt_input = dt_simulated_weekly
   ,dt_holidays = dt_prophet_holidays
@@ -367,7 +366,7 @@ AllocatorCollect <- robyn_allocator(
 # optimal_response <- robyn_response(robyn_object = robyn_object
 #                                    , select_build = 0
 #                                    , paid_media_var = select_media
-#                                    , Spend = optimal_spend)
+#                                    , spend = optimal_spend)
 # round(optimal_response_allocator) == round(optimal_response)
 # optimal_response_allocator; optimal_response
 
@@ -434,7 +433,7 @@ Response1 <- robyn_response(
   robyn_object = robyn_object
   #, select_build = 1 # 2 means the second refresh model. 0 means the initial model
   , paid_media_var = "search_clicks_P"
-  , Spend = Spend1)
+  , spend = Spend1)
 Response1/Spend1 # ROI for search 80k
 
 # Get response for 81k
@@ -443,7 +442,7 @@ Response2 <- robyn_response(
   robyn_object = robyn_object
   #, select_build = 1
   , paid_media_var = "search_clicks_P"
-  , Spend = Spend2)
+  , spend = Spend2)
 Response2/Spend2 # ROI for search 81k
 
 # Marginal ROI of next 1000$ from 80k spend level for search

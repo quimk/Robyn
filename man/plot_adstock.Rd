@@ -4,14 +4,14 @@
 \alias{plot_adstock}
 \title{Adstocking help plot}
 \usage{
-plot_adstock(plotAdstockCurves)
+plot_adstock(plot = TRUE)
 }
 \arguments{
-\item{plotAdstockCurves}{A logical value.}
+\item{plot}{Boolean. Do you wish to return the plot?}
 }
 \description{
 Produce example plots for both Geometric and Weibull adstock.
 }
 \examples{
-plot_adstock(TRUE)
+plot_adstock()
 }
