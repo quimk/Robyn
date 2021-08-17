@@ -49,3 +49,62 @@ The \code{robyn_response()} function returns the response for a given
 spend level of a given \code{paid_media_vars} from a selected model
 result from a selected model build (initial model, refresh model etc.).
 }
+\examples{
+\dontrun{
+## Get marginal response (mResponse) and marginal ROI (mROI) for
+## the next 1k on 80k for search_clicks_P, when provided the saved
+## robyn_object by the robyn_save() function.
+
+# Get response for 80k
+Spend1 <- 80000
+Response1 <- robyn_response(
+  robyn_object = robyn_object
+  , paid_media_var = "search_clicks_P"
+  , Spend = Spend1
+  )
+
+# Get ROI for 80k
+Response1/Spend1 # ROI for search 80k
+
+# Get response for 81k
+Spend2 <- Spend1+1000
+Response2 <- robyn_response(
+  robyn_object = robyn_object
+  , paid_media_var = "search_clicks_P"
+  , Spend = Spend2
+  )
+
+# Get ROI for 81k
+Response2/Spend2 # ROI for search 81k
+
+# Get marginal response (mResponse) for the next 1k on 80k
+Response2-Response1
+
+# Get marginal ROI (mROI) for the next 1k on 80k
+(Response2-Response1)/(Spend2-Spend1)
+
+
+## Get response for 80k for search_clicks_P from the third model refresh
+
+robyn_response(
+  robyn_object = robyn_object
+  , select_build = 3
+  , paid_media_var = "search_clicks_P"
+  , Spend = 80000
+  )
+
+## Get response for 80k for search_clicks_P from the a certain model SolID
+## in the current model output in the global environment
+
+robyn_response(
+  , paid_media_var = "search_clicks_P"
+  , select_model = "3_10_3"
+  , Spend = 80000
+  , dt_hyppar = OutputCollect$resultHypParam
+  , dt_coef = OutputCollect$xDecompAgg
+  , InputCollect = InputCollect
+  )
+}
+
+
+}

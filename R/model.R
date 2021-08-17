@@ -1294,13 +1294,12 @@ robyn_mmm <- function(hyper_collect
 #' \code{select_model}, \code{dt_hyppar} and \code{InputCollect}.
 #' @param InputCollect A List containing all input parameters for the model.
 #' Required when \code{robyn_object} is not provided.
-#'
+#' @export
 #' @examples
-#'
 #' \dontrun{
 #' ## Get marginal response (mResponse) and marginal ROI (mROI) for
 #' ## the next 1k on 80k for search_clicks_P, when provided the saved
-#' ## \code{robyn_object} by the \code{robyn_save()} function.
+#' ## robyn_object by the robyn_save() function.
 #'
 #' # Get response for 80k
 #' Spend1 <- 80000
@@ -1329,7 +1328,7 @@ robyn_mmm <- function(hyper_collect
 #'
 #' # Get marginal ROI (mROI) for the next 1k on 80k
 #' (Response2-Response1)/(Spend2-Spend1)
-#' }
+#'
 #'
 #' ## Get response for 80k for search_clicks_P from the third model refresh
 #'
@@ -1345,14 +1344,14 @@ robyn_mmm <- function(hyper_collect
 #'
 #' robyn_response(
 #'   , paid_media_var = "search_clicks_P"
-#'   , select_model = "3_10_3
+#'   , select_model = "3_10_3"
 #'   , Spend = 80000
 #'   , dt_hyppar = OutputCollect$resultHypParam
 #'   , dt_coef = OutputCollect$xDecompAgg
 #'   , InputCollect = InputCollect
 #'   )
+#' }
 #'
-#' @export
 #'
 robyn_response <- function(robyn_object = NULL
                            , select_build = NULL
