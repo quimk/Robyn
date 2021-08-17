@@ -6,7 +6,7 @@
 \usage{
 robyn_allocator(
   robyn_object = NULL,
-  select_run = NULL,
+  select_build = NULL,
   InputCollect = NULL,
   OutputCollect = NULL,
   select_model = NULL,
@@ -23,7 +23,7 @@ robyn_allocator(
 \arguments{
 \item{robyn_object}{xxx}
 
-\item{select_run}{xxx}
+\item{select_build}{xxx}
 
 \item{InputCollect}{xxx}
 

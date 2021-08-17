@@ -6,7 +6,7 @@
 \usage{
 robyn_response(
   robyn_object = NULL,
-  select_run = NULL,
+  select_build = NULL,
   paid_media_var = NULL,
   select_model = NULL,
   Spend = NULL,
@@ -16,28 +16,36 @@ robyn_response(
 )
 }
 \arguments{
-\item{robyn_object}{xxx}
+\item{robyn_object}{A character specifying location of the Robyn.RData object
+that contains all previous modelling information.}
 
-\item{select_run}{xxx}
+\item{select_build}{An integer. Default to the latest model build. \code{select_buil = 0}
+selects the initial model. \code{select_buil = 1} selects the first refresh model.}
 
-\item{paid_media_var}{xxx}
+\item{paid_media_var}{A character. Selected paid media variable for the response.
+Must be within \code{InputCollect$paid_media_vars}}
 
-\item{select_model}{xxx}
+\item{select_model}{A character. A model \code{SolID}. When \code{robyn_object}
+is provided, \code{select_model} defaults to the already selected \code{SolID}. When
+\code{robyn_object} is not provides, \code{select_model} must be provided with
+\code{dt_hyppar}, \code{dt_coef} and \code{InputCollect} together and has to be
+a \code{SolID} within \code{dt_hyppar}}
 
-\item{Spend}{xxx}
+\item{Spend}{A numeric value. The desired spend level to return a response for.}
 
-\item{dt_hyppar}{xxx}
+\item{dt_hyppar}{A data.table. When \code{robyn_object} is not provided, use
+\code{dt_hyppar = OutputCollect$resultHypParam}. It must be provided along
+\code{select_model}, \code{dt_coef} and \code{InputCollect}.}
 
-\item{dt_coef}{xxx}
+\item{dt_coef}{A data.table. When \code{robyn_object} is not provided, use
+\code{dt_coef = OutputCollect$xDecompAgg}. It must be provided along
+\code{select_model}, \code{dt_hyppar} and \code{InputCollect}.}
 
-\item{InputCollect}{xxxxxx}
+\item{InputCollect}{A List containing all input parameters for the model.
+Required when \code{robyn_object} is not provided.}
 }
 \description{
-The \code{robyn_mmm()} function activates Nevergrad to generate samples of
-hyperparameters, conducts media transformation within each loop, fits the
-Ridge regression, calibrates the model optionally, decomposes responses
-and collects the result. It's an inner function within \code{robyn_run()}.
-}
-\examples{
-
+The \code{robyn_response()} function returns the response for a given
+spend level of a given \code{paid_media_vars} from a selected model
+result from a selected model build (initial model, refresh model etc.).
 }

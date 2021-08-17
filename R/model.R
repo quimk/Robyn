@@ -1270,39 +1270,92 @@ robyn_mmm <- function(hyper_collect
 ####################################################################
 #' The response function
 #'
-#' The \code{robyn_mmm()} function activates Nevergrad to generate samples of
-#' hyperparameters, conducts media transformation within each loop, fits the
-#' Ridge regression, calibrates the model optionally, decomposes responses
-#' and collects the result. It's an inner function within \code{robyn_run()}.
+#' The \code{robyn_response()} function returns the response for a given
+#' spend level of a given \code{paid_media_vars} from a selected model
+#' result from a selected model build (initial model, refresh model etc.).
 #'
-#' @param robyn_object xxx
-#' @param select_run xxx
-#' @param paid_media_var xxx
-#' @param select_model xxx
-#' @param Spend xxx
-#' @param dt_hyppar xxx
-#' @param dt_coef xxx
+#' @param robyn_object A character specifying location of the Robyn.RData object
+#' that contains all previous modelling information.
+#' @param select_build An integer. Default to the latest model build. \code{select_buil = 0}
+#' selects the initial model. \code{select_buil = 1} selects the first refresh model.
+#' @param paid_media_var A character. Selected paid media variable for the response.
+#' Must be within \code{InputCollect$paid_media_vars}
+#' @param select_model A character. A model \code{SolID}. When \code{robyn_object}
+#' is provided, \code{select_model} defaults to the already selected \code{SolID}. When
+#' \code{robyn_object} is not provides, \code{select_model} must be provided with
+#' \code{dt_hyppar}, \code{dt_coef} and \code{InputCollect} together and has to be
+#' a \code{SolID} within \code{dt_hyppar}
+#' @param Spend A numeric value. The desired spend level to return a response for.
+#' @param dt_hyppar A data.table. When \code{robyn_object} is not provided, use
+#' \code{dt_hyppar = OutputCollect$resultHypParam}. It must be provided along
+#' \code{select_model}, \code{dt_coef} and \code{InputCollect}.
+#' @param dt_coef A data.table. When \code{robyn_object} is not provided, use
+#' \code{dt_coef = OutputCollect$xDecompAgg}. It must be provided along
+#' \code{select_model}, \code{dt_hyppar} and \code{InputCollect}.
 #' @param InputCollect A List containing all input parameters for the model.
+#' Required when \code{robyn_object} is not provided.
+#'
 #' @examples
 #'
+#' \dontrun{
+#' ## Get marginal response (mResponse) and marginal ROI (mROI) for
+#' ## the next 1k on 80k for search_clicks_P, when provided the saved
+#' ## \code{robyn_object} by the \code{robyn_save()} function.
+#'
+#' # Get response for 80k
+#' Spend1 <- 80000
+#' Response1 <- robyn_response(
+#'   robyn_object = robyn_object
+#'   , paid_media_var = "search_clicks_P"
+#'   , Spend = Spend1
+#'   )
+#'
+#' # Get ROI for 80k
+#' Response1/Spend1 # ROI for search 80k
+#'
+#' # Get response for 81k
+#' Spend2 <- Spend1+1000
+#' Response2 <- robyn_response(
+#'   robyn_object = robyn_object
+#'   , paid_media_var = "search_clicks_P"
+#'   , Spend = Spend2
+#'   )
+#'
+#' # Get ROI for 81k
+#' Response2/Spend2 # ROI for search 81k
+#'
+#' # Get marginal response (mResponse) for the next 1k on 80k
+#' Response2-Response1
+#'
+#' # Get marginal ROI (mROI) for the next 1k on 80k
+#' (Response2-Response1)/(Spend2-Spend1)
+#' }
+#'
+#' ## Get response for 80k for search_clicks_P from the third model refresh
+#'
+#' robyn_response(
+#'   robyn_object = robyn_object
+#'   , select_build = 3
+#'   , paid_media_var = "search_clicks_P"
+#'   , Spend = 80000
+#'   )
+#'
+#' ## Get response for 80k for search_clicks_P from the a certain model SolID
+#' ## in the current model output in the global environment
+#'
+#' robyn_response(
+#'   , paid_media_var = "search_clicks_P"
+#'   , select_model = "3_10_3
+#'   , Spend = 80000
+#'   , dt_hyppar = OutputCollect$resultHypParam
+#'   , dt_coef = OutputCollect$xDecompAgg
+#'   , InputCollect = InputCollect
+#'   )
+#'
 #' @export
 #'
-####################################################################
-#' Robyn response function
-#'
-#' Describe function.
-#'
-#' @param robyn_object xxx
-#' @param select_run xxx
-#' @param paid_media_var xxx
-#' @param select_model xxx
-#' @param Spend xxx
-#' @param dt_hyppar xxx
-#' @param dt_coef xxx
-#' @param InputCollect xxxxxx
-#' @export
 robyn_response <- function(robyn_object = NULL
-                           , select_run = NULL
+                           , select_build = NULL
                            , paid_media_var = NULL
                            , select_model = NULL
                            , Spend = NULL
@@ -1319,15 +1372,15 @@ robyn_response <- function(robyn_object = NULL
     objectPath <- substr(robyn_object, start = 1, stop = max(gregexpr("/|\\\\", robyn_object)[[1]]))
     Robyn <- get(objectName)
 
-    select_run_all <- 0:(length(Robyn)-1)
-    if (is.null(select_run)) {
-      select_run <- max(select_run_all)
-      message("Using latest model: ", ifelse(select_run==0, "initial model",paste0("refresh model nr.",select_run))," for the response function. Use parameter select_run to specify which run to use")
+    select_build_all <- 0:(length(Robyn)-1)
+    if (is.null(select_build)) {
+      select_build <- max(select_build_all)
+      message("Using latest model: ", ifelse(select_build==0, "initial model",paste0("refresh model nr.",select_build))," for the response function. Use parameter select_build to specify which run to use")
     }
 
-    if (!(select_run %in% select_run_all) | length(select_run) !=1) {stop("select_run must be one value of ", paste(select_run_all, collapse = ", "))}
+    if (!(select_build %in% select_build_all) | length(select_build) !=1) {stop("select_build must be one value of ", paste(select_build_all, collapse = ", "))}
 
-    listName <- ifelse(select_run == 0, "listInit", paste0("listRefresh",select_run))
+    listName <- ifelse(select_build == 0, "listInit", paste0("listRefresh",select_build))
     InputCollect <- Robyn[[listName]][["InputCollect"]]
     OutputCollect <- Robyn[[listName]][["OutputCollect"]]
     dt_hyppar <- OutputCollect$resultHypParam

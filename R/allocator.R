@@ -11,7 +11,7 @@
 #' Describe function.
 #'
 #' @param robyn_object xxx
-#' @param select_run xxx
+#' @param select_build xxx
 #' @param InputCollect xxx
 #' @param OutputCollect xxx
 #' @param select_model xxx
@@ -26,7 +26,7 @@
 #' @return List object
 #' @export
 robyn_allocator <- function(robyn_object = NULL
-                            ,select_run = NULL
+                            ,select_build = NULL
                             ,InputCollect = NULL
                             ,OutputCollect = NULL
                             ,select_model = NULL
@@ -51,15 +51,15 @@ robyn_allocator <- function(robyn_object = NULL
     objectPath <- substr(robyn_object, start = 1, stop = max(gregexpr("/|\\\\", robyn_object)[[1]]))
     Robyn <- get(objectName)
 
-    select_run_all <- 0:(length(Robyn)-1)
-    if (is.null(select_run)) {
-      select_run <- max(select_run_all)
-      message("Using latest model: ", ifelse(select_run==0, "initial model",paste0("refresh model nr.",select_run))," for the response function. select_run = 0 selects initial model, 1 the first refresh etc")
+    select_build_all <- 0:(length(Robyn)-1)
+    if (is.null(select_build)) {
+      select_build <- max(select_build_all)
+      message("Using latest model: ", ifelse(select_build==0, "initial model",paste0("refresh model nr.",select_build))," for the response function. select_build = 0 selects initial model, 1 the first refresh etc")
     }
 
-    if (!(select_run %in% select_run_all) | length(select_run) !=1) {stop("select_run must be one value of ", paste(select_run_all, collapse = ", "))}
+    if (!(select_build %in% select_build_all) | length(select_build) !=1) {stop("select_build must be one value of ", paste(select_build_all, collapse = ", "))}
 
-    listName <- ifelse(select_run == 0, "listInit", paste0("listRefresh",select_run))
+    listName <- ifelse(select_build == 0, "listInit", paste0("listRefresh",select_build))
     InputCollect <- Robyn[[listName]][["InputCollect"]]
     OutputCollect <- Robyn[[listName]][["OutputCollect"]]
     select_model <- OutputCollect$selectID

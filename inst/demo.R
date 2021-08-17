@@ -365,7 +365,7 @@ AllocatorCollect <- robyn_allocator(
 # optimal_response_allocator <- AllocatorCollect$dt_optimOut[channels== select_media
 #                                                            , optmResponseUnit]
 # optimal_response <- robyn_response(robyn_object = robyn_object
-#                                    , select_run = 0
+#                                    , select_build = 0
 #                                    , paid_media_var = select_media
 #                                    , Spend = optimal_spend)
 # round(optimal_response_allocator) == round(optimal_response)
@@ -407,7 +407,7 @@ Robyn <- robyn_refresh(
 
 AllocatorCollect <- robyn_allocator(
   robyn_object = robyn_object
-  #, select_run = 0 # 0 is initial model, 1 is first refresh etc. Default to the latest refresh
+  #, select_build = 0 # 0 is initial model, 1 is first refresh etc. Default to the latest refresh
   , scenario = "max_historical_response" # "max_historical_response"
   #or "max_response_expected_spend"
   , channel_constr_low = c(0.7, 0.7, 0.7, 0.7, 0.7) # must be between 0.01-1 and has
@@ -432,7 +432,7 @@ AllocatorCollect <- robyn_allocator(
 Spend1 <- 80000
 Response1 <- robyn_response(
   robyn_object = robyn_object
-  #, select_run = 1 # 2 means the second refresh model. 0 means the initial model
+  #, select_build = 1 # 2 means the second refresh model. 0 means the initial model
   , paid_media_var = "search_clicks_P"
   , Spend = Spend1)
 Response1/Spend1 # ROI for search 80k
@@ -441,7 +441,7 @@ Response1/Spend1 # ROI for search 80k
 Spend2 <- Spend1+1000
 Response2 <- robyn_response(
   robyn_object = robyn_object
-  #, select_run = 1
+  #, select_build = 1
   , paid_media_var = "search_clicks_P"
   , Spend = Spend2)
 Response2/Spend2 # ROI for search 81k
