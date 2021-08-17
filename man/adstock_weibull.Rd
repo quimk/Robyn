@@ -7,12 +7,17 @@
 adstock_weibull(x, shape, scale)
 }
 \arguments{
-\item{x}{xxx}
+\item{x}{A numeric vector.}
 
-\item{shape}{xxx}
+\item{shape}{A numeric value. The shape parameter controls the decay shape.
+The larger the shape value, the more S-shape the curve shows. The smaller the
+shape value, the more L-shape the curve shows.}
 
-\item{scale}{xxx}
+\item{scale}{A numeric value. The scale parameter controls the decay inflexion
+point. The larger the scale value, the later the inflexion point occurs.}
 }
 \description{
-Describe function.
+The Weibull adstock function is a two-parametric adstock function that allows
+changing decay rate over time, compared to the fixed decay rate over time as
+in Geomeric adstock.
 }

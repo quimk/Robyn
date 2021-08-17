@@ -2,13 +2,13 @@
 % Please edit documentation in R/transformation.R
 \name{plot_saturation}
 \alias{plot_saturation}
-\title{Saturattion help plot}
+\title{Saturation help plot}
 \usage{
 plot_saturation(plotResponseCurves)
 }
 \arguments{
-\item{plotResponseCurves}{xxx}
+\item{plotResponseCurves}{A logical value.}
 }
 \description{
-Describe function.
+Produce example plots for the Hill saturation curve.
 }

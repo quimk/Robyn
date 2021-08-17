@@ -7,10 +7,10 @@
 adstock_geometric(x, theta)
 }
 \arguments{
-\item{x}{xxx}
+\item{x}{A numeric vector.}
 
-\item{theta}{xxx}
+\item{theta}{A numeric value. Indicates the decay rate of the geometric function.}
 }
 \description{
-Describe function.
+The geometric adstock function is the classic one-parametric adstock function.
 }

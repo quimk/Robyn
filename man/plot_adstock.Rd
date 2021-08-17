@@ -7,8 +7,8 @@
 plot_adstock(plotAdstockCurves)
 }
 \arguments{
-\item{plotAdstockCurves}{xxx}
+\item{plotAdstockCurves}{A logical value.}
 }
 \description{
-Describe function.
+Produce example plots for both Geometric and Weibull adstock.
 }

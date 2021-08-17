@@ -7,14 +7,18 @@
 saturation_hill(x, alpha, gamma, x_marginal = NULL)
 }
 \arguments{
-\item{x}{xxx}
+\item{x}{A numeric vector.}
 
-\item{alpha}{xxx}
+\item{alpha}{A numeric value. Alpha controls the shape of the saturation curve.
+The larger the alpha, the more S-shape. The smaller, the more C-shape.}
 
-\item{gamma}{xxx}
+\item{gamma}{A numeric value. Gamma controls the inflexion point of the
+saturation curve. The larger the gamma, the later the inflexion point occurs.}
 
-\item{x_marginal}{xxxxxx}
+\item{x_marginal}{A numeric value. When provided, the function returns the
+Hill-transformed value of the x_marginal input.}
 }
 \description{
-Describe function.
+The Hill function applied here is a two-parametric version of the
+function that allows the saturation curve to flip between S and C shape.
 }

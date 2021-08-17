@@ -7,14 +7,19 @@
 mic_men(x, Vmax, Km, reverse = FALSE)
 }
 \arguments{
-\item{x}{xxx}
+\item{x}{A numeric value or a numeric vector. Input media spend when
+\code{reverse = FALSE}. Input media exposure metrics (impression, clicks
+, GRPs etc.) when \code{reverse = TRUE}}
 
-\item{Vmax}{xxx}
+\item{Vmax}{A numeric value. Indicates maximum rate achieved by the system}
 
-\item{Km}{xxx}
+\item{Km}{A numeric value. The Michaelis constant.}
 
-\item{reverse}{xxx}
+\item{reverse}{A logical value. Input media spend when \code{reverse = FALSE}.
+Input media exposure metrics (impression, clicks, GRPs etc.) when \code{reverse = TRUE}}
 }
 \description{
-Describe function.
+The Michaelis-Menten function is used to fit the spend exposure relationship for paid media
+variables, when exposure metrics like impressions, clicks or GRPs are provided in
+\code{paid_media_vars} instead of spend metric.
 }

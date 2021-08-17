@@ -8,12 +8,18 @@
 ####################################################################
 #' Michaelis-Menten transformation
 #'
-#' Describe function.
+#' The Michaelis-Menten function is used to fit the spend exposure relationship for paid media
+#' variables, when exposure metrics like impressions, clicks or GRPs are provided in
+#' \code{paid_media_vars} instead of spend metric.
 #'
-#' @param x xxx
-#' @param Vmax xxx
-#' @param Km xxx
-#' @param reverse xxx
+#' @param x A numeric value or a numeric vector. Input media spend when
+#' \code{reverse = FALSE}. Input media exposure metrics (impression, clicks
+#' , GRPs etc.) when \code{reverse = TRUE}
+#' @param Vmax A numeric value. Indicates maximum rate achieved by the system
+#' @param Km A numeric value. The Michaelis constant.
+#' @param reverse A logical value. Input media spend when \code{reverse = FALSE}.
+#' Input media exposure metrics (impression, clicks, GRPs etc.) when \code{reverse = TRUE}
+#' @export
 
 mic_men <- function(x, Vmax, Km, reverse = FALSE) {
   if (!reverse) {
@@ -24,14 +30,15 @@ mic_men <- function(x, Vmax, Km, reverse = FALSE) {
   return(mm_out)
 }
 
+
 ####################################################################
 #' Geometric adstocking function
 #'
-#' Describe function.
+#' The geometric adstock function is the classic one-parametric adstock function.
 #'
-#' @param x xxx
-#' @param theta xxx
-
+#' @param x A numeric vector.
+#' @param theta A numeric value. Indicates the decay rate of the geometric function.
+#' @export
 adstock_geometric <- function(x, theta) {
   x_decayed <- c(x[1] ,rep(0, length(x)-1))
   for (xi in 2:length(x_decayed)) {
@@ -47,11 +54,17 @@ adstock_geometric <- function(x, theta) {
 ####################################################################
 #' Weibull adstock function
 #'
-#' Describe function.
+#' The Weibull adstock function is a two-parametric adstock function that allows
+#' changing decay rate over time, compared to the fixed decay rate over time as
+#' in Geomeric adstock.
 #'
-#' @param x xxx
-#' @param shape xxx
-#' @param scale xxx
+#' @param x A numeric vector.
+#' @param shape A numeric value. The shape parameter controls the decay shape.
+#' The larger the shape value, the more S-shape the curve shows. The smaller the
+#' shape value, the more L-shape the curve shows.
+#' @param scale A numeric value. The scale parameter controls the decay inflexion
+#' point. The larger the scale value, the later the inflexion point occurs.
+#' @export
 
 adstock_weibull <- function(x, shape , scale) {
   x.n <- length(x)
@@ -75,12 +88,17 @@ adstock_weibull <- function(x, shape , scale) {
 ####################################################################
 #' Hill saturation function
 #'
-#' Describe function.
+#' The Hill function applied here is a two-parametric version of the
+#' function that allows the saturation curve to flip between S and C shape.
 #'
-#' @param x xxx
-#' @param alpha xxx
-#' @param gamma xxx
-#' @param x_marginal xxxxxx
+#' @param x A numeric vector.
+#' @param alpha A numeric value. Alpha controls the shape of the saturation curve.
+#' The larger the alpha, the more S-shape. The smaller, the more C-shape.
+#' @param gamma A numeric value. Gamma controls the inflexion point of the
+#' saturation curve. The larger the gamma, the later the inflexion point occurs.
+#' @param x_marginal A numeric value. When provided, the function returns the
+#' Hill-transformed value of the x_marginal input.
+#' @export
 
 saturation_hill <- function(x, alpha, gamma, x_marginal = NULL) {
 
@@ -98,9 +116,9 @@ saturation_hill <- function(x, alpha, gamma, x_marginal = NULL) {
 ####################################################################
 #' Adstocking help plot
 #'
-#' Describe function.
+#' Produce example plots for both Geometric and Weibull adstock.
 #'
-#' @param plotAdstockCurves xxx
+#' @param plotAdstockCurves A logical value.
 #' @export
 
 plot_adstock <- function(plotAdstockCurves) {
@@ -179,11 +197,11 @@ plot_adstock <- function(plotAdstockCurves) {
 
 
 ####################################################################
-#' Saturattion help plot
+#' Saturation help plot
 #'
-#' Describe function.
+#' Produce example plots for the Hill saturation curve.
 #'
-#' @param plotResponseCurves xxx
+#' @param plotResponseCurves A logical value.
 #' @export
 
 plot_saturation <- function(plotResponseCurves) {
