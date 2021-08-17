@@ -1472,18 +1472,6 @@ robyn_response <- function(robyn_object = NULL
 }
 
 
-####################################################################
-#' Robyn decomp function
-#'
-#' Describe function.
-#'
-#' @param coefs xxx
-#' @param dt_modSaturated xxx
-#' @param x xxx
-#' @param y_pred xxx
-#' @param i xxx
-#' @param dt_modRollWind xxx
-#' @param refreshAddedStart xxx
 model_decomp <- function(coefs, dt_modSaturated, x, y_pred, i, dt_modRollWind, refreshAddedStart) {
 
   ## input for decomp
@@ -1552,15 +1540,6 @@ model_decomp <- function(coefs, dt_modSaturated, x, y_pred, i, dt_modRollWind, r
 } ## decomp end
 
 
-
-####################################################################
-#' Calibration function
-#'
-#' Describe function.
-#'
-#' @param decompCollect xxx
-#' @param calibration_input xxx
-#' @param paid_media_vars xxx
 calibrate_mmm <- function(decompCollect, calibration_input, paid_media_vars) {
 
   # check if any lift channel doesn't have media var
@@ -1614,16 +1593,6 @@ calibrate_mmm <- function(decompCollect, calibration_input, paid_media_vars) {
 }
 
 
-####################################################################
-#' Calibration function
-#'
-#' Describe function.
-#'
-#' @param x_train xxx
-#' @param y_train xxx
-#' @param lambda xxx
-#' @param lower.limits xxx
-#' @param upper.limits xxx
 model_refit <- function(x_train, y_train, lambda, lower.limits, upper.limits) {
   mod <- glmnet(
     x_train
@@ -1677,15 +1646,6 @@ model_refit <- function(x_train, y_train, lambda, lower.limits, upper.limits) {
   return(mod_out)
 }
 
-####################################################################
-#' Ridge lambda sequence function
-#'
-#' Describe function.
-#'
-#' @param x xxxxxx
-#' @param y xxx
-#' @param seq_len xxx
-#' @param lambda_min_ratio xxx
 ridge_lambda <- function(x
                          , y
                          , seq_len = 100

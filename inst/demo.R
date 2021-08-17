@@ -343,7 +343,7 @@ AllocatorCollect <- robyn_allocator(
 
   InputCollect = InputCollect
   , OutputCollect = OutputCollect
-  , select_model = select_model # input one of the model IDs in model_output_collect$allSolutions
+  , select_model = select_model # input one of the model IDs in OutputCollect$allSolutions
   #to get optimisation result
   , scenario = "max_historical_response" # options are "max_historical_response"
   #, "max_response_expected_spend"
