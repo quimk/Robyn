@@ -23,15 +23,15 @@ options(future.fork.enable = TRUE)
 ## please see here for more info about installing Python packages via reticulate
 ## https://rstudio.github.io/reticulate/articles/python_packages.html
 
-## Option 1: nevergrad installation via conda
-# conda_create("r-reticulate") # must run this line once
-# conda_install("r-reticulate", "nevergrad", pip=TRUE)
-# use_condaenv("r-reticulate")
-
-## Option 2: nevergrad installation via PIP
+## Option 1: nevergrad installation via PIP
 # virtualenv_create("r-reticulate")
 # py_install("nevergrad", pip = TRUE)
 # use_virtualenv("r-reticulate", required = TRUE)
+
+## Option 2: nevergrad installation via conda
+# conda_create("r-reticulate") # must run this line once
+# conda_install("r-reticulate", "nevergrad", pip=TRUE)
+# use_condaenv("r-reticulate")
 
 ## In case nevergrad still can't be imported after installation,
 ## please locate your python file and run this line with your path:

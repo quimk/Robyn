@@ -327,7 +327,7 @@ check_iteration <- function(calibration_input, iterations, trials) {
   } else if (!is.null(calibration_input) & (iterations < 2000 | trials < 10)) {
     warning(paste(
       "You are calibrating MMM. We recommend to run at least 2000 iterations per trial and",
-      "trials to build initial model"
+      "10 trials to build initial model"
     ))
   }
 }
