@@ -96,50 +96,34 @@ We're very proud to see that there're already 100+ known users of Project Robyn 
   
 ## Q&A
 
-  * **Q: What is the rationale behind using exposure metrics (impressions, clicks, GRPs etc.) instead of spend to represent paid media in `paid_media_vars`**: 
+### Input data questions
+
+  * **Q: What is the rationale behind using exposure metrics (impressions, clicks, GRPs etc.) instead of spend to represent paid media in `paid_media_vars`**: See [here](https://github.com/facebookexperimental/Robyn/issues/138) and [here](https://github.com/facebookexperimental/Robyn/issues/137).
   
-  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/138) and [here](https://github.com/facebookexperimental/Robyn/issues/137).
+  * **Q: How many data points/how long time period should I include in the model?**: See [here](https://github.com/facebookexperimental/Robyn/issues/73#issuecomment-829994839).
+
+### Core modelling questions
   
-  * **Q: How is decomposition distance DECOMP.RSSD calculated? What's the rationale behind?**: 
+  * **Q: How is decomposition distance DECOMP.RSSD calculated? What's the rationale behind?**: See [here](https://github.com/facebookexperimental/Robyn/issues/82#issuecomment-845846447).
   
-  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/82#issuecomment-845846447).
+  * **Q: Can DECOMP.RSSD limit the model's ability to detect over- or underperforming channels?**: See [here](https://github.com/facebookexperimental/Robyn/issues/110).
   
-  * **Q: Can DECOMP.RSSD limit the model's ability to detect over- or underperforming channels?**: 
+  * **Q: How are adstock and saturation transformation applied in Robyn?**: See [here](https://github.com/facebookexperimental/Robyn/issues/94).
   
-  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/110).
+  * **Q: How does Robyn's budget allocator work?**: See [here](https://github.com/facebookexperimental/Robyn/issues/92).
   
-  * **Q: What are the best practices to select final model among all Pareto-optimum output?**: 
+  * **Q: Does Robyn do time-serie cross-validation to prevent overfitting?**: See [here](https://github.com/facebookexperimental/Robyn/issues/81).
   
-  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/135#issuecomment-897825437).
+### Output interpretation questions
   
-  * **Q: Does Robyn return uncertainty metrics like p-value or confidence interval for predictors?**: 
+  * **Q: What are the best practices to select final model among all Pareto-optimum output?**: See [here](https://github.com/facebookexperimental/Robyn/issues/135#issuecomment-897825437).
   
-  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/131).
+  * **Q: Does Robyn return uncertainty metrics like p-value or confidence interval for predictors?**: See [here](https://github.com/facebookexperimental/Robyn/issues/131).
   
-  * **Q: Robyn doesn't return positive effect/coefficient for my media variables. Is it possible to force it?**: 
+  * **Q: Robyn doesn't return positive effect/coefficient for my media variables. Is it possible to force it?**: See [here](https://github.com/facebookexperimental/Robyn/issues/115).
   
-  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/115).
-  
-  * **Q: How many data points/how long time period should I include in the model?**: 
-  
-  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/73#issuecomment-829994839).
-  
-  * **Q: Can Robyn account for interative/synergy effect between channels?**: 
-  
-  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/96).
-  
-  * **Q: How are adstock and saturation transformation applied in Robyn?**: 
-  
-  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/94).
-  
-  * **Q: How does Robyn's budget allocator work?**: 
-  
-  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/92).
-  
-  * **Q: Does Robyn do time-serie cross-validation to prevent overfitting?**
-  
-  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/81).
-  
+  * **Q: Can Robyn account for interative/synergy effect between channels?**: [here](https://github.com/facebookexperimental/Robyn/issues/96).
+
 
 ## Release log
 
