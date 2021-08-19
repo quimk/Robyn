@@ -12,7 +12,7 @@
 #### Step 0: setup environment
 
 ## Install and load libraries
-library(Robyn) # devtools::install_github("facebookexperimental/Robyn@package_test")
+library(Robyn) # remotes::install_github("facebookexperimental/Robyn@package_test")
 set.seed(123)
 
 ## force multicore when using RStudio

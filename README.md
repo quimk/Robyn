@@ -7,9 +7,9 @@
 
 **1. Installing the package**
 
-  * Run `install.packages('devtools')` if you haven't installed devtools yet.
+  * Run `install.packages('remotes')` if you haven't installed devtools yet.
   
-  * Run `devtools::install_github('facebookexperimental/Robyn@package_test')` to install the package.
+  * Run `remotes::install_github('facebookexperimental/Robyn@package_test')` to install the package.
   
   * This package is built on R version 4.1.0 (2021-05-18). It's recommended to update to this version or above. 
   
@@ -63,8 +63,7 @@ We're very proud to see that there're already 100+ known users of Project Robyn 
   build model refresh at any given cadence based on previous model result. This capability enables using MMM as a continuous reporting tool 
   and therefore makes MMM more actionable.
   
-  * **Trend & season decomposition**: Robyn leverages Facebook's time-serie-forecast package Prophet to decompose trend, season, holiday and
-  weekday as model predictor out of the box. This capability often increases model fit and reduces autoregressive pattern in residuals.
+  * **Trend & season decomposition**: Robyn leverages Facebook's time-serie-forecast package [Prophet](https://facebook.github.io/prophet/) to decompose trend, season, holiday and weekday as model predictor out of the box. This capability often increases model fit and reduces autoregressive pattern in residuals.
   
   * **Rolling window**: In Robyn 3.0, user can specify `window_start` and `window_end` in the `robyn_inputs()` function to set modelling 
   period to a subset of available data. A, important capability to keep MMM returning up-to-date results frequently. At the same time,
@@ -85,24 +84,69 @@ We're very proud to see that there're already 100+ known users of Project Robyn 
   
   * **Experimental calibration**: We believe integrating experimental results into MMM is the best choice for model selection. As the general aphorism in statistics "all models are wrong but some are useful", there's no reliable way to select final MMM results, even after Robyn has accounted for the business fit with the DECOMP.RSSD as objective function. Experiments (RCT, randomised controlled trials) are causal by nature and thus are seen as ground-truth. Common experimental tools include people-based technique like Facebook [Conversion Lift](https://www.facebook.com/business/m/one-sheeters/conversion-lift) and geo-based technique like Facebook [GeoLift](https://github.com/ArturoEsquerra/GeoLift/), among others. Technically speaking, Robyn drives model results closer to experimental results by using MAPE.LIFT as the third objective function besides NRMSE & DECOMP.RSSD when calibrating and minimizing the error between predicted and experimental results.
   
-  * **Custom adstock**: Robyn offers Geometric and Weibull as adstock options to enable more customisation and flexibility in adstock transformation.
+  * **Custom adstock**: Robyn offers the one-parametric Geometric function and the two-parametric Weibull function as adstock options to enable more customisation and flexibility in adstock transformation. While the Geometric adstock is considered more intuitive and runs faster, the Weibull adstock is not only more flexible, but often more suitable for digital media transformation, as shown in [this study](https://github.com/annalectnl/weibull-adstock/blob/master/adstock_weibull_annalect.pdf or one attached by Ekimetrics) from Ekimetrics. 
   
-  * **S-shape saturation**: Robyn uses the Hill function that is able to transform between C- and S-shape to enable more customisation and flexibility in saturation transformation. 
+  * **S-shape saturation**: Robyn uses the two-parametric Hill function that is able to transform between C- and S-shape to enable more customisation and flexibility in saturation transformation. 
   
-  * **Budget allocator**: blabla
+  * **Budget allocator**: Based on selected model result, or to be precise the saturation curve of each paid media variable, the `robyn_allocator()` function returns the optimal mix of spend that maximizes the total response. Technically speaking, Robyn uses by defaultt a combination of Augmented Lagrangian (AUGLAG) as global optimization algorithm and Sequential Least Square Quadratic Programming (SLSQP) as local optimization algorithm to solve the nonlinear objective function analytically.
   
-  * **Automated output**: blabla
+  * **Automated output**: When using `robyn_run()` function to build the initial model, Robyn outputs an one-pager that contains 6 charts  for every Pareto-optimum model and saves 4 csv-files (pareto_hyperparameters.csv, pareto_aggregated.csv, pareto_media_transform_matrix.csv, pareto_alldecomp_matrix.csv) that contains all results. The 6 charts are: the effect decomposition waterfall chart, the actual vs. predicted fit line chart, the media spend vs. effect bar chart, the media saturation line chart, the adstock decay rate bar chart and the predicted vs. residual line chart. When using `robyn_refresh()` function to build refresh models, Robyn outputs 2 extra charts (aggregated actual vs. predicted line chart and aggregated decomposition bar chart) and saves 4 extra csv-files separately (report_hyperparameters.csv, report_aggregated.csv, report_media_transform_matrix.csv, report_alldecomp_matrix.csv). 
   
-
+  
 ### Q&A
 
-  * xxx
-
-### Change log
-
-  * xxx
+  * **Q: What is the rationale behind using exposure metrics (impressions, clicks, GRPs etc.) instead of spend to represent paid media in `paid_media_vars`**: 
   
-  * xxx
+  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/138) and [here](https://github.com/facebookexperimental/Robyn/issues/137).
+  
+  * **Q: How is decomposition distance DECOMP.RSSD calculated? What's the rationale behind?**: 
+  
+  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/82#issuecomment-845846447).
+  
+  * **Q: Can DECOMP.RSSD limit the model's ability to detect over- or underperforming channels?**: 
+  
+  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/110).
+  
+  * **Q: What are the best practices to select final model among all Pareto-optimum output?**: 
+  
+  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/135#issuecomment-897825437).
+  
+  * **Q: Does Robyn return uncertainty metrics like p-value or confidence interval for predictors?**: 
+  
+  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/131).
+  
+  * **Q: Robyn doesn't return positive effect/coefficient for my media variables. Is it possible to force it?**: 
+  
+  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/115).
+  
+  * **Q: How many data points/how long time period should I include in the model?**: 
+  
+  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/73#issuecomment-829994839).
+  
+  * **Q: Can Robyn account for interative/synergy effect between channels?**: 
+  
+  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/96).
+  
+  * **Q: How are adstock and saturation transformation applied in Robyn?**: 
+  
+  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/94).
+  
+  * **Q: How does Robyn's budget allocator work?**: 
+  
+  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/92).
+  
+  * **Q: Does Robyn do time-serie cross-validation to prevent overfitting?**
+  
+  * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/81).
+  
+
+### Release log
+
+  * Robyn 3.0.0 release (2021-09-29)
+  
+  * Robyn 2.0.0 release (2021-03-03)
+  
+  * Robyn 1.0.0 release (2020-11-30)
 
 
 ## License
@@ -119,35 +163,5 @@ FB Robyn MMM R script is MIT licensed, as found in the LICENSE file.
 * leonelsentana@fb.com, Leonel Sentana, Marketing Science Partner
 * igorskokan@fb.com, Igor Skokan, Marketing Science Partner
 
-
-
-**3. Test run with sample data**
-  * Please follow all instructions in fb_robyn.exec.R
-  * After above steps, if you select all and run in fb_robyn.exec.R, the script should execute 20k iterations (500 iterations * 40 trials) and save some plots on your selected folder
-  * An example model onepager looks like this:
-![result](https://user-images.githubusercontent.com/14415136/110111544-c81d1f80-7db0-11eb-9a9f-51249514baae.png)
-
-  * The final function f.budgetAllocator() might throw error "provided ModID is not within the best result". First of all, please read all instructions behind the function. Model IDs are encoded in each onepager .png name and also in the title. Also, execute model_output_collect$allSolutions will output all final model IDs. Please pick one and put it into f.budgetAllocator(). 
-  * An example optimised model looks like this:
-![result_optimised](https://user-images.githubusercontent.com/14415136/110111552-ceab9700-7db0-11eb-84b5-9f105c49b09b.png)
-
-
-## Step-by-step Guide Website
-
-* Guidelines on the website: https://facebookexperimental.github.io/Robyn/docs/step-by-step-guide
-
-## Model selection with evolutionary algorithm
-
-Using Facebook AI's open source gradient-free optimisation library [Nevergrad](https://facebookresearch.github.io/nevergrad/), Robyn is able to leverage evolutionary algorithms to perform multi-objective hyperparameter optimisation and output a set of Pareto-optimal solutions. Besides NRMSE as loss function for the optimisation, Robyn also minimises on a business logic "decomposition distance", or DECOMP.RSSD that is aiming to steer the model towards more realistic decomposition results. In case of calibration, a third loss function MAPE.LIFT is added too.
-
-The following plot demonstrates typical Pareto fronts 1-3 on NRMSE and DECOMP.RSSD:
-![paretofront](https://user-images.githubusercontent.com/14415136/110000483-a3269f00-7d13-11eb-85de-0bae918f4f5c.png)
-
-
-## Join the FB Robyn MMM community. **Coming soon**
-
-
-
-See the [CONTRIBUTING](CONTRIBUTING.md) file for how to help out.
 
 
