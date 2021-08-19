@@ -8,7 +8,7 @@
 
 **1. Installing the package**
 
-  * Run `install.packages('remotes')` if you haven't installed devtools yet.
+  * Run `install.packages('remotes')` if you haven't installed the 'remotes' package yet.
   
   * Run `remotes::install_github('facebookexperimental/Robyn@package_test')` to install the package.
   
