@@ -3,7 +3,8 @@
 
 2021-09-29
 
-### Quick start (R only)
+
+## Quick start (R only)
 
 **1. Installing the package**
 
@@ -14,7 +15,7 @@
   * This package is built on R version 4.1.0 (2021-05-18). It's recommended to update to this version or above. 
   
   * Robyn requires the Python library [Nevergrad](https://facebookresearch.github.io/nevergrad/). If encountering Python-related 
-  error during installation, please check out the step-by-step guide to get more info.
+  error during installation, please check out the [step-by-step guide](https://github.com/facebookexperimental/Robyn/blob/package_test/inst/demo.R) to get more info.
   
   * For Windows, if you get openssl error, please see instructions
   [here](https://stackoverflow.com/questions/54558389/how-to-solve-this-error-while-installing-python-packages-in-rstudio/54566647) and
@@ -30,7 +31,7 @@
   * Join our [public group](https://www.facebook.com/groups/robynmmm/) to exchange with other users and interact with team Robyn.
 
 
-### Introduction
+## Introduction
 
   * **What is Robyn**: Robyn is an experimental, semi-automated and open-sourced Marketing Mix Modeling (MMM) package from Facebook 
   Marketing Science. It uses various machine learning techniques (Ridge regression with cross validation, multi-objective evolutionary 
@@ -45,7 +46,7 @@
   want to contribute to the measurement landscape, inspire the industry and build a community for exchange and innovation around the future 
   of MMM and Marketing Science in general.
   
-### Proof of concept
+## Proof of concept
 
 We're very proud to see that there're already 100+ known users of Project Robyn since it's initial release in November 2020, while we're certain that the unknown number of users will be even higher. Two of the users have achieved remarkable success that we want to share with you.
 
@@ -54,7 +55,7 @@ We're very proud to see that there're already 100+ known users of Project Robyn 
   * **[Central Retail](https://www.facebook.com/business/success/central-retail-corporation) from Thailand**: 28% increase in revenue 
   possible with reallocated budget
   
-### Core capabilities
+## Core capabilities
 
   * **Semi-automated modelling process**: Robyn automatically returns a set of business-relevant and Pareto-optimum results by optimizing on
   the model fit and business fit over larger iterations. Building MMM manually is a very time-consuming process that involves many subjective decisions, modelling experience and trial and error over hundreds of iterations. Months of effort is common to build MMM from scratch. Robyn is able to automate a large portion of the modelling process (see Resident case above) and thus reduce the "analyst-bias". Pure model run time for recommended 10k iterations on a laptop is <1 hour. Technically speaking, Robyn leverages the multi-objective optimization capacity of Facebook's evolutionary optimization platform Nevergrad to minimize both prediction error (NRMSE, normalized root-mean-square error) and decomposition distance (DECOMP.RSSD, decomposition root-sum-square distance, a major innovation of Robyn) at the same time and eliminates the majority of "bad models" (larger prediction error and/or unrealistic media effect like the smallest channel getting the most effect). 
@@ -93,7 +94,7 @@ We're very proud to see that there're already 100+ known users of Project Robyn 
   * **Automated output**: When using `robyn_run()` function to build the initial model, Robyn outputs an one-pager that contains 6 charts  for every Pareto-optimum model and saves 4 csv-files (pareto_hyperparameters.csv, pareto_aggregated.csv, pareto_media_transform_matrix.csv, pareto_alldecomp_matrix.csv) that contains all results. The 6 charts are: the effect decomposition waterfall chart, the actual vs. predicted fit line chart, the media spend vs. effect bar chart, the media saturation line chart, the adstock decay rate bar chart and the predicted vs. residual line chart. When using `robyn_refresh()` function to build refresh models, Robyn outputs 2 extra charts (aggregated actual vs. predicted line chart and aggregated decomposition bar chart) and saves 4 extra csv-files separately (report_hyperparameters.csv, report_aggregated.csv, report_media_transform_matrix.csv, report_alldecomp_matrix.csv). 
   
   
-### Q&A
+## Q&A
 
   * **Q: What is the rationale behind using exposure metrics (impressions, clicks, GRPs etc.) instead of spend to represent paid media in `paid_media_vars`**: 
   
@@ -140,7 +141,7 @@ We're very proud to see that there're already 100+ known users of Project Robyn 
   * **A**: See [here](https://github.com/facebookexperimental/Robyn/issues/81).
   
 
-### Release log
+## Release log
 
   * Robyn 3.0.0 release (2021-09-29)
   
@@ -162,6 +163,5 @@ FB Robyn MMM R script is MIT licensed, as found in the LICENSE file.
 * gufeng@fb.com, Gufeng Zhou, Marketing Science Partner
 * leonelsentana@fb.com, Leonel Sentana, Marketing Science Partner
 * igorskokan@fb.com, Igor Skokan, Marketing Science Partner
-
 
 
