@@ -7,12 +7,8 @@
 ## Quick start (R only)
 
 **1. Installing the package**
-
-  * Run `install.packages('remotes')` if you haven't installed the 'remotes' package yet.
   
-  * Run `remotes::install_github('facebookexperimental/Robyn@package_test')` to install the package.
-  
-  * This package is built on R version 4.1.0 (2021-05-18). It's recommended to update to this version or above. 
+  * Run `remotes::install_github('facebookexperimental/Robyn@package_test')` to install the package. Run `install.packages('remotes')` if you haven't installed the 'remotes' package yet.
   
   * Robyn requires the Python library [Nevergrad](https://facebookresearch.github.io/nevergrad/). If encountering Python-related 
   error during installation, please check out the [step-by-step guide](https://github.com/facebookexperimental/Robyn/blob/package_test/inst/demo.R) to get more info.
@@ -98,31 +94,31 @@ We're very proud to see that there're already 100+ known users of Project Robyn 
 
 ### Input data questions
 
-  * **Q: What is the rationale behind using exposure metrics (impressions, clicks, GRPs etc.) instead of spend to represent paid media in `paid_media_vars`**: See [here](https://github.com/facebookexperimental/Robyn/issues/138) and [here](https://github.com/facebookexperimental/Robyn/issues/137).
+  * **What is the rationale behind using exposure metrics (impressions, clicks, GRPs etc.) instead of spend to represent paid media in `paid_media_vars`**: See [here](https://github.com/facebookexperimental/Robyn/issues/138) and [here](https://github.com/facebookexperimental/Robyn/issues/137).
   
-  * **Q: How many data points/how long time period should I include in the model?**: See [here](https://github.com/facebookexperimental/Robyn/issues/73#issuecomment-829994839).
+  * **How many data points/how long time period should I include in the model?**: See [here](https://github.com/facebookexperimental/Robyn/issues/73#issuecomment-829994839).
 
 ### Core modelling questions
   
-  * **Q: How is decomposition distance DECOMP.RSSD calculated? What's the rationale behind?**: See [here](https://github.com/facebookexperimental/Robyn/issues/82#issuecomment-845846447).
+  * **How is decomposition distance DECOMP.RSSD calculated? What's the rationale behind?**: See [here](https://github.com/facebookexperimental/Robyn/issues/82#issuecomment-845846447).
   
-  * **Q: Can DECOMP.RSSD limit the model's ability to detect over- or underperforming channels?**: See [here](https://github.com/facebookexperimental/Robyn/issues/110).
+  * **Can DECOMP.RSSD limit the model's ability to detect over- or underperforming channels?**: See [here](https://github.com/facebookexperimental/Robyn/issues/110).
   
-  * **Q: How are adstock and saturation transformation applied in Robyn?**: See [here](https://github.com/facebookexperimental/Robyn/issues/94).
+  * **How are adstock and saturation transformation applied in Robyn?**: See [here](https://github.com/facebookexperimental/Robyn/issues/94).
   
-  * **Q: How does Robyn's budget allocator work?**: See [here](https://github.com/facebookexperimental/Robyn/issues/92).
+  * **How does Robyn's budget allocator work?**: See [here](https://github.com/facebookexperimental/Robyn/issues/92).
   
-  * **Q: Does Robyn do time-serie cross-validation to prevent overfitting?**: See [here](https://github.com/facebookexperimental/Robyn/issues/81).
+  * **Does Robyn do time-serie cross-validation to prevent overfitting?**: See [here](https://github.com/facebookexperimental/Robyn/issues/81).
   
 ### Output interpretation questions
   
-  * **Q: What are the best practices to select final model among all Pareto-optimum output?**: See [here](https://github.com/facebookexperimental/Robyn/issues/135#issuecomment-897825437).
+  * **What are the best practices to select final model among all Pareto-optimum output?**: See [here](https://github.com/facebookexperimental/Robyn/issues/135#issuecomment-897825437).
   
-  * **Q: Does Robyn return uncertainty metrics like p-value or confidence interval for predictors?**: See [here](https://github.com/facebookexperimental/Robyn/issues/131).
+  * **Does Robyn return uncertainty metrics like p-value or confidence interval for predictors?**: See [here](https://github.com/facebookexperimental/Robyn/issues/131).
   
-  * **Q: Robyn doesn't return positive effect/coefficient for my media variables. Is it possible to force it?**: See [here](https://github.com/facebookexperimental/Robyn/issues/115).
+  * **Robyn doesn't return positive effect/coefficient for my media variables. Is it possible to force it?**: See [here](https://github.com/facebookexperimental/Robyn/issues/115).
   
-  * **Q: Can Robyn account for interative/synergy effect between channels?**: [here](https://github.com/facebookexperimental/Robyn/issues/96).
+  * **Can Robyn account for interative/synergy effect between channels?**: [here](https://github.com/facebookexperimental/Robyn/issues/96).
 
 
 ## Release log
