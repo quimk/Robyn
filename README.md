@@ -99,6 +99,14 @@ The chart below shows the performance of the multi-objective optimisation from t
 Similar to above, a more obvious trend of the multi-objective minimization process can be observed during the refreshing process with 3k iterations. The reason for this behaviour is that hyperparameter bounds are narrower during refresh than in the initial build which leads to faster convergence.
 ![pareto_front](https://user-images.githubusercontent.com/14415136/130216738-387754dc-91db-4dc2-9ed1-2df10c71aa1d.png)
 
+### Reporting model refresh time-series fit
+All initial and refresh builds are included sequentially. For the refresh builds, only the added new periods will be appended. The assembled R-squared is adjusted and describes the fit of the assembled actual & fitted lines below. Refresh builds can have different window lengths (parameter `refresh_step` in the  `robyn_refresh()` function).
+![report_actual_fitted](https://user-images.githubusercontent.com/14415136/130219287-2888d5cb-f8d7-4382-b0aa-5e7be3327797.png)
+
+### Reporting model refresh decompsition & ROAS
+Decomposition of all predictors per build. The baseline varibale is the sum of all prophet variables (trend, season, weekday, holiday) and the intercept. It's often more intuitive to look at baseline varibale due to the possible intercept drop in the Ridge regression and the effect shift between these baseline variables. **All data is simulated and don't have real-life implication.**
+![report_decomposition](https://user-images.githubusercontent.com/14415136/130220460-5361b313-f308-4976-b2f8-243d7233188b.png)
+
 ### Prophet decomposition
 Trend, season, holiday and extra regressor ("event" in this case) decomposition by Prophet. Weekday is not used because the sample data is weekly. Robyn uses Prophet to also decompose categorical variables as extra regressor to simplify later programming. For technical details of decomposition, please refer to Prophet's documentation [here](https://facebook.github.io/prophet/docs/trend_changepoints.html).  
 ![prophet_decomp](https://user-images.githubusercontent.com/14415136/130233462-1c1c4cb5-025d-4e1c-a10e-ea0917441a65.png)
@@ -106,7 +114,6 @@ Trend, season, holiday and extra regressor ("event" in this case) decomposition 
 ### Spend exposure plot
 When using exposure variables (impressions, clicks, GRPs etc) instead of spend in `paid_media_vars`, Robyn fits an nonlinear model with Michaelis Menten function between exposure and spend to establish the spend-exposure relationship. The example data shows very good fit between exposure and spend. However, when a channel has more complex activities, for example a large advertiser having multiple teams using different strategies (bidding, objective, audience etc.) for Facebook ads, it's possible that the high-level channel total impressions and spends will fit poorly. A sign to consider splitting this channel into meaningful subchannels.
 ![spend_exposure_fitting](https://user-images.githubusercontent.com/14415136/130233984-bc1fe1db-262f-43d0-806d-c3f71d31b528.png)
-
 
 ### Model one-pager
 An example of the model one-pager for each Pareto-optimal models. **All data is simulated and don't have real-life implication.**
@@ -117,14 +124,6 @@ An example of the model one-pager for each Pareto-optimal models. **All data is 
   * **Average media decay rate**: Decay rate comparison. When using Geometric adstock, this equals to theta. When using Weibull, because Weibull is two-parametric with changing decay rate over time that is difficult to illustrate intuitively, we've chosen to compare the total Weibull infinite sum of decay to it's equivalent in Geometric's infinite sum of decay rate and finally plot the Geometric decay rate as a visual approximate to the Weibull average decay.
   * **Fitted vs. residuals**: Visual examination of the model diagnostic in residuals
 ![3_206_1](https://user-images.githubusercontent.com/14415136/130217793-392bc76b-df8a-4d8c-a033-fe119d49666e.png)
-
-### Reporting model refresh time-series fit
-All initial and refresh builds are included sequentially. For the refresh builds, only the added new periods will be appended. The assembled R-squared is adjusted and describes the fit of the assembled actual & fitted lines below. Refresh builds can have different window lengths (parameter `refresh_step` in the  `robyn_refresh()` function).
-![report_actual_fitted](https://user-images.githubusercontent.com/14415136/130219287-2888d5cb-f8d7-4382-b0aa-5e7be3327797.png)
-
-### Reporting model refresh decompsition & ROAS
-Decomposition of all predictors per build. The baseline varibale is the sum of all prophet variables (trend, season, weekday, holiday) and the intercept. It's often more intuitive to look at baseline varibale due to the possible intercept drop in the Ridge regression and the effect shift between these baseline variables. **All data is simulated and don't have real-life implication.**
-![report_decomposition](https://user-images.githubusercontent.com/14415136/130220460-5361b313-f308-4976-b2f8-243d7233188b.png)
 
 
 ## Q&A
