@@ -452,8 +452,6 @@ hyper_names <- function(adstock, all_media) {
 #' impressions for Facebook variables.
 #'
 #' @param InputCollect Default to \code{InputCollect}
-#' @param refresh Boolean. Default to \code{FALSE}. \code{TRUE}
-#' when using in \code{robyn_refresh()}.
 #' @return A list containing the all input parameters and modified input
 #' data. The list is passed to further functions like
 #' \code{robyn_run()}, \code{robyn_save()} and \code{robyn_allocator()}.

@@ -321,8 +321,8 @@ robyn_run <- function(InputCollect,
       geom_point(size = 0.2) +
       theme(legend.position = "none") +
       labs(
-        title = "Model selection",
-        subtitle = paste0("Hyperparameter pareto sample distribution", ", iterations = ", InputCollect$iterations, " * ", InputCollect$trials, " trial"),
+        title = "Hyperparameter optimisation sampling",
+        subtitle = paste0("Sample distribution", ", iterations = ", InputCollect$iterations, " * ", InputCollect$trials, " trial"),
         x = "Hyperparameter space",
         y = ""
       )
@@ -345,7 +345,7 @@ robyn_run <- function(InputCollect,
       # geom_line(data = resultHypParam[robynPareto ==3], aes(x=nrmse, y=decomp.rssd), colour = "coral")+
       scale_colour_gradient(low = "navyblue", high = "skyblue") +
       labs(
-        title = ifelse(is.null(InputCollect$calibration_input), "Model selection", "Model selection with top 10% calibration"),
+        title = ifelse(is.null(InputCollect$calibration_input), "Multi-objective evolutionary performance", "Multi-objective evolutionary performance with top 10% calibration"),
         subtitle = paste0("2D Pareto front 1-3 with ", InputCollect$nevergrad_algo, ", iterations = ", InputCollect$iterations, " * ", InputCollect$trials, " trial"),
         x = "NRMSE",
         y = "DECOMP.RSSD"
