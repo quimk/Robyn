@@ -264,7 +264,7 @@ InputCollect <- robyn_inputs(InputCollect = InputCollect, hyperparameters = hype
 OutputCollect <- robyn_run(
   InputCollect = InputCollect # feed in all model specification
   , plot_folder = robyn_object # plots will be saved in the same folder as robyn_object
-  , pareto_fronts = 1
+  , pareto_fronts = 3
   , plot_pareto = TRUE
   )
 
@@ -362,14 +362,12 @@ Robyn <- robyn_refresh(
   robyn_object = robyn_object
   , dt_input = dt_simulated_weekly
   , dt_holidays = dt_prophet_holidays
-  , refresh_steps = 4
-  , refresh_mode = "manual"
-  , refresh_iters = 100 # Iteration for refresh. 600 is rough estimation. We'll still
+  , refresh_steps = 13
+  , refresh_mode = "auto"
+  , refresh_iters = 1000 # Iteration for refresh. 600 is rough estimation. We'll still
   # figuring out what's the ideal number.
   , refresh_trials = 3
 )
-
-AllocatorCollect$dt_optimOut
 
 ## Besides plots: there're 4 csv output saved in the folder for further usage
 # report_hyperparameters.csv, hyperparameters of all selected model for reporting
@@ -378,21 +376,21 @@ AllocatorCollect$dt_optimOut
 # report_alldecomp_matrix.csv,all decomposition vectors of independent variables
 
 
-load(robyn_object)
-names(Robyn)
-
 ################################################################
 #### Step 7: Get budget allocation recommendation based on selected refresh runs
 
 # Run ?robyn_allocator to check parameter definition
 AllocatorCollect <- robyn_allocator(
   robyn_object = robyn_object
-  , select_build = 2 # Use third refresh model
-  , scenario = "max_historical_response"
+  , select_build = 3 # Use third refresh model
+  , scenario = "max_response_expected_spend"
   , channel_constr_low = c(0.7, 0.7, 0.7, 0.7, 0.7)
   , channel_constr_up = c(1.2, 1.5, 1.5, 1.5, 1.5)
+  , expected_spend = 2000000 # Total spend to be simulated
+  , expected_spend_days = 14 # Duration of expected_spend in days
 )
 
+AllocatorCollect$dt_optimOut
 
 ################################################################
 #### Step 8: get marginal returns
