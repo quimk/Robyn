@@ -28,7 +28,7 @@
 #' @param prophet_vars Character vector. Include any of "trend",
 #' "season", "weekday", "holiday". Are case-sensitive. Highly recommended
 #' to use all for daily data and "trend", "season", "holiday" for
-#' weekly and above cadence
+#' weekly and above cadence.
 #' @param prophet_signs Character vector. Choose any of
 #' \code{c("default", "positive", "negative")}. Control
 #' the signs of coefficients for prophet variables. Must have same
@@ -394,7 +394,7 @@ robyn_inputs <- function(dt_input = NULL,
 #'   ,newsletter_thetas = c(0.1, 0.4)
 #' )
 #'
-#' # Define hyper_names() for weibull adstock
+#' # Define hyper_names for weibull adstock
 #' hyper_names(adstock = "weibull", all_media = InputCollect$all_media)
 #'
 #' hyperparameters <- list(

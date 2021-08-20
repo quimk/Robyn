@@ -89,7 +89,7 @@ hyperparameters <- list(
   ,newsletter_thetas = c(0.1, 0.4)
 )
 
-# Define hyper_names() for weibull adstock
+# Define hyper_names for weibull adstock
 hyper_names(adstock = "weibull", all_media = InputCollect$all_media)
 
 hyperparameters <- list(

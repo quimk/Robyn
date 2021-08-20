@@ -796,7 +796,6 @@ robyn_mmm <- function(hyper_collect,
                       lambda.n = 100,
                       lambda_fixed = NULL,
                       refresh = FALSE) {
-
   if (reticulate::py_module_available("nevergrad")) {
     ng <- reticulate::import("nevergrad", delay_load = TRUE)
   } else {
@@ -1437,8 +1436,10 @@ robyn_response <- function(robyn_object = NULL,
     select_build_all <- 0:(length(Robyn) - 1)
     if (is.null(select_build)) {
       select_build <- max(select_build_all)
-      message("Using latest model: ", ifelse(select_build == 0, "initial model", paste0("refresh model nr.", select_build)),
-              " for the response function. Use parameter 'select_build' to specify which run to use")
+      message(
+        "Using latest model: ", ifelse(select_build == 0, "initial model", paste0("refresh model nr.", select_build)),
+        " for the response function. Use parameter 'select_build' to specify which run to use"
+      )
     }
 
     if (!(select_build %in% select_build_all) | length(select_build) != 1) {
@@ -1454,7 +1455,8 @@ robyn_response <- function(robyn_object = NULL,
   } else if (any(is.null(dt_hyppar), is.null(dt_coef), is.null(InputCollect))) {
     stop(paste(
       "When 'robyn_object' is not provided, then 'dt_hyppar = OutputCollect$resultHypParam',",
-      "'dt_coef = OutputCollect$xDecompAgg' and 'InputCollect' must be provided"))
+      "'dt_coef = OutputCollect$xDecompAgg' and 'InputCollect' must be provided"
+    ))
   }
 
   dt_input <- InputCollect$dt_input

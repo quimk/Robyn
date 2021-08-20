@@ -52,7 +52,7 @@ as "revenue" or "conversion". Only one allowed and case sensitive.}
 \item{prophet_vars}{Character vector. Include any of "trend",
 "season", "weekday", "holiday". Are case-sensitive. Highly recommended
 to use all for daily data and "trend", "season", "holiday" for
-weekly and above cadence}
+weekly and above cadence.}
 
 \item{prophet_signs}{Character vector. Choose any of
 \code{c("default", "positive", "negative")}. Control

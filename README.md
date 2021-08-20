@@ -93,27 +93,33 @@ We're very proud to see that there're already 100+ known users of Project Robyn 
 
 ### Pareto-front chart for the initial model build
 The chart below shows the performance of the multi-objective optimisation from the evolutionary algorithm platform Nevergrad over 10k iterations in total. The two axis (NRMSE on x and DECOMP.RSSD on y) are the two objective functions to be minimised. As the iteration increases, a trend down the lower left corner of the coordinate can be clearly observed. This is a proof of Nevergrad's ability to drive the model result toward desired direction. The red lines are Pareto-fronts 1-3 and contains the best possible model results from all iterations.
-![pareto_front](https://user-images.githubusercontent.com/14415136/130214627-2e361317-ce11-4afc-b92d-5b08b67e1627.png)
+
+![Pareto-front for initial model](man/figures/plt1.png?raw=true)
 
 ### Pareto-front chart for the refresh model build
 Similar to above, a more obvious trend of the multi-objective minimization process can be observed during the refreshing process with 3k iterations. The reason for this behaviour is that hyperparameter bounds are narrower during refresh than in the initial build which leads to faster convergence.
-![pareto_front](https://user-images.githubusercontent.com/14415136/130216738-387754dc-91db-4dc2-9ed1-2df10c71aa1d.png)
+
+![Pareto-front for refresh model](man/figures/plt2.png?raw=true)
 
 ### Reporting model refresh time-series fit
 All initial and refresh builds are included sequentially. For the refresh builds, only the added new periods will be appended. The assembled R-squared is adjusted and describes the fit of the assembled actual & fitted lines below. Refresh builds can have different window lengths (parameter `refresh_step` in the  `robyn_refresh()` function).
-![report_actual_fitted](https://user-images.githubusercontent.com/14415136/130219287-2888d5cb-f8d7-4382-b0aa-5e7be3327797.png)
+
+![Refresh time-series fit](man/figures/plt3.png?raw=true)
 
 ### Reporting model refresh decompsition & ROAS
 Decomposition of all predictors per build. The baseline varibale is the sum of all prophet variables (trend, season, weekday, holiday) and the intercept. It's often more intuitive to look at baseline varibale due to the possible intercept drop in the Ridge regression and the effect shift between these baseline variables. **All data is simulated and don't have real-life implication.**
-![report_decomposition](https://user-images.githubusercontent.com/14415136/130220460-5361b313-f308-4976-b2f8-243d7233188b.png)
+
+![Refresh decompsition & ROAS](man/figures/plt4.png?raw=true)
 
 ### Prophet decomposition
-Trend, season, holiday and extra regressor ("event" in this case) decomposition by Prophet. Weekday is not used because the sample data is weekly. Robyn uses Prophet to also decompose categorical variables as extra regressor to simplify later programming. For technical details of decomposition, please refer to Prophet's documentation [here](https://facebook.github.io/prophet/docs/trend_changepoints.html).  
-![prophet_decomp](https://user-images.githubusercontent.com/14415136/130233462-1c1c4cb5-025d-4e1c-a10e-ea0917441a65.png)
+Trend, season, holiday and extra regressor ("event" in this case) decomposition by Prophet. Weekday is not used because the sample data is weekly. Robyn uses Prophet to also decompose categorical variables as extra regressor to simplify later programming. For technical details of decomposition, please refer to Prophet's documentation [here](https://facebook.github.io/prophet/docs/trend_changepoints.html).
+
+![Prophet decomposition](man/figures/plt5.png?raw=true)
 
 ### Spend exposure plot
 When using exposure variables (impressions, clicks, GRPs etc) instead of spend in `paid_media_vars`, Robyn fits an nonlinear model with Michaelis Menten function between exposure and spend to establish the spend-exposure relationship. The example data shows very good fit between exposure and spend. However, when a channel has more complex activities, for example a large advertiser having multiple teams using different strategies (bidding, objective, audience etc.) for Facebook ads, it's possible that the high-level channel total impressions and spends will fit poorly. A sign to consider splitting this channel into meaningful subchannels.
-![spend_exposure_fitting](https://user-images.githubusercontent.com/14415136/130233984-bc1fe1db-262f-43d0-806d-c3f71d31b528.png)
+
+![Spend exposure plot](man/figures/plt6.png?raw=true)
 
 ### Model one-pager
 An example of the model one-pager for each Pareto-optimal models. **All data is simulated and don't have real-life implication.**
@@ -123,7 +129,8 @@ An example of the model one-pager for each Pareto-optimal models. **All data is 
   * **Saturation curves**: The Hill function induced saturation curves for each media variable.
   * **Average media decay rate**: Decay rate comparison. When using Geometric adstock, this equals to theta. When using Weibull, because Weibull is two-parametric with changing decay rate over time that is difficult to illustrate intuitively, we've chosen to compare the total Weibull infinite sum of decay to it's equivalent in Geometric's infinite sum of decay rate and finally plot the Geometric decay rate as a visual approximate to the Weibull average decay.
   * **Fitted vs. residuals**: Visual examination of the model diagnostic in residuals
-![3_206_1](https://user-images.githubusercontent.com/14415136/130217793-392bc76b-df8a-4d8c-a033-fe119d49666e.png)
+
+![Model one-pager](man/figures/plt7.png?raw=true)
 
 
 ## Q&A
