@@ -99,6 +99,15 @@ The chart below shows the performance of the multi-objective optimisation from t
 Similar to above, a more obvious trend of the multi-objective minimization process can be observed during the refreshing process with 3k iterations. The reason for this behaviour is that hyperparameter bounds are narrower during refresh than in the initial build which leads to faster convergence.
 ![pareto_front](https://user-images.githubusercontent.com/14415136/130216738-387754dc-91db-4dc2-9ed1-2df10c71aa1d.png)
 
+### Prophet decomposition
+Trend, season, holiday and extra regressor ("event" in this case) decomposition by Prophet. Weekday is not used because the sample data is weekly. Robyn uses Prophet to also decompose categorical variables as extra regressor to simplify later programming. For technical details of decomposition, please refer to Prophet's documentation [here](https://facebook.github.io/prophet/docs/trend_changepoints.html).  
+![prophet_decomp](https://user-images.githubusercontent.com/14415136/130233462-1c1c4cb5-025d-4e1c-a10e-ea0917441a65.png)
+
+### Spend exposure plot
+When using exposure variables (impressions, clicks, GRPs etc) instead of spend in `paid_media_vars`, Robyn fits an nonlinear model with Michaelis Menten function between exposure and spend to establish the spend-exposure relationship. The example data shows very good fit between exposure and spend. However, when a channel has more complex activities, for example a large advertiser having multiple teams using different strategies (bidding, objective, audience etc.) for Facebook ads, it's possible that the high-level channel total impressions and spends will fit poorly. A sign to consider splitting this channel into meaningful subchannels.
+![spend_exposure_fitting](https://user-images.githubusercontent.com/14415136/130233984-bc1fe1db-262f-43d0-806d-c3f71d31b528.png)
+
+
 ### Model one-pager
 An example of the model one-pager for each Pareto-optimal models. **All data is simulated and don't have real-life implication.**
   * **Waterfall chart**: Total decomposition of all independent variables
