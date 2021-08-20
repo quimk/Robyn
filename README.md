@@ -89,7 +89,17 @@ We're very proud to see that there're already 100+ known users of Project Robyn 
   
   * **Automated output**: When using `robyn_run()` function to build the initial model, Robyn outputs an one-pager that contains 6 charts  for every Pareto-optimum model and saves 4 csv-files (pareto_hyperparameters.csv, pareto_aggregated.csv, pareto_media_transform_matrix.csv, pareto_alldecomp_matrix.csv) that contains all results. The 6 charts are: the effect decomposition waterfall chart, the actual vs. predicted fit line chart, the media spend vs. effect bar chart, the media saturation line chart, the adstock decay rate bar chart and the predicted vs. residual line chart. When using `robyn_refresh()` function to build refresh models, Robyn outputs 2 extra charts (aggregated actual vs. predicted line chart and aggregated decomposition bar chart) and saves 4 extra csv-files separately (report_hyperparameters.csv, report_aggregated.csv, report_media_transform_matrix.csv, report_alldecomp_matrix.csv). 
   
-  
+## Example plots
+
+### Pareto-front chart for the initial model build
+The chart below shows the performance of the multi-objective optimisation from the evolutionary algorithm platform Nevergrad over 10k iterations in total. The two axis (NRMSE on x and DECOMP.RSSD on y) are the two objective functions to be minimised. As the iteration increases, a trend down the lower left corner of the coordinate can be clearly observed. This is a proof of Nevergrad's ability to drive the model result toward desired direction.
+![pareto_front](https://user-images.githubusercontent.com/14415136/130214627-2e361317-ce11-4afc-b92d-5b08b67e1627.png)
+
+### Pareto-front chart for the refresh model build
+Similar to above, a more obvious trend of the multi-objective minimization process can be observed during the refreshing process with 3k iterations. The reason for this behaviour is that hyperparameter bounds are narrower during refresh than in the initial build which leads to faster convergence.
+![pareto_front](https://user-images.githubusercontent.com/14415136/130216738-387754dc-91db-4dc2-9ed1-2df10c71aa1d.png)
+
+
 ## Q&A
 
 ### Input data questions
