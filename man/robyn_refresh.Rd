@@ -10,8 +10,8 @@ robyn_refresh(
   dt_holidays = dt_holidays,
   refresh_steps = 4,
   refresh_mode = "manual",
-  refresh_iters = 100,
-  refresh_trials = 1,
+  refresh_iters = 1000,
+  refresh_trials = 3,
   plot_pareto = TRUE
 )
 }

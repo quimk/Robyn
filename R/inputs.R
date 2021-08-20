@@ -273,7 +273,7 @@ robyn_inputs <- function(dt_input = NULL,
       ### conditional output 1.2
       ## running robyn_inputs() for the 1st time & 'hyperparameters' provided --> run robyn_engineering()
       check_iteration(calibration_input, iterations, trials)
-      outFeatEng <- robyn_engineering(InputCollect = InputCollect, refresh = FALSE)
+      outFeatEng <- robyn_engineering(InputCollect = InputCollect)
       invisible(return(outFeatEng))
     }
   } else {
@@ -310,7 +310,7 @@ robyn_inputs <- function(dt_input = NULL,
       check_hyperparameters(InputCollect$hyperparameters, InputCollect$adstock, InputCollect$all_media)
       check_iteration(InputCollect$calibration_input, InputCollect$iterations, InputCollect$trials)
 
-      outFeatEng <- robyn_engineering(InputCollect = InputCollect, refresh = FALSE)
+      outFeatEng <- robyn_engineering(InputCollect = InputCollect)
       invisible(return(outFeatEng))
     }
   }
@@ -458,7 +458,7 @@ hyper_names <- function(adstock, all_media) {
 #' data. The list is passed to further functions like
 #' \code{robyn_run()}, \code{robyn_save()} and \code{robyn_allocator()}.
 #' @export
-robyn_engineering <- function(InputCollect, refresh = FALSE) {
+robyn_engineering <- function(InputCollect) {
 
   check_InputCollect(InputCollect)
 
@@ -696,12 +696,12 @@ fit_spend_exposure <- function(dt_spendModInput, mediaCostFactor, paid_media_var
   colnames(dt_spendModInput) <- c("spend", "exposure")
 
   # remove spend == 0 to avoid DIV/0 error
-  dt_spendModInput$spend[dt_spendModInput$spend == 0] <- 0.01
-  # adapt exposure with avg when spend == 0
-  dt_spendModInput$exposure <- ifelse(
-    dt_spendModInput$exposure == 0, dt_spendModInput$spend / mediaCostFactor,
-    dt_spendModInput$exposure
-  )
+  # dt_spendModInput$spend[dt_spendModInput$spend == 0] <- 0.01
+  # # adapt exposure with avg when spend == 0
+  # dt_spendModInput$exposure <- ifelse(
+  #   dt_spendModInput$exposure == 0, dt_spendModInput$spend / mediaCostFactor,
+  #   dt_spendModInput$exposure
+  # )
 
   # Model 1: Michaelis-Menten model Vmax * spend/(Km + spend)
   tryCatch(
@@ -727,6 +727,13 @@ fit_spend_exposure <- function(dt_spendModInput, mediaCostFactor, paid_media_var
     error = function(cond) {
       message("Michaelis-Menten fitting for ", paid_media_vars, " out of range. Using lm instead")
       modNLS <- yhatNLS <- modNLSSum <- rsq_nls <- NULL
+    },
+    warning = function(cond) {
+      message("Michaelis-Menten fitting for ", paid_media_vars, " out of range. Using lm instead")
+      modNLS <- yhatNLS <- modNLSSum <- rsq_nls <- NULL
+    },
+    finally = {
+      if (!exists("modNLS")) modNLS <- yhatNLS <- modNLSSum <- rsq_nls <- NULL
     }
   )
 

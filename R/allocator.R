@@ -38,8 +38,12 @@
 #' @param expected_spend_days Integer. The duration of the future spend volume in
 #' \code{expected_spend}. Only applies when \code{scenario = "max_response_expected_spend"}.
 #' @param channel_constr_low,channel_constr_up Numeric vector. The lower and upper bounds
-#' for each paid media variable when maximizing total media response. Must be between
-#' 0.01-1 and has same length and order as \code{paid_media_vars}.
+#' for each paid media variable when maximizing total media response. \code{channel_constr_low
+#' = 0.7} means minimum spend of the variable is 70% of historical average. Lower bound must
+#' be >=0.01. \code{channel_constr_up = 1.5} means maximum spend of the variable is 150% of
+#' historical average. Upper bound must be >= lower bound. Both must have same length and order
+#' as \code{paid_media_vars}. nIt's ot recommended to 'exaggerate' upper bounds, esp. if the
+#' new level is way higher than historical level.
 #' @param maxeval Integer. The maximum iteration of the global optimization algorithm.
 #' Defaults to 100000.
 #' @param constr_mode Character. Options are \code{"eq"} or \code{"ineq"},
@@ -154,10 +158,10 @@ robyn_allocator <- function(robyn_object = NULL,
   ## check input parameters
 
   if (any(channel_constr_low < 0.01)) {
-    stop("'channel_constr_low' must be between >0.01")
+    stop("'channel_constr_low' must be >= 0.01")
   }
   if (any(channel_constr_up < channel_constr_low)) {
-    stop("'channel_constr_up' must be > 'channel_constr_low'")
+    stop("'channel_constr_up' must be >= 'channel_constr_low'")
   }
   if (any(channel_constr_up > 5)) {
     message("'channel_constr_up' >5 might cause unrealistic allocation")

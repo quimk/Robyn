@@ -146,9 +146,9 @@ robyn_refresh <- function(robyn_object,
                           dt_input = dt_input,
                           dt_holidays = dt_holidays,
                           refresh_steps = 4,
-                          refresh_mode = "manual" # "auto", "manual"
-                          , refresh_iters = 100,
-                          refresh_trials = 1,
+                          refresh_mode = "manual", # "auto", "manual"
+                          refresh_iters = 1000,
+                          refresh_trials = 3,
                           plot_pareto = TRUE) {
   refreshControl <- TRUE
   while (refreshControl) {

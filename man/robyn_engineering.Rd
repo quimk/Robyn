@@ -4,7 +4,7 @@
 \alias{robyn_engineering}
 \title{Apply prophet decomposition and spend exposure transformation}
 \usage{
-robyn_engineering(InputCollect, refresh = FALSE)
+robyn_engineering(InputCollect)
 }
 \arguments{
 \item{InputCollect}{Default to \code{InputCollect}}
