@@ -50,7 +50,11 @@ We're very proud to see that there're already 100+ known users of Project Robyn 
   working months to implement its in-house model
   * **[Central Retail](https://www.facebook.com/business/success/central-retail-corporation) from Thailand**: 28% increase in revenue 
   possible with reallocated budget
-  
+
+## Model flow
+
+![Model flow](man/figures/Robyn3.0_Model_Flow.png?raw=true)
+
 ## Core capabilities
 
   * **Semi-automated modelling process**: Robyn automatically returns a set of business-relevant and Pareto-optimum results by optimizing on
@@ -88,10 +92,6 @@ We're very proud to see that there're already 100+ known users of Project Robyn 
   * **Budget allocator**: Based on selected model result, or to be precise the saturation curve of each paid media variable, the `robyn_allocator()` function returns the optimal mix of spend that maximizes the total response. Technically speaking, Robyn uses by defaultt a combination of Augmented Lagrangian (AUGLAG) as global optimization algorithm and Sequential Least Square Quadratic Programming (SLSQP) as local optimization algorithm to solve the nonlinear objective function analytically.
   
   * **Automated output**: When using `robyn_run()` function to build the initial model, Robyn outputs an one-pager that contains 6 charts  for every Pareto-optimum model and saves 4 csv-files (pareto_hyperparameters.csv, pareto_aggregated.csv, pareto_media_transform_matrix.csv, pareto_alldecomp_matrix.csv) that contains all results. The 6 charts are: the effect decomposition waterfall chart, the actual vs. predicted fit line chart, the media spend vs. effect bar chart, the media saturation line chart, the adstock decay rate bar chart and the predicted vs. residual line chart. When using `robyn_refresh()` function to build refresh models, Robyn outputs 2 extra charts (aggregated actual vs. predicted line chart and aggregated decomposition bar chart) and saves 4 extra csv-files separately (report_hyperparameters.csv, report_aggregated.csv, report_media_transform_matrix.csv, report_alldecomp_matrix.csv). 
-  
-## Model flow
-
-![Model flow](man/figures/Robyn3.0_Model_Flow.png?raw=true)
 
 ## Example plots
 
@@ -167,6 +167,13 @@ An example of the model one-pager for each Pareto-optimal models. **All data is 
   
   * **Can Robyn account for interative/synergy effect between channels?**: [here](https://github.com/facebookexperimental/Robyn/issues/96).
 
+## Nevergrad algorithm selection
+
+We've conducted a high-level comparison of Nevergrad algorithms aiming to identify the best option for Robyn. At first, we ran 500 iterations and 10 trials for all options. X axis is accumulated seconds and Y axis is combined loss function sqrt(sum(RMSE^2,DECOMP.RSSD^2)). The lower the combined error, the better the model. We can observe that DE (Differential Evoluttion) and TwoPointsDE are not only achieving the lowest error. They also show the ability to improve continuously, as opposed to OnePlusOne or cGA, for example, that are reaching convergence early and stop evolving. 
+![All algo comparison](man/figures/ng_algo_compare_all_500x10-min.png?raw=true)
+
+As deepdive for both differential algorithms, we've ran 2000 iterations for 5 trials as our common recommendation. Y axis is the combined error and X axis the iteration counts. We can observe that both algorithms are reaching the "flat tail" after 1000 iterations, although small improvements are still happening. Both algorithm are having similar level of combined error. Based on this, we selected "TwoPointsDE" as the standard Nevergrad algorihm.
+![DE algo comparison](man/figures/ng_algo_compare_de_2000x5-min.png?raw=true)
 
 ## Release log
 
