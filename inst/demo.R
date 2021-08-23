@@ -210,6 +210,18 @@ InputCollect <- robyn_inputs(InputCollect = InputCollect, hyperparameters = hype
 
 #### 2a-4: Fourth (optional), model calibration / add experimental input
 
+## Guide for calibration source
+
+# 1. We strongly recommend to use experimental and causal results that are considered
+# ground truth to calibrate MMM. Usual experiment types are people-based (e.g. Facebook
+# conversion lift) and geo-based (e.g. Facebook GeoLift).
+# 2. Currently, Robyn only accepts point-estimate as calibration input. For example, if
+# 10k$ spend is tested against a hold-out for channel A, then input the incremental
+# return as point-estimate as the example below.
+# 3. The point-estimate has to always match the spend in the variable. For example, if
+# channel A usually has 100k$ weekly spend and the experimental HO is 70%, input the
+# point-estimate for the 30k$, not the 70k$.
+
 # dt_calibration <- data.frame(
 #   channel = c("facebook_I",  "tv_S", "facebook_I")
 #   # channel name must in paid_media_vars
