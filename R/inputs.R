@@ -15,6 +15,21 @@
 #' library \code{prophet} and fit a nonlinear model to spend and exposure
 #' metrics in case exposure metrics are used in \code{paid_media_vars}.
 #'
+#' @section Guide for calibration source:
+#'  \enumerate{
+#'    \item We strongly recommend to use experimental and causal results
+#'    that are considered ground truth to calibrate MMM. Usual experiment
+#'    types are people-based (e.g. Facebook conversion lift) and
+#'    geo-based (e.g. Facebook GeoLift).
+#'    \item Currently, Robyn only accepts point-estimate as calibration
+#'    input. For example, if 10k$ spend is tested against a hold-out
+#'    for channel A, then input the incremental return as point-estimate
+#'    as the example below.
+#'    \item The point-estimate has to always match the spend in the variable.
+#'    For example, if channel A usually has 100k$ weekly spend and the
+#'    experimental HO is 70%, input the point-estimate for the 30k$, not the 70k$.
+#' }
+#'
 #' @param dt_input A data.frame. Raw input data. Load simulated
 #' dataset using \code{data("dt_simulated_weekly")}
 #' @param dt_holidays A data.frame. Raw input holiday data. Load standard
@@ -88,6 +103,7 @@
 #' "DiscreteOnePlusOne", "PortfolioDiscreteOnePlusOne", "NaiveTBPSA",
 #' "cGA", "RandomSearch")}
 #' @param calibration_input A data.table. Optional provide experimental results.
+#' Check "Guide for calibration source" section.
 #' @param InputCollect Default to NULL. \code{robyn_inputs}'s output when
 #' \code{hyperparameters} are not yet set.
 #' @examples

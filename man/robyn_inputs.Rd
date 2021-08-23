@@ -130,7 +130,8 @@ to have ratio of independent variable: data points of 1:10.}
 "DiscreteOnePlusOne", "PortfolioDiscreteOnePlusOne", "NaiveTBPSA",
 "cGA", "RandomSearch")}}
 
-\item{calibration_input}{A data.table. Optional provide experimental results.}
+\item{calibration_input}{A data.table. Optional provide experimental results.
+Check "Guide for calibration source" section.}
 
 \item{InputCollect}{Default to NULL. \code{robyn_inputs}'s output when
 \code{hyperparameters} are not yet set.}
@@ -148,6 +149,23 @@ holiday & weekday decomposition using Facebook's time-serie forecasting
 library \code{prophet} and fit a nonlinear model to spend and exposure
 metrics in case exposure metrics are used in \code{paid_media_vars}.
 }
+\section{Guide for calibration source}{
+
+ \enumerate{
+   \item We strongly recommend to use experimental and causal results
+   that are considered ground truth to calibrate MMM. Usual experiment
+   types are people-based (e.g. Facebook conversion lift) and
+   geo-based (e.g. Facebook GeoLift).
+   \item Currently, Robyn only accepts point-estimate as calibration
+   input. For example, if 10k$ spend is tested against a hold-out
+   for channel A, then input the incremental return as point-estimate
+   as the example below.
+   \item The point-estimate has to always match the spend in the variable.
+   For example, if channel A usually has 100k$ weekly spend and the
+   experimental HO is 70%, input the point-estimate for the 30k$, not the 70k$.
+}
+}
+
 \examples{
 # load similated input data
 data("dt_simulated_weekly")
