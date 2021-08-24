@@ -131,7 +131,7 @@ robyn_run <- function(InputCollect,
     message(paste(
       "Using", InputCollect$adstock, "adstocking with",
       length(InputCollect$hyperparameters),
-      "hyperparameters & 100-fold ridge x-validation on",
+      "hyperparameters & 10-fold ridge x-validation on",
       InputCollect$cores, "cores"
     ))
     model_output_collect <- list()
@@ -1110,6 +1110,7 @@ robyn_mmm <- function(hyper_collect,
             type.measure = "mse"
             # ,penalty.factor = c(1,1,1,1,1,1,1,1,1)
             # ,nlambda = 100
+            # ,nfold = 10
             # ,intercept = FALSE
           ) # plot(cvmod) coef(cvmod)
           # head(predict(cvmod, newx=x_train, s="lambda.1se"))
