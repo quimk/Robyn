@@ -13,7 +13,7 @@ format_unit <- function(x_in) {
     } else if (abs(x) >= 1000000 & abs(x) < 1000000000) {
       x_out <- paste0(round(x / 1000000, 1), " mio")
     } else if (abs(x) >= 1000 & abs(x) < 1000000) {
-      x_out <- paste0(round(x / 1000, 1), " tsd")
+      x_out <- paste0(round(x / 1000, 1), " k")
     } else {
       x_out <- round(x, 0)
     }

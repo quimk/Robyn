@@ -757,6 +757,10 @@ fit_spend_exposure <- function(dt_spendModInput, mediaCostFactor, paid_media_var
   modLMSum <- summary(modLM)
   rsq_lm <- get_rsq(true = dt_spendModInput$exposure, predicted = yhatLM)
   if (is.na(rsq_lm)) stop("Please check if ", paid_media_vars, " contains only 0s")
+  if (max(rsq_lm, rsq_nls)<0.7) warning("Spend-exposure fitting for ", paid_media_vars
+                                        , " has rsq = ", max(rsq_lm, rsq_nls), ". To
+                                        increase the fit, try splitting the variable.
+                                        Otherwise consider using spend instead.")
 
   output <- list(
     res = data.table(
