@@ -9,11 +9,11 @@
 format_unit <- function(x_in) {
   x_out <- sapply(x_in, function(x) {
     if (abs(x) >= 1000000000) {
-      x_out <- paste0(round(x / 1000000000, 1), " bln")
+      x_out <- paste0(round(x / 1000000000, 1), " B")
     } else if (abs(x) >= 1000000 & abs(x) < 1000000000) {
-      x_out <- paste0(round(x / 1000000, 1), " mio")
+      x_out <- paste0(round(x / 1000000, 1), " M")
     } else if (abs(x) >= 1000 & abs(x) < 1000000) {
-      x_out <- paste0(round(x / 1000, 1), " tsd")
+      x_out <- paste0(round(x / 1000, 1), " K")
     } else {
       x_out <- round(x, 0)
     }
