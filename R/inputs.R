@@ -381,33 +381,30 @@ robyn_inputs <- function(dt_input = NULL,
 #' Includes \code{InputCollect$paid_media_vars} and \code{InputCollect$organic_vars}.
 #' @examples
 #' \dontrun{
-#' # Define hyper_names() for geometric adstock
+#' # Having InputCollect as robyn_inputs() output
+#' # Define hyper_names for geometric adstock
 #' hyper_names(adstock = "geometric", all_media = InputCollect$all_media)
 #'
 #' hyperparameters <- list(
 #'   facebook_I_alphas = c(0.5, 3) # example bounds for alpha
-#'   ,facebook_I_gammas = c(0.3, 1) # example bounds for gamma
-#'   ,facebook_I_thetas = c(0, 0.3) # example bounds for theta
+#'   , facebook_I_gammas = c(0.3, 1) # example bounds for gamma
+#'   , facebook_I_thetas = c(0, 0.3) # example bounds for theta
 #'
-#'   ,print_S_alphas = c(0.5, 3)
-#'   ,print_S_gammas = c(0.3, 1)
-#'   ,print_S_thetas = c(0.1, 0.4)
-#'
-#'   ,tv_S_alphas = c(0.5, 3)
-#'   ,tv_S_gammas = c(0.3, 1)
-#'   ,tv_S_thetas = c(0.3, 0.8)
-#'
-#'   ,search_clicks_P_alphas = c(0.5, 3)
-#'   ,search_clicks_P_gammas = c(0.3, 1)
-#'   ,search_clicks_P_thetas = c(0, 0.3)
-#'
-#'   ,ooh_S_alphas = c(0.5, 3)
-#'   ,ooh_S_gammas = c(0.3, 1)
-#'   ,ooh_S_thetas = c(0.1, 0.4
-#'
-#'   ,newsletter_alphas = c(0.5, 3)
-#'   ,newsletter_gammas = c(0.3, 1)
-#'   ,newsletter_thetas = c(0.1, 0.4)
+#'   , print_S_alphas = c(0.5, 3),
+#'   print_S_gammas = c(0.3, 1),
+#'   print_S_thetas = c(0.1, 0.4),
+#'   tv_S_alphas = c(0.5, 3),
+#'   tv_S_gammas = c(0.3, 1),
+#'   tv_S_thetas = c(0.3, 0.8),
+#'   search_clicks_P_alphas = c(0.5, 3),
+#'   search_clicks_P_gammas = c(0.3, 1),
+#'   search_clicks_P_thetas = c(0, 0.3),
+#'   ooh_S_alphas = c(0.5, 3),
+#'   ooh_S_gammas = c(0.3, 1),
+#'   ooh_S_thetas = c(0.1, 0.4),
+#'   newsletter_alphas = c(0.5, 3),
+#'   newsletter_gammas = c(0.3, 1),
+#'   newsletter_thetas = c(0.1, 0.4)
 #' )
 #'
 #' # Define hyper_names for weibull adstock
@@ -415,34 +412,30 @@ robyn_inputs <- function(dt_input = NULL,
 #'
 #' hyperparameters <- list(
 #'   facebook_I_alphas = c(0.5, 3) # example bounds for alpha
-#'   ,facebook_I_gammas = c(0.3, 1) # example bounds for gamma
-#'   ,facebook_I_shapes = c(0.0001, 2) # example bounds for shape
-#'   ,facebook_I_scales = c(0, 0.1) # example bounds for scale
+#'   , facebook_I_gammas = c(0.3, 1) # example bounds for gamma
+#'   , facebook_I_shapes = c(0.0001, 2) # example bounds for shape
+#'   , facebook_I_scales = c(0, 0.1) # example bounds for scale
 #'
-#'   ,print_S_alphas = c(0.5, 3)
-#'   ,print_S_gammas = c(0.3, 1)
-#'   ,print_S_shapes = c(0.0001, 2)
-#'   ,print_S_scales = c(0, 0.1)
-#'
-#'   ,tv_S_alphas = c(0.5, 3)
-#'   ,tv_S_gammas = c(0.3, 1)
-#'   ,tv_S_shapes = c(0.0001, 2)
-#'   ,tv_S_scales= c(0, 0.1)
-#'
-#'   ,search_clicks_P_alphas = c(0.5, 3)
-#'   ,search_clicks_P_gammas = c(0.3, 1)
-#'   ,search_clicks_P_shapes = c(0.0001, 2)
-#'   ,search_clicks_P_scales = c(0, 0.1)
-#'
-#'   ,ooh_S_alphas = c(0.5, 3)
-#'   ,ooh_S_gammas = c(0.3, 1)
-#'   ,ooh_S_shapes = c(0.0001, 2)
-#'   ,ooh_S_scales = c(0, 0.1)
-#'
-#'   ,newsletter_alphas = c(0.5, 3)
-#'   ,newsletter_gammas = c(0.3, 1)
-#'   ,newsletter_shapes = c(0.0001, 2)
-#'   ,newsletter_scales = c(0, 0.1)
+#'   , print_S_alphas = c(0.5, 3),
+#'   print_S_gammas = c(0.3, 1),
+#'   print_S_shapes = c(0.0001, 2),
+#'   print_S_scales = c(0, 0.1),
+#'   tv_S_alphas = c(0.5, 3),
+#'   tv_S_gammas = c(0.3, 1),
+#'   tv_S_shapes = c(0.0001, 2),
+#'   tv_S_scales = c(0, 0.1),
+#'   search_clicks_P_alphas = c(0.5, 3),
+#'   search_clicks_P_gammas = c(0.3, 1),
+#'   search_clicks_P_shapes = c(0.0001, 2),
+#'   search_clicks_P_scales = c(0, 0.1),
+#'   ooh_S_alphas = c(0.5, 3),
+#'   ooh_S_gammas = c(0.3, 1),
+#'   ooh_S_shapes = c(0.0001, 2),
+#'   ooh_S_scales = c(0, 0.1),
+#'   newsletter_alphas = c(0.5, 3),
+#'   newsletter_gammas = c(0.3, 1),
+#'   newsletter_shapes = c(0.0001, 2),
+#'   newsletter_scales = c(0, 0.1)
 #' )
 #' }
 #' @export
@@ -473,7 +466,6 @@ hyper_names <- function(adstock, all_media) {
 #' \code{robyn_run()}, \code{robyn_save()} and \code{robyn_allocator()}.
 #' @export
 robyn_engineering <- function(InputCollect) {
-
   check_InputCollect(InputCollect)
 
   dt_input <- InputCollect$dt_input
@@ -756,7 +748,17 @@ fit_spend_exposure <- function(dt_spendModInput, mediaCostFactor, paid_media_var
   yhatLM <- predict(modLM)
   modLMSum <- summary(modLM)
   rsq_lm <- get_rsq(true = dt_spendModInput$exposure, predicted = yhatLM)
-  if (is.na(rsq_lm)) stop("Please check if ", paid_media_vars, " contains only 0s")
+  if (is.na(rsq_lm)) {
+    stop("Please check if ", paid_media_vars, " contains only 0s")
+  }
+  if (max(rsq_lm, rsq_nls) < 0.7) {
+    warning(paste(
+      "Spend-exposure fitting for", paid_media_vars,
+      "has rsq = ", max(rsq_lm, rsq_nls),
+      "To increase the fit, try splitting the variable.",
+      "Otherwise consider using spend instead."
+    ))
+  }
 
   output <- list(
     res = data.table(
