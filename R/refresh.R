@@ -300,8 +300,8 @@ robyn_refresh <- function(robyn_object,
     selectID <- OutputCollectRF$resultHypParam[which.min(error_dis), solID]
     OutputCollectRF$selectID <- selectID
     message(
-      "\nSelected model ID: ", selectID, " for refresh model nr.",
-      refreshCounter, " based on the smallest combined error of nrmse & decomp.rssd"
+      "Selected model ID: ", selectID, " for refresh model nr.",
+      refreshCounter, " based on the smallest combined error of NRMSE & DECOMP.RSSD"
     )
 
     OutputCollectRF$resultHypParam[, bestModRF := solID == selectID]
@@ -520,7 +520,7 @@ robyn_refresh <- function(robyn_object,
 
     if (refreshLooper == 0) {
       refreshControl <- FALSE
-      message("reached maximum available date. no further refresh possible")
+      message("Reached maximum available date. No further refresh possible")
     }
   }
   invisible(Robyn)
