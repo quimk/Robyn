@@ -5,12 +5,12 @@ on:
     branches:
       #- main
       #- master
-      - package_test
+      - package
   pull_request:
     branches:
       #- main
       #- master
-      - package_test
+      - package
 
 name: R-CMD-check
 
