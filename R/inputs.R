@@ -179,6 +179,12 @@ robyn_inputs <- function(dt_input = NULL,
     check_nas(dt_input)
     check_nas(dt_holidays)
 
+    # check vars names (duplicates and valid)
+    check_varnames(dt_input, dt_holidays,
+                   dep_var, date_var,
+                   context_vars, paid_media_vars,
+                   organic_vars)
+
     ## check date input (and set dayInterval and intervalType)
     date_input <- check_datevar(dt_input, date_var)
     date_var <- date_input$date_var # when date_var = "auto"

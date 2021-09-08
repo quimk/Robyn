@@ -17,6 +17,46 @@ check_nas <- function(df) {
   }
 }
 
+check_varnames <- function(dt_input, dt_holidays,
+                           dep_var, date_var,
+                           context_vars, paid_media_vars,
+                           organic_vars) {
+  dfs <- list(dt_input = dt_input, dt_holidays = dt_holidays)
+  for (i in seq_along(dfs)) {
+    # Which names to check by data.frame
+    table_name <- names(dfs[i])
+    if (table_name == "dt_input") {
+      vars <- c(
+        dep_var, date_var, context_vars,
+        paid_media_vars, organic_vars, "auto"
+      )
+    }
+    if (table_name == "dt_holidays") {
+      vars <- c("ds","country") # holiday?
+    }
+    df <- dfs[[i]]
+    # COMMENTED: each check_xvar() will give a better clue
+    # # Not present names
+    # cols <- c(colnames(df), "auto")
+    # if (!all(vars %in% cols)) {
+    #   these <- vars[!vars %in% cols]
+    #   stop(paste(
+    #     "You have set variables that are not present in your", table_name, "dataframe.",
+    #     "Check:", paste(these, collapse = ", ")
+    #   ))
+    # }
+    # Duplicate names
+    vars <- vars[vars != "auto"]
+    if (length(vars) != length(unique(vars))) {
+      these <- names(table(vars)[table(vars) > 1])
+      stop(paste(
+        "You have duplicated variable names for", table_name, "in different parameters.",
+        "Check:", paste(these, collapse = ", ")
+      ))
+    }
+  }
+}
+
 check_datevar <- function(dt_input, date_var = "auto") {
   if (date_var[1] == "auto") {
     is_date <- which(unlist(lapply(dt_input, is.Date)))
