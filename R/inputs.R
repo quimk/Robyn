@@ -190,6 +190,7 @@ robyn_inputs <- function(dt_input = NULL,
     date_var <- date_input$date_var # when date_var = "auto"
     dayInterval <- date_input$dayInterval
     intervalType <- date_input$intervalType
+    setorderv(dt_input, date_var)
 
     ## check dependent var
     check_depvar(dt_input, dep_var, dep_var_type)

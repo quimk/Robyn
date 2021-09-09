@@ -210,7 +210,7 @@ robyn_refresh <- function(robyn_object,
 
 
     ## load new data
-
+    setorderv(dt_input, InputCollectRF$date_var, order = 1L)
     InputCollectRF$dt_input <- dt_input
     InputCollectRF$dt_holidays <- dt_holidays
 
