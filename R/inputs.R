@@ -106,6 +106,7 @@
 #' Check "Guide for calibration source" section.
 #' @param InputCollect Default to NULL. \code{robyn_inputs}'s output when
 #' \code{hyperparameters} are not yet set.
+#' @param ... Additional parameters passed to \code{prophet} functions.
 #' @examples
 #' # load similated input data
 #' data("dt_simulated_weekly")
@@ -168,7 +169,8 @@ robyn_inputs <- function(dt_input = NULL,
                          trials = 5,
                          nevergrad_algo = "TwoPointsDE",
                          calibration_input = NULL,
-                         InputCollect = NULL) {
+                         InputCollect = NULL,
+                         ...) {
 
   ### Use case 1: running robyn_inputs() for the first time
   if (is.null(InputCollect)) {
@@ -296,7 +298,7 @@ robyn_inputs <- function(dt_input = NULL,
       ### conditional output 1.2
       ## running robyn_inputs() for the 1st time & 'hyperparameters' provided --> run robyn_engineering()
       check_iteration(calibration_input, iterations, trials)
-      outFeatEng <- robyn_engineering(InputCollect = InputCollect)
+      outFeatEng <- robyn_engineering(InputCollect = InputCollect, ...)
       invisible(return(outFeatEng))
     }
   } else {
@@ -333,7 +335,7 @@ robyn_inputs <- function(dt_input = NULL,
       check_hyperparameters(InputCollect$hyperparameters, InputCollect$adstock, InputCollect$all_media)
       check_iteration(InputCollect$calibration_input, InputCollect$iterations, InputCollect$trials)
 
-      outFeatEng <- robyn_engineering(InputCollect = InputCollect)
+      outFeatEng <- robyn_engineering(InputCollect = InputCollect, ...)
       invisible(return(outFeatEng))
     }
   }
@@ -467,12 +469,13 @@ hyper_names <- function(adstock, all_media) {
 #' using non-spend variables in \code{paid_media_vars}, for example
 #' impressions for Facebook variables.
 #'
+#' @inheritParams robyn_inputs
 #' @param InputCollect Default to \code{InputCollect}
 #' @return A list containing the all input parameters and modified input
 #' data. The list is passed to further functions like
 #' \code{robyn_run()}, \code{robyn_save()} and \code{robyn_allocator()}.
 #' @export
-robyn_engineering <- function(InputCollect) {
+robyn_engineering <- function(InputCollect, ...) {
   check_InputCollect(InputCollect)
 
   dt_input <- InputCollect$dt_input
@@ -587,7 +590,8 @@ robyn_engineering <- function(InputCollect) {
       factor_vars = factor_vars,
       context_vars = InputCollect$context_vars,
       paid_media_vars = paid_media_vars,
-      intervalType = InputCollect$intervalType
+      intervalType = InputCollect$intervalType,
+      ...
     )
   }
 
@@ -623,10 +627,12 @@ robyn_engineering <- function(InputCollect) {
 #' @param context_vars As in \code{robyn_inputs()}
 #' @param paid_media_vars As in \code{robyn_inputs()}
 #' @param intervalType As included in \code{InputCollect}
+#' @param ... Additional prophet parameters
 #' @return A list containing all prophet decomposition output.
 prophet_decomp <- function(dt_transform, dt_holidays,
                            prophet_country, prophet_vars, prophet_signs,
-                           factor_vars, context_vars, paid_media_vars, intervalType) {
+                           factor_vars, context_vars, paid_media_vars, intervalType,
+                           ...) {
   check_prophet(dt_holidays, prophet_country, prophet_vars, prophet_signs)
   recurrance <- subset(dt_transform, select = c("ds", "dep_var"))
   colnames(recurrance)[2] <- "y"
@@ -643,13 +649,14 @@ prophet_decomp <- function(dt_transform, dt_holidays,
       holidays = if (use_holiday) holidays[country == prophet_country] else NULL,
       yearly.seasonality = use_season,
       weekly.seasonality = use_weekday,
-      daily.seasonality = FALSE
+      daily.seasonality = FALSE,
+      ...
     )
     dt_ohe <- as.data.table(model.matrix(y ~ ., dt_regressors[, c("y", factor_vars), with = FALSE]))[, -1]
     ohe_names <- names(dt_ohe)
     for (addreg in ohe_names) modelRecurrance <- add_regressor(modelRecurrance, addreg)
     dt_ohe <- cbind(dt_regressors[, !factor_vars, with = FALSE], dt_ohe)
-    mod_ohe <- fit.prophet(modelRecurrance, dt_ohe)
+    mod_ohe <- fit.prophet(modelRecurrance, dt_ohe, ...)
     dt_forecastRegressor <- predict(mod_ohe, dt_ohe)
     forecastRecurrance <- dt_forecastRegressor[, str_detect(
       names(dt_forecastRegressor), "_lower$|_upper$",

@@ -13,7 +13,8 @@ prophet_decomp(
   factor_vars,
   context_vars,
   paid_media_vars,
-  intervalType
+  intervalType,
+  ...
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ prophet_decomp(
 \item{paid_media_vars}{As in \code{robyn_inputs()}}
 
 \item{intervalType}{As included in \code{InputCollect}}
+
+\item{...}{Additional prophet parameters}
 }
 \value{
 A list containing all prophet decomposition output.

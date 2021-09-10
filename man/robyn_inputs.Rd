@@ -30,7 +30,8 @@ robyn_inputs(
   trials = 5,
   nevergrad_algo = "TwoPointsDE",
   calibration_input = NULL,
-  InputCollect = NULL
+  InputCollect = NULL,
+  ...
 )
 }
 \arguments{
@@ -135,6 +136,8 @@ Check "Guide for calibration source" section.}
 
 \item{InputCollect}{Default to NULL. \code{robyn_inputs}'s output when
 \code{hyperparameters} are not yet set.}
+
+\item{...}{Additional parameters passed to \code{prophet} functions.}
 }
 \value{
 A list containing the all input parameters and modified input data from

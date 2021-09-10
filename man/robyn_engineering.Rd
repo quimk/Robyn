@@ -4,10 +4,12 @@
 \alias{robyn_engineering}
 \title{Apply prophet decomposition and spend exposure transformation}
 \usage{
-robyn_engineering(InputCollect)
+robyn_engineering(InputCollect, ...)
 }
 \arguments{
 \item{InputCollect}{Default to \code{InputCollect}}
+
+\item{...}{Additional parameters passed to \code{prophet} functions.}
 }
 \value{
 A list containing the all input parameters and modified input
