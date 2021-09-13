@@ -245,7 +245,7 @@ robyn_inputs <- function(dt_input = NULL,
     calibration_input <- check_calibration(dt_input, date_var, calibration_input, dayInterval)
 
     ## collect input
-    InputCollect <- list(
+    InputCollect <- output <- list(
       dt_input = dt_input,
       dt_holidays = dt_holidays,
       dt_mod = NULL,
@@ -286,25 +286,15 @@ robyn_inputs <- function(dt_input = NULL,
       calibration_input = calibration_input
     )
 
-
     ### Use case 1: running robyn_inputs() for the first time
-    if (is.null(hyperparameters)) {
-
-      ### conditional output 1.1
-      ## running robyn_inputs() for the 1st time & no 'hyperparameters' yet
-      invisible(return(InputCollect))
-    } else {
-
+    if (!is.null(hyperparameters)) {
       ### conditional output 1.2
       ## running robyn_inputs() for the 1st time & 'hyperparameters' provided --> run robyn_engineering()
       check_iteration(calibration_input, iterations, trials)
-      outFeatEng <- robyn_engineering(InputCollect = InputCollect, ...)
-      invisible(return(outFeatEng))
+      output <- robyn_engineering(InputCollect = InputCollect, ...)
     }
   } else {
-
     ### Use case 2: adding 'hyperparameters' and/or 'calibration_input' using robyn_inputs()
-
     ## check calibration and iters/trials
     calibration_input <- check_calibration(
       InputCollect$dt_input,
@@ -312,34 +302,24 @@ robyn_inputs <- function(dt_input = NULL,
       calibration_input,
       InputCollect$dayInterval
     )
-
     ## update calibration_input
-    if (!is.null(calibration_input)) {
-      InputCollect$calibration_input <- calibration_input
-    }
-
-    if (is.null(InputCollect$hyperparameters) & is.null(hyperparameters)) {
-
-      ### conditional output 2.1
-      ## when 'hyperparameters' is still not yet provided
-      invisible(return(InputCollect))
-    } else {
-
+    if (!is.null(calibration_input)) InputCollect$calibration_input <- calibration_input
+    if (!(is.null(InputCollect$hyperparameters) & is.null(hyperparameters))) {
       ### conditional output 2.2
       ## 'hyperparameters' provided --> run robyn_engineering()
-
       ## update & check hyperparameters
-      if (is.null(InputCollect$hyperparameters)) {
-        InputCollect$hyperparameters <- hyperparameters
-      }
+      if (is.null(InputCollect$hyperparameters)) InputCollect$hyperparameters <- hyperparameters
       check_hyperparameters(InputCollect$hyperparameters, InputCollect$adstock, InputCollect$all_media)
       check_iteration(InputCollect$calibration_input, InputCollect$iterations, InputCollect$trials)
-
-      outFeatEng <- robyn_engineering(InputCollect = InputCollect, ...)
-      invisible(return(outFeatEng))
+      output <- robyn_engineering(InputCollect = InputCollect, ...)
     }
   }
+  if (!"robyn_inputs" %in% class(output)) {
+    class(output) <- c(class(output), "robyn_inputs")
+  }
+  return(output)
 }
+
 
 ####################################################################
 #' Get correct hyperparameter names
@@ -607,7 +587,6 @@ robyn_engineering <- function(InputCollect, ...) {
   InputCollect[["yhatNLSCollect"]] <- yhatNLSCollect
   InputCollect[["costSelector"]] <- costSelector
   InputCollect[["mediaCostFactor"]] <- mediaCostFactor
-
   return(InputCollect)
 }
 

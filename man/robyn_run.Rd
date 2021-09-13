@@ -10,7 +10,8 @@ robyn_run(
   pareto_fronts = 1,
   plot_pareto = TRUE,
   refresh = FALSE,
-  dt_hyper_fixed = NULL
+  dt_hyper_fixed = NULL,
+  ui = FALSE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ and saving model one-pagers. Used when testing models.}
 
 \item{dt_hyper_fixed}{data.frame. Only provide when loading old model results.
 It consumes hyperparameters from saved csv \code{pareto_hyperparameters.csv}.}
+
+\item{ui}{Boolean. Save additional outputs for UI usage. List outcome.}
 }
 \description{
 The \code{robyn_run()} function consumes output from \code{robyn_input()},

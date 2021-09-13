@@ -22,6 +22,7 @@
 #' @param plot_pareto Boolean. Set to \code{FALSE} to deactivate plotting
 #' and saving model one-pagers. Used when testing models.
 #' @param refresh Boolean. Set to \code{TRUE} when used in \code{robyn_refresh()}
+#' @param ui Boolean. Save additional outputs for UI usage. List outcome.
 #' @examples
 #' \dontrun{
 #' OutputCollect <- robyn_run(
@@ -37,7 +38,8 @@ robyn_run <- function(InputCollect,
                       pareto_fronts = 1,
                       plot_pareto = TRUE,
                       refresh = FALSE,
-                      dt_hyper_fixed = NULL) {
+                      dt_hyper_fixed = NULL,
+                      ui = FALSE) {
 
   #####################################
   #### Set local environment
@@ -360,7 +362,9 @@ robyn_run <- function(InputCollect,
         } else {
           pf_color <- "coral"
         }
-        pParFront <- pParFront + geom_line(data = resultHypParam[robynPareto == pfs], aes(x = nrmse, y = decomp.rssd), colour = pf_color)
+        pParFront <- pParFront + geom_line(
+          data = resultHypParam[robynPareto == pfs],
+          aes(x = nrmse, y = decomp.rssd), colour = pf_color)
       }
     }
 
@@ -758,19 +762,26 @@ robyn_run <- function(InputCollect,
   fwrite(mediaVecCollect, paste0(plot_folder, "/", plot_folder_sub, "/", "pareto_media_transform_matrix.csv"))
   fwrite(xDecompVecCollect, paste0(plot_folder, "/", plot_folder_sub, "/", "pareto_alldecomp_matrix.csv"))
 
-  OutputCollect <- list(
+  # For internal use -> UI Code
+  if (ui) {
+    UI <- list(pParFront = pParFront)
+  } else UI <- NULL
+
+  OutputCollect <- output <- list(
     resultHypParam = resultHypParam[solID %in% allSolutions],
     xDecompAgg = xDecompAgg[solID %in% allSolutions],
     mediaVecCollect = mediaVecCollect,
     xDecompVecCollect = xDecompVecCollect,
+    UI = invisible(UI),
     model_output_collect = model_output_collect,
     allSolutions = allSolutions,
     totalTime = totalTime,
     plot_folder = paste0(plot_folder, "/", plot_folder_sub, "/")
   )
-
-  return(OutputCollect)
+  class(output) <- c(class(output), robyn_run)
+  return(output)
 }
+
 
 ####################################################################
 #' The core MMM function
