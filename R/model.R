@@ -778,7 +778,6 @@ robyn_run <- function(InputCollect,
     totalTime = totalTime,
     plot_folder = paste0(plot_folder, "/", plot_folder_sub, "/")
   )
-  class(output) <- c(class(output), robyn_run)
   return(output)
 }
 

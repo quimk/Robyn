@@ -314,9 +314,6 @@ robyn_inputs <- function(dt_input = NULL,
       output <- robyn_engineering(InputCollect = InputCollect, ...)
     }
   }
-  if (!"robyn_inputs" %in% class(output)) {
-    class(output) <- c(class(output), "robyn_inputs")
-  }
   return(output)
 }
 
