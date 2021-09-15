@@ -7,7 +7,7 @@
 robyn_save(robyn_object, select_model, InputCollect, OutputCollect)
 }
 \arguments{
-\item{robyn_object}{Character. Path of the \code{Robyn.RData} object
+\item{robyn_object}{Character. Path of the \code{Robyn.RDS} object
 that contains all previous modeling information.}
 
 \item{select_model}{Character. A model \code{SolID}. When \code{robyn_object}
@@ -36,7 +36,7 @@ Use \code{robyn_save()} to select and save the initial model.
 select_model <- "3_10_3"
 
 ## Save the robyn object. Overwriting old object needs confirmation.
-robyn_object <- "~/Desktop/Robyn.RData"
+robyn_object <- "~/Desktop/Robyn.RDS"
 robyn_save(
   robyn_object = robyn_object,
   select_model = select_model,

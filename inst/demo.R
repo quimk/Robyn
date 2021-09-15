@@ -51,8 +51,8 @@ head(dt_simulated_weekly)
 data("dt_prophet_holidays")
 head(dt_prophet_holidays)
 
-## Set robyn_object. It must have extension .RData. The object name can be different than Robyn:
-robyn_object <- "~/Desktop/Robyn.RData"
+## Set robyn_object. It must have extension .RDS. The object name can be different than Robyn:
+robyn_object <- "~/Desktop/Robyn.RDS"
 
 ################################################################
 #### Step 2a: For first time user: Model specification in 4 steps
@@ -101,7 +101,7 @@ InputCollect <- robyn_inputs(
   ### set model parameters
 
   ## set cores for parallel computing
-  ,cores = 8 # I am using 6 cores from 8 on my local machine. Use availableCores() to find out cores
+  ,cores = 6 # I am using 6 cores from 8 on my local machine. Use future::availableCores() to find out cores
 
   ## set rolling window start
   ,window_start = "2016-11-23"
@@ -360,7 +360,7 @@ AllocatorCollect$dt_optimOut
 
 
 ################################################################
-#### Step 6: Model refresh based on selected model and saved Robyn.RData object - Alpha
+#### Step 6: Model refresh based on selected model and saved Robyn.RDS object - Alpha
 
 ## NOTE: must run robyn_save to select and save an initial model first, before refreshing below
 ## The robyn_refresh() function is suitable for updating within "reasonable periods"

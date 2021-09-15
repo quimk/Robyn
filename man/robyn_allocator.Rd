@@ -21,7 +21,7 @@ robyn_allocator(
 )
 }
 \arguments{
-\item{robyn_object}{Character. Path of the \code{Robyn.RData} object
+\item{robyn_object}{Character. Path of the \code{Robyn.RDS} object
 that contains all previous modeling information.}
 
 \item{select_build}{Integer. Default to the latest model build. \code{select_buil = 0}

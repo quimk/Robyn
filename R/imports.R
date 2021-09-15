@@ -23,7 +23,7 @@
 #' @importFrom doRNG %dorng%
 #' @importFrom doParallel registerDoParallel
 #' @importFrom foreach foreach %dopar% getDoParWorkers registerDoSEQ
-#' @importFrom future multicore plan
+#' @importFrom future multicore plan sequential availableCores
 #' @import ggplot2
 #' @importFrom glmnet cv.glmnet glmnet
 #' @importFrom lubridate is.Date day floor_date

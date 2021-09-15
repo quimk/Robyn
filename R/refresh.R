@@ -20,7 +20,7 @@
 #' select_model <- "3_10_3"
 #'
 #' ## Save the robyn object. Overwriting old object needs confirmation.
-#' robyn_object <- "~/Desktop/Robyn.RData"
+#' robyn_object <- "~/Desktop/Robyn.RDS"
 #' robyn_save(
 #'   robyn_object = robyn_object,
 #'   select_model = select_model,
@@ -40,7 +40,6 @@ robyn_save <- function(robyn_object,
     )))
   }
 
-  # initModPathFull <- paste0(robyn_object, "/")
   if (file.exists(robyn_object)) {
     answer <- askYesNo(paste0(robyn_object, " already exists. Are you certain to overwrite it?"))
     if (answer == FALSE | is.na(answer)) {
@@ -59,9 +58,9 @@ robyn_save <- function(robyn_object,
   listInit <- list(OutputCollect = OutputCollect, InputCollect = InputCollect)
   Robyn <- list(listInit = listInit)
 
-  save(Robyn, file = robyn_object)
+  saveRDS(Robyn, file = robyn_object)
   # listOutputInit <- NULL;  listParamInit <- NULL
-  # load("/Users/gufengzhou/Documents/GitHub/plots/listInit.RData")
+  # load("/Users/gufengzhou/Documents/GitHub/plots/listInit.RDS")
 }
 
 
@@ -69,7 +68,7 @@ robyn_save <- function(robyn_object,
 #' Build refresh model
 #'
 #' The \code{robyn_refresh()} function builds update models based on
-#' the previously built models saved in the \code{Robyn.RData} object specified
+#' the previously built models saved in the \code{Robyn.RDS} object specified
 #' in \code{robyn_object}. For example, when updating the initial build with 4
 #' weeks of new data, \code{robyn_refresh()} consumes the selected model of
 #' the initial build. it sets lower and upper bounds of hyperparameters for the
@@ -113,7 +112,7 @@ robyn_save <- function(robyn_object,
 #' ## 2, new variables are added
 #'
 #' # Set the Robyn object path
-#' robyn_object <- "~/Desktop/Robyn.RData"
+#' robyn_object <- "~/Desktop/Robyn.RDS"
 #'
 #' # Load new data
 #' data("dt_simulated_weekly")
@@ -154,13 +153,13 @@ robyn_refresh <- function(robyn_object,
   while (refreshControl) {
 
     ## load inital model
-    # if(exists("OutputCollectRF")) {rm(OutputCollectRF, listParamRefresh, listDTRefresh)}
-    load(robyn_object)
-    objectName <- substr(robyn_object, start = max(gregexpr(
-      "/|\\\\", robyn_object
-    )[[1]]) + 1, stop = max(gregexpr("RData", robyn_object)[[1]]) - 2)
-    objectPath <- substr(robyn_object, start = 1, stop = max(gregexpr("/|\\\\", robyn_object)[[1]]))
-    Robyn <- get(objectName)
+    if (!file.exists(robyn_object)) {
+      stop("File does not exist or is somewhere else. Check: ", robyn_object)
+    } else {
+      Robyn <- readRDS(robyn_object)
+      objectPath <- dirname(robyn_object)
+      objectName <- sub("'\\..*$", "", basename(robyn_object))
+    }
 
     ## count refresh
     refreshCounter <- length(Robyn)
@@ -516,7 +515,7 @@ robyn_refresh <- function(robyn_object,
     # assign(listNameUpdate, listHolder)
     Robyn[[listNameUpdate]] <- listHolder
 
-    save(Robyn, file = robyn_object)
+    saveRDS(Robyn, file = robyn_object)
 
     if (refreshLooper == 0) {
       refreshControl <- FALSE

@@ -51,16 +51,7 @@ robyn_run <- function(InputCollect,
   t0 <- Sys.time()
 
   # check path
-  if (tolower(substr(plot_folder, start = nchar(plot_folder) - 5, stop = nchar(plot_folder))) == ".rdata") {
-    plot_folder <- substr(plot_folder, start = 1, stop = max(gregexpr("/|\\\\", plot_folder)[[1]]) - 1)
-  } else if (grepl("^/$|^\\\\$", substr(plot_folder, start = nchar(plot_folder), stop = nchar(plot_folder)))) {
-    plot_folder <- substr(plot_folder, start = 1, stop = max(gregexpr("/|\\\\", plot_folder)[[1]]) - 1)
-  }
-
-  if (!dir.exists(plot_folder)) {
-    plot_folder <- getwd()
-    message("provided plot_folder doesn't exist. Using default plot_folder = getwd(): ", getwd())
-  }
+  plot_folder <- check_filename(plot_folder)
 
   dt_mod <- copy(InputCollect$dt_mod)
   dt_modRollWind <- copy(InputCollect$dt_modRollWind)
@@ -1439,10 +1430,14 @@ robyn_response <- function(robyn_object = NULL,
 
   ## get input
   if (!is.null(robyn_object)) {
-    load(robyn_object)
-    objectName <- substr(robyn_object, start = max(gregexpr("/|\\\\", robyn_object)[[1]]) + 1, stop = max(gregexpr("RData", robyn_object)[[1]]) - 2)
-    objectPath <- substr(robyn_object, start = 1, stop = max(gregexpr("/|\\\\", robyn_object)[[1]]))
-    Robyn <- get(objectName)
+
+    if (!file.exists(robyn_object)) {
+      stop("File does not exist or is somewhere else. Check: ", robyn_object)
+    } else {
+      Robyn <- readRDS(robyn_object)
+      objectPath <- dirname(robyn_object)
+      objectName <- sub("'\\..*$", "", basename(robyn_object))
+    }
 
     select_build_all <- 0:(length(Robyn) - 1)
     if (is.null(select_build)) {

@@ -16,7 +16,7 @@ robyn_refresh(
 )
 }
 \arguments{
-\item{robyn_object}{Character. Path of the \code{Robyn.RData} object
+\item{robyn_object}{Character. Path of the \code{Robyn.RDS} object
 that contains all previous modeling information.}
 
 \item{dt_input}{A data.frame. Should include all previous data and newly added
@@ -51,7 +51,7 @@ A list. The Robyn object.
 }
 \description{
 The \code{robyn_refresh()} function builds update models based on
-the previously built models saved in the \code{Robyn.RData} object specified
+the previously built models saved in the \code{Robyn.RDS} object specified
 in \code{robyn_object}. For example, when updating the initial build with 4
 weeks of new data, \code{robyn_refresh()} consumes the selected model of
 the initial build. it sets lower and upper bounds of hyperparameters for the
@@ -73,7 +73,7 @@ reporting purpose and produces reporting plots.
 ## 2, new variables are added
 
 # Set the Robyn object path
-robyn_object <- "~/Desktop/Robyn.RData"
+robyn_object <- "~/Desktop/Robyn.RDS"
 
 # Load new data
 data("dt_simulated_weekly")

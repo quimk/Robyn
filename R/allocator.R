@@ -11,7 +11,7 @@
 #' The \code{robyn_allocator()} function returns a new split of media
 #' variable spends that maximizes the total media response.
 #'
-#' @param robyn_object Character. Path of the \code{Robyn.RData} object
+#' @param robyn_object Character. Path of the \code{Robyn.RDS} object
 #' that contains all previous modeling information.
 #' @param select_build Integer. Default to the latest model build. \code{select_buil = 0}
 #' selects the initial model. \code{select_buil = 1} selects the first refresh model.
@@ -104,10 +104,14 @@ robyn_allocator <- function(robyn_object = NULL,
 
   ## collect input
   if (!is.null(robyn_object)) {
-    load(robyn_object)
-    objectName <- substr(robyn_object, start = max(gregexpr("/|\\\\", robyn_object)[[1]]) + 1, stop = max(gregexpr("RData", robyn_object)[[1]]) - 2)
-    objectPath <- substr(robyn_object, start = 1, stop = max(gregexpr("/|\\\\", robyn_object)[[1]]))
-    Robyn <- get(objectName)
+
+    if (!file.exists(robyn_object)) {
+      stop("File does not exist or is somewhere else. Check: ", robyn_object)
+    } else {
+      Robyn <- readRDS(robyn_object)
+      objectPath <- dirname(robyn_object)
+      objectName <- sub("'\\..*$", "", basename(robyn_object))
+    }
 
     select_build_all <- 0:(length(Robyn) - 1)
     if (is.null(select_build)) {

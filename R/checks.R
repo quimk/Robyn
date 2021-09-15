@@ -392,3 +392,12 @@ check_InputCollect <- function(list) {
     stop("Check your 'dt_input' object")
   }
 }
+
+check_filename <- function(plot_folder) {
+  plot_folder <- dirname(robyn_object)
+  if (!dir.exists(plot_folder)) {
+    plot_folder <- getwd()
+    message("Provided 'plot_folder' doesn't exist. Using default 'plot_folder = getwd()': ",plot_folder)
+  }
+  return(plot_folder)
+}
