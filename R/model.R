@@ -51,7 +51,7 @@ robyn_run <- function(InputCollect,
   t0 <- Sys.time()
 
   # check path
-  plot_folder <- check_filename(plot_folder)
+  plot_folder <- check_filedir(plot_folder)
 
   dt_mod <- copy(InputCollect$dt_mod)
   dt_modRollWind <- copy(InputCollect$dt_modRollWind)

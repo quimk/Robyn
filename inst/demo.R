@@ -52,7 +52,7 @@ data("dt_prophet_holidays")
 head(dt_prophet_holidays)
 
 ## Set robyn_object. It must have extension .RDS. The object name can be different than Robyn:
-robyn_object <- "~/Desktop/Robyn.RDS"
+robyn_object <- "~/Desktop/MyRobyn.RDS"
 
 ################################################################
 #### Step 2a: For first time user: Model specification in 4 steps
@@ -294,7 +294,7 @@ OutputCollect <- robyn_run(
 ## your business reality
 
 OutputCollect$allSolutions # get all model IDs in result
-select_model <- "5_126_5" # select one from above
+select_model <- "2_8_1" # select one from above
 robyn_save(robyn_object = robyn_object # model object location and name
            , select_model = select_model # selected model ID
            , InputCollect = InputCollect # all model input

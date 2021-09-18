@@ -619,15 +619,16 @@ prophet_decomp <- function(dt_transform, dt_holidays,
   use_weekday <- any(str_detect("weekday", prophet_vars))
   use_holiday <- any(str_detect("holiday", prophet_vars))
 
+  dt_regressors <- cbind(recurrance, subset(dt_transform, select = c(context_vars, paid_media_vars)))
+  modelRecurrance <- prophet(
+    holidays = if (use_holiday) holidays[country == prophet_country] else NULL,
+    yearly.seasonality = use_season,
+    weekly.seasonality = use_weekday,
+    daily.seasonality = FALSE,
+    ...
+  )
+
   if (!is.null(factor_vars)) {
-    dt_regressors <- cbind(recurrance, subset(dt_transform, select = c(context_vars, paid_media_vars)))
-    modelRecurrance <- prophet(
-      holidays = if (use_holiday) holidays[country == prophet_country] else NULL,
-      yearly.seasonality = use_season,
-      weekly.seasonality = use_weekday,
-      daily.seasonality = FALSE,
-      ...
-    )
     dt_ohe <- as.data.table(model.matrix(y ~ ., dt_regressors[, c("y", factor_vars), with = FALSE]))[, -1]
     ohe_names <- names(dt_ohe)
     for (addreg in ohe_names) modelRecurrance <- add_regressor(modelRecurrance, addreg)
@@ -645,13 +646,8 @@ prophet_decomp <- function(dt_transform, dt_holidays,
       dt_transform[, (aggreg) := scale(get_reg, center = min(get_reg), scale = FALSE)]
     }
   } else {
-    modelRecurrance <- prophet(
-      holidays = if (use_holiday) holidays[country == prophet_country] else NULL,
-      yearly.seasonality = use_season,
-      weekly.seasonality = use_weekday,
-      daily.seasonality = FALSE
-    )
-    forecastRecurrance <- predict(modelRecurrance, dt_transform$ds)
+    mod <- fit.prophet(modelRecurrance, dt_regressors, ...)
+    forecastRecurrance <- predict(mod, dt_regressors)
   }
 
   if (use_trend) {

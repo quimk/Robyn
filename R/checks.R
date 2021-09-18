@@ -393,7 +393,7 @@ check_InputCollect <- function(list) {
   }
 }
 
-check_filename <- function(plot_folder) {
+check_filedir <- function(plot_folder) {
   plot_folder <- dirname(robyn_object)
   if (!dir.exists(plot_folder)) {
     plot_folder <- getwd()
