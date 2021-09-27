@@ -11,6 +11,7 @@
 #' The \code{robyn_allocator()} function returns a new split of media
 #' variable spends that maximizes the total media response.
 #'
+#' @inheritParams robyn_run
 #' @param robyn_object Character. Path of the \code{Robyn.RDS} object
 #' that contains all previous modeling information.
 #' @param select_build Integer. Default to the latest model build. \code{select_buil = 0}
@@ -97,14 +98,14 @@ robyn_allocator <- function(robyn_object = NULL,
                             channel_constr_low = 0.5,
                             channel_constr_up = 2,
                             maxeval = 100000,
-                            constr_mode = "eq") {
+                            constr_mode = "eq",
+                            ui = FALSE) {
 
   #####################################
   #### Set local environment
 
   ## collect input
   if (!is.null(robyn_object)) {
-
     if (!file.exists(robyn_object)) {
       stop("File does not exist or is somewhere else. Check: ", robyn_object)
     } else {
@@ -678,7 +679,13 @@ robyn_allocator <- function(robyn_object = NULL,
 
   fwrite(dt_optimOut, paste0(OutputCollect$plot_folder, select_model, "_reallocated.csv"))
 
-  listAllocator <- list(dt_optimOut = dt_optimOut, nlsMod = nlsMod)
+  if (ui) {
+    ui <- list(p12 = p12, p13 = p13, p14 = p14)
+  } else {
+    ui <- NULL
+  }
+
+  listAllocator <- list(dt_optimOut = dt_optimOut, nlsMod = nlsMod, ui = ui)
 
   return(listAllocator)
 }

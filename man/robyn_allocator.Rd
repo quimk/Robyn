@@ -17,7 +17,8 @@ robyn_allocator(
   channel_constr_low = 0.5,
   channel_constr_up = 2,
   maxeval = 1e+05,
-  constr_mode = "eq"
+  constr_mode = "eq",
+  ui = FALSE
 )
 }
 \arguments{
@@ -69,6 +70,8 @@ Defaults to 100000.}
 
 \item{constr_mode}{Character. Options are \code{"eq"} or \code{"ineq"},
 indicating constraints with equality or inequality.}
+
+\item{ui}{Boolean. Save additional outputs for UI usage. List outcome.}
 }
 \value{
 A list object containing allocator result.
