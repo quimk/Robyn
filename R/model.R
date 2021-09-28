@@ -137,7 +137,7 @@ robyn_run <- function(InputCollect,
     ))
 
     for (ngt in 1:InputCollect$trials) {
-      cat(paste(" Running trial nr.", ngt, "\n"))
+      message(paste(" Running trial nr.", ngt, "\n"))
       model_output <- robyn_mmm(
         hyper_collect = InputCollect$hyperparameters,
         InputCollect = InputCollect,
@@ -1294,7 +1294,7 @@ robyn_mmm <- function(hyper_collect,
     } ## end NG loop
   }) # end system.time
 
-  cat("\n Finished in", round(sysTimeDopar[3] / 60, 2), "mins")
+  message("\n Finished in ", round(sysTimeDopar[3] / 60, 2), " mins")
 
   if (hyper_fixed == FALSE) close(pb)
   registerDoSEQ()
@@ -1571,7 +1571,7 @@ model_decomp <- function(coefs, dt_modSaturated, x, y_pred, i, dt_modRollWind, r
   y_hat <- rowSums(xDecomp)
   errorTerm <- y_hat - y_pred
   if (prod(round(y_pred) == round(y_hat)) == 0) {
-    cat("\n### attention for loop", i, ": manual decomp is not matching linear model prediction. Deviation is", mean(errorTerm / y) * 100, "% ### \n")
+    message("\n### attention for loop ", i, " : manual decomp is not matching linear model prediction. Deviation is ", mean(errorTerm / y) * 100, " % ### \n")
   }
 
   ## output decomp
