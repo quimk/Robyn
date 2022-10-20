@@ -19,7 +19,7 @@ ui <- function() {
       background-color: DFDFD6 !important;}"))
     ),
     titlePanel(
-      splitLayout(HTML('<img src="https://facebookexperimental.github.io/Robyn/img/robyn_logo.png" alt="Logo" width = 50 height = 40> Robyn Learn: Meta Open-Sourced MMM UI'),
+      splitLayout(HTML('<img src="https://facebookexperimental.github.io/Robyn/img/robyn_logo.png" alt="Logo" width = 50 height = 40> MMM'),
         textOutput("version"),
         cellWidths = c("80%", "20%")
       ),
